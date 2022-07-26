@@ -1,6 +1,7 @@
 mod rbx;
 mod cli;
-mod util;
+
+use std::process;
 
 use clap::Parser;
 use cli::Cli;
@@ -8,5 +9,15 @@ use cli::Cli;
 #[tokio::main]
 async fn main() {
     let args = Cli::parse();
-    args.run().await.unwrap();
+    match args.run().await {
+        Ok(str) => {
+            if let Some(s) = str {
+                log::info!("{}", s);
+            }
+        }
+        Err(err) => {
+            log::error!("{:?}", err);
+            process::exit(1);
+        }
+    }
 }

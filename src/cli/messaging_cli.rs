@@ -1,6 +1,6 @@
 use clap::{Subcommand, Args};
 
-use crate::{rbx::RbxCloud, util::{print_success, print_error}};
+use crate::rbx::RbxCloud;
 
 #[derive(Debug, Subcommand)]
 pub enum MessagingCommands {
@@ -30,7 +30,7 @@ pub struct Messaging {
 }
 
 impl Messaging {
-	pub async fn run(self) -> anyhow::Result<()> {
+	pub async fn run(self) -> anyhow::Result<Option<String>> {
 		match self.command {
 			MessagingCommands::Publish { topic, message, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
@@ -38,14 +38,13 @@ impl Messaging {
 				let res = messaging.publish(message).await;
 				match res {
 					Ok(()) => {
-						print_success(format!("published message to topic {}", topic));
+						Ok(Some(format!("published message to topic {}", topic)))
 					}
 					Err(err) => {
-						print_error(format!("{}", err.to_string()));
+						Err(err)
 					}
 				}
 			}
 		}
-		Ok(())
 	}
 }

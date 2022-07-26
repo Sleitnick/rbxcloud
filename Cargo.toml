@@ -7,6 +7,7 @@ authors = ["Stephen Leitnick"]
 [dependencies]
 anyhow = "1.0.58"
 clap = { version = "3.2.14", features = ["derive"] }
+log = "0.4.17"
 reqwest = { version = "0.11.11", features = ["json"] }
 serde = { version = "1.0.140", features = ["derive"] }
 serde_json = "1.0.82"

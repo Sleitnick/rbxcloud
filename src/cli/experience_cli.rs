@@ -1,6 +1,6 @@
 use clap::{Subcommand, ValueEnum, Args};
 
-use crate::{rbx::{RbxCloud, PublishVersionType}, util::{print_success, print_error}};
+use crate::rbx::{RbxCloud, PublishVersionType};
 
 #[derive(Debug, Subcommand)]
 pub enum ExperienceCommands {
@@ -40,7 +40,7 @@ pub enum VersionType {
 }
 
 impl Experience {
-	pub async fn run(self) -> anyhow::Result<()> {
+	pub async fn run(self) -> anyhow::Result<Option<String>> {
 		match self.command {
 			ExperienceCommands::Publish {place_id,universe_id,version_type,api_key, filename } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
@@ -51,14 +51,13 @@ impl Experience {
 				let res = rbx_cloud.experience(place_id).publish(&filename, publish_version_type).await;
 				match res {
 					Ok(body) => {
-						print_success(format!("{:?} {}/{} with version number {}", version_type, universe_id, place_id, body.version_number).to_lowercase());
+						Ok(Some(format!("{:?} {}/{} with version number {}", version_type, universe_id, place_id, body.version_number).to_lowercase()))
 					}
 					Err(err) => {
-						print_error(format!("{}", err.to_string()));
+						Err(err)
 					}
 				}
 			}
 		}
-		Ok(())
 	}
 }

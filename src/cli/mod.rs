@@ -13,7 +13,7 @@ pub struct Cli {
 }
 
 impl Cli {
-	pub async fn run(self) -> anyhow::Result<()> {
+	pub async fn run(self) -> anyhow::Result<Option<String>> {
 		match self.command {
 			Command::Experience(command) => command.run().await,
 			Command::Messaging(command) => command.run().await,
