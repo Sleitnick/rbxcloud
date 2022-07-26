@@ -1,5 +1,6 @@
 mod experience;
 mod messaging;
+mod datastore;
 mod error;
 
 pub use experience::PublishVersionType;

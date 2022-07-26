@@ -24,7 +24,7 @@ pub enum ExperienceCommands {
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser)]
         api_key: String,
-    }
+    },
 }
 
 #[derive(Debug, Args)]
