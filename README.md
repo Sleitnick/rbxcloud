@@ -1,6 +1,20 @@
 # Roblox Open Cloud CLI
 :warning: Under development :warning:
 
+The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud APIs.
+
+Common use-cases:
+- CD pipelines
+- Debugging DataStores
+- _TODO: More use-cases_
+
+## Install
+### Foreman
+Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file:
+```toml
+rbxcloud = { source = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.2" }
+```
+
 ## Experience
 
 ### Publish
