@@ -53,7 +53,7 @@ jobs:
     env:
       BIN: rbxcloud
     steps:
-      - use: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Get version from tag
         shell: bash
