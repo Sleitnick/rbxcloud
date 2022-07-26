@@ -602,7 +602,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rbx_cloud_cli"
+name = "rbxcloud"
 version = "0.1.0"
 dependencies = [
  "anyhow",
