@@ -1,5 +1,5 @@
 # Roblox Open Cloud CLI
-:warning: Under development :warning:
+:warning: Under Development :warning:
 
 The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud APIs.
 
@@ -46,6 +46,7 @@ OPTIONS:
 ```
 
 ## DataStore
+:warning: Under Development :warning:
 
 ### List Stores
 ```
