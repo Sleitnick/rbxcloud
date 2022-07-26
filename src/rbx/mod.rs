@@ -5,7 +5,7 @@ mod error;
 
 pub use experience::PublishVersionType;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -42,6 +42,23 @@ impl RbxMessaging {
 	}
 }
 
+pub struct RbxDataStore {
+	pub api_key: String,
+	pub universe_id: u64,
+}
+
+impl RbxDataStore {
+	pub async fn list_stores(&self, prefix: Option<String>, limit: u64, cursor: Option<String>) -> anyhow::Result<ListDataStoresResponse> {
+		datastore::list_datastores(&ListDataStoresParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			prefix: prefix,
+			limit: limit,
+			cursor: cursor,
+		}).await
+	}
+}
+
 #[derive(Debug)]
 pub struct RbxCloud {
 	pub api_key: String,
@@ -60,5 +77,9 @@ impl RbxCloud {
 
 	pub fn messaging(&self, topic: &String) -> RbxMessaging {
 		RbxMessaging { api_key: self.api_key.clone(), universe_id: self.universe_id.clone(), topic: topic.clone() }
+	}
+
+	pub fn datastore(&self) -> RbxDataStore {
+		RbxDataStore { api_key: self.api_key.clone(), universe_id: self.universe_id.clone() }
 	}
 }
