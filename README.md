@@ -18,27 +18,160 @@ rbxcloud = { source = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.2" }
 ## Experience
 
 ### Publish
-```sh
-# Long
-$ rbxcloud experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
+```
+USAGE:
+    rbxcloud.exe experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
 
-# Short
-$ rbxcloud experience publish -f <FILENAME> -p <PLACE_ID> -u <UNIVERSE_ID> -v <VERSION_TYPE> -a <API_KEY>
-
-# Example
-$ rbxcloud experience publish -f myplace.rbxl -p 123456789 -u 987654321 -v published -a ABCDEFG
+OPTIONS:
+    -a, --api-key <API_KEY>              Roblox Open Cloud API Key
+    -f, --filename <FILENAME>            Filename (full or relative) of the RBXL file
+    -h, --help                           Print help information
+    -p, --place-id <PLACE_ID>            Place ID of the experience
+    -u, --universe-id <UNIVERSE_ID>      Universe ID of the experience
+    -v, --version-type <VERSION_TYPE>    Version type [possible values: saved, published]
 ```
 
 ## Messaging
 
 ### Publish
-```sh
-# Long
-$ rbxcloud messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+```
+USAGE:
+    rbxcloud.exe messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
-# Short
-$ rbxcloud messaging publish -t <TOPIC> -m <MESSAGE> -u <UNIVERSE_ID> -a <API_KEY>
+OPTIONS:
+    -a, --api-key <API_KEY>            Roblox Open Cloud API Key
+    -h, --help                         Print help information
+    -m, --message <MESSAGE>            Message to send
+    -t, --topic <TOPIC>                Message topic
+```
 
-# Example
-$ rbxcloud messaging publish -t MyTopic -m "Hello world!" -u 987654321 -a ABCDEFG
+## DataStore
+
+### List Stores
+```
+USAGE:
+    rbxcloud.exe datastore list-stores [OPTIONS] --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>            Roblox Open Cloud API Key
+    -c, --cursor <CURSOR>              Cursor for the next set of data
+    -h, --help                         Print help information
+    -l, --limit <LIMIT>                Maximum number of items to return
+    -p, --prefix <PREFIX>              Return only DataStores with this prefix
+    -u, --universe-id <UNIVERSE_ID>    Universe ID of the experience
+```
+
+### List Keys
+```
+USAGE:
+    rbxcloud.exe datastore list [OPTIONS] --datastore-name <DATASTORE_NAME> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -c, --cursor <CURSOR>                    Cursor for the next set of data
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -h, --help                               Print help information
+    -l, --limit <LIMIT>                      Maximum number of items to return
+    -o, --all-scopes                         If true, return keys from all scopes
+    -p, --prefix <PREFIX>                    Return only DataStores with this prefix
+    -s, --scope <SCOPE>                      DataStore scope
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+```
+
+### List Versions of Key
+```
+USAGE:
+    rbxcloud.exe datastore list-versions [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --sort-order <SORT_ORDER> --limit <LIMIT> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -c, --cursor <CURSOR>                    Cursor for the next set of data
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -e, --end-time <END_TIME>                End time constraint (ISO UTC Datetime)
+    -h, --help                               Print help information
+    -k, --key <KEY>                          The key of the entry
+    -l, --limit <LIMIT>                      Maximum number of items to return
+    -o, --sort-order <SORT_ORDER>            Sort order [possible values: ascending, descending]
+    -s, --scope <SCOPE>                      DataStore scope
+    -t, --start-time <START_TIME>            Start time constraint (ISO UTC Datetime)
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+```
+
+### Get Key
+```
+USAGE:
+    rbxcloud.exe datastore get [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -h, --help                               Print help information
+    -k, --key <KEY>                          The key of the entry
+    -s, --scope <SCOPE>                      DataStore scope
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+```
+
+### Set Key
+```
+USAGE:
+    rbxcloud.exe datastore set [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --data <DATA> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -D, --data <DATA>                        JSON-stringified data (up to 4MB)
+    -e, --exclusive-create                   Only create the entry if it does not exist
+    -h, --help                               Print help information
+    -i, --match-version <MATCH_VERSION>      Only update if the current version matches this
+    -k, --key <KEY>                          The key of the entry
+    -s, --scope <SCOPE>                      DataStore scope
+    -t, --attributes <ATTRIBUTES>            JSON-stringified attributes data
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+    -U, --user-ids <USER_IDS>                Comma-separated list of Roblox user IDs
+```
+
+## Increment Key
+```
+USAGE:
+    rbxcloud.exe datastore increment [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --increment-by <INCREMENT_BY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -h, --help                               Print help information
+    -i, --increment-by <INCREMENT_BY>        The amount by which the entry should be incremented
+    -k, --key <KEY>                          The key of the entry
+    -s, --scope <SCOPE>                      DataStore scope
+    -t, --attributes <ATTRIBUTES>            JSON-stringified attributes data
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+    -U, --user-ids <USER_IDS>                Comma-separated list of Roblox user IDs
+```
+
+## Delete Key
+```
+USAGE:
+    rbxcloud.exe datastore delete [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -h, --help                               Print help information
+    -k, --key <KEY>                          The key of the entry
+    -s, --scope <SCOPE>                      DataStore scope
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
+```
+
+## Get Version of Key
+```
+USAGE:
+    rbxcloud.exe datastore get-version [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --version-id <VERSION_ID> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+
+OPTIONS:
+    -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
+    -d, --datastore-name <DATASTORE_NAME>    DataStore name
+    -h, --help                               Print help information
+    -i, --version-id <VERSION_ID>            The version of the key
+    -k, --key <KEY>                          The key of the entry
+    -s, --scope <SCOPE>                      DataStore scope
+    -u, --universe-id <UNIVERSE_ID>          Universe ID of the experience
 ```

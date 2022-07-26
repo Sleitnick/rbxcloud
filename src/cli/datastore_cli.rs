@@ -38,7 +38,7 @@ pub enum DataStoreCommands {
 		scope: Option<String>,
 
 		/// If true, return keys from all scopes
-		#[clap(short = 'l', long, value_parser)]
+		#[clap(short = 'o', long, value_parser)]
 		all_scopes: bool,
 
 		/// Return only DataStores with this prefix
@@ -195,11 +195,11 @@ pub enum DataStoreCommands {
 		#[clap(short, long, value_parser)]
 		key: String,
 
-		/// Don't consider versions older than this (ISO UTC Datetime)
+		/// Start time constraint (ISO UTC Datetime)
 		#[clap(short = 't', long, value_parser)]
 		start_time: Option<String>,
 
-		/// Don't consider versions younger than this (ISO UTC Datetime)
+		/// End time constraint (ISO UTC Datetime)
 		#[clap(short = 'e', long, value_parser)]
 		end_time: Option<String>,
 
