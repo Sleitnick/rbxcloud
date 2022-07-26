@@ -68,6 +68,31 @@ enum DataStoreErrorCode {
 	Unknown,
 }
 
+pub struct ListEntriesParams {
+    pub api_key: String,
+    pub universe_id: u64,
+	pub datastore_name: String,
+	pub scope: Option<String>,
+	pub all_scopes: bool,
+	pub prefix: Option<String>,
+	pub limit: u64,
+	pub cursor: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListEntriesResponse {
+	keys: Vec<ListEntriesKey>,
+	next_page_cursor: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListEntriesKey {
+	scope: String,
+	key: String,
+}
+
 pub async fn list_datastores(params: &ListDataStoresParams) -> anyhow::Result<ListDataStoresResponse> {
 	let client = reqwest::Client::new();
 	let url = format!(
@@ -89,6 +114,42 @@ pub async fn list_datastores(params: &ListDataStoresParams) -> anyhow::Result<Li
         .await?;
 	if res.status().is_success() {
 		let body_res = res.json::<ListDataStoresResponse>().await;
+		if let Err(e) = body_res {
+			bail!(e);
+		}
+		Ok(body_res.unwrap())
+	} else {
+		let err_res = res.json::<DataStoreErrorResponse>().await?;
+		Err(anyhow::anyhow!(format!("{:?}", err_res)))
+	}
+}
+
+pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntriesResponse> {
+	let client = reqwest::Client::new();
+	let url = format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries",
+		universeId=params.universe_id
+	);
+	let mut query: Vec<(&str, String)> = vec![
+		("datastoreName", params.datastore_name.clone()),
+		("limit", params.limit.to_string()),
+		("AllScopes", params.all_scopes.to_string()),
+		("scope", params.scope.clone().unwrap_or("global".to_string())),
+	];
+	if let Some(prefix) = &params.prefix {
+		query.push(("prefix", prefix.clone()));
+	}
+	if let Some(cursor) = &params.cursor {
+		query.push(("cursor", cursor.clone()));
+	}
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+		.query(&query)
+        .send()
+        .await?;
+	if res.status().is_success() {
+		let body_res = res.json::<ListEntriesResponse>().await;
 		if let Err(e) = body_res {
 			bail!(e);
 		}

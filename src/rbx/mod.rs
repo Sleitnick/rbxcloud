@@ -5,7 +5,7 @@ mod error;
 
 pub use experience::PublishVersionType;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -52,6 +52,19 @@ impl RbxDataStore {
 		datastore::list_datastores(&ListDataStoresParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
+			prefix: prefix,
+			limit: limit,
+			cursor: cursor,
+		}).await
+	}
+
+	pub async fn list_entries(&self, name: String, scope: Option<String>, all_scopes: bool, prefix: Option<String>, limit: u64, cursor: Option<String>) -> anyhow::Result<ListEntriesResponse> {
+		datastore::list_entries(&ListEntriesParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			all_scopes: all_scopes,
 			prefix: prefix,
 			limit: limit,
 			cursor: cursor,

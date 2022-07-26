@@ -47,7 +47,7 @@ pub enum DataStoreCommands {
 
 		/// Maximum number of items to return
 		#[clap(short, long, value_parser)]
-		limit: Option<u64>,
+		limit: u64,
 
 		/// Cursor for the next set of data
 		#[clap(short, long, value_parser)]
@@ -281,7 +281,17 @@ impl DataStore {
 				}
 			},
 			DataStoreCommands::List { prefix, limit, cursor, universe_id, api_key, datastore_name, scope, all_scopes } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.list_entries(datastore_name, scope, all_scopes, prefix, limit, cursor).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(format!("{:?}", data)))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			},
 			DataStoreCommands::Get { datastore_name, scope, key, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))
