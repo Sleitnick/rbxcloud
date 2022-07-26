@@ -24,6 +24,9 @@ $ rbxcloud experience publish --filename <FILENAME> --place-id <PLACE_ID> --univ
 
 # Short
 $ rbxcloud experience publish -f <FILENAME> -p <PLACE_ID> -u <UNIVERSE_ID> -v <VERSION_TYPE> -a <API_KEY>
+
+# Example
+$ rbxcloud experience publish -f myplace.rbxl -p 123456789 -u 987654321 -v published -a ABCDEFG
 ```
 
 ## Messaging
@@ -35,4 +38,7 @@ $ rbxcloud messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <
 
 # Short
 $ rbxcloud messaging publish -t <TOPIC> -m <MESSAGE> -u <UNIVERSE_ID> -a <API_KEY>
+
+# Example
+$ rbxcloud messaging publish -t MyTopic -m "Hello world!" -u 987654321 -a ABCDEFG
 ```
