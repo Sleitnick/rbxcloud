@@ -1,0 +1,4 @@
+/target
+*.rbxl
+api_key.txt
+test.sh
