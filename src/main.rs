@@ -8,8 +8,14 @@ use cli::Cli;
 
 #[tokio::main]
 async fn main() {
-    let args = Cli::parse();
-    match args.run().await {
+    env_logger::builder()
+        .format_timestamp(None)
+        .filter_level(log::LevelFilter::Info)
+        .init();
+
+    let cli_args = Cli::parse();
+
+    match cli_args.run().await {
         Ok(str) => {
             if let Some(s) = str {
                 log::info!("{}", s);
