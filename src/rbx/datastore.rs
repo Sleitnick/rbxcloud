@@ -149,10 +149,12 @@ pub struct IncrementEntryParams {
 	pub increment_by: f64,
 }
 
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct IncrementEntryResponse {
-
+pub struct DeleteEntryParams {
+    pub api_key: String,
+    pub universe_id: u64,
+	pub datastore_name: String,
+	pub scope: Option<String>,
+	pub key: String,
 }
 
 async fn handle_res<T: DeserializeOwned>(res: Response) -> anyhow::Result<T> {
@@ -179,6 +181,18 @@ async fn handle_res_string(res: Response) -> anyhow::Result<String> {
 				Ok(body) => Ok(body),
 				Err(err) => bail!(err)
 			}
+		},
+		false => {
+			let err_res = res.json::<DataStoreErrorResponse>().await?;
+			bail!(err_res)
+		},
+	}
+}
+
+async fn handle_res_ok(res: Response) -> anyhow::Result<()> {
+	match res.status().is_success() {
+		true => {
+			Ok(())
 		},
 		false => {
 			let err_res = res.json::<DataStoreErrorResponse>().await?;
@@ -328,7 +342,6 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
-		.header("Content-Type", "application/json")
 		.header("roblox-entry-userids", format!("[{}]", ids))
 		.header("roblox-entry-attributes", params.roblox_entry_attributes.as_ref().unwrap_or(&"{}".to_string()))
 		.query(&query)
@@ -349,4 +362,24 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
 			bail!(err)
 		}
 	}
+}
+
+pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
+	let client = reqwest::Client::new();
+	let url = format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry",
+		universeId=params.universe_id
+	);
+	let query: Vec<(&str, String)> = vec![
+		("datastoreName", params.datastore_name.clone()),
+		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("entryKey", params.key.clone()),
+	];
+    let res = client
+        .delete(url)
+        .header("x-api-key", &params.api_key)
+		.query(&query)
+        .send()
+        .await?;
+	handle_res_ok(res).await
 }

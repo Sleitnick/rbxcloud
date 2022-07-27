@@ -338,8 +338,19 @@ impl DataStore {
 			}
 
 			DataStoreCommands::Delete { datastore_name, scope, key, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.delete_entry(datastore_name, scope, key).await;
+				match res {
+					Ok(_) => {
+						Ok(None)
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			}
+
 			DataStoreCommands::ListVersions { datastore_name, scope, key, start_time, end_time, sort_order, limit, cursor, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))
 			}
