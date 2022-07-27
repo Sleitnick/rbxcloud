@@ -18,7 +18,6 @@ async fn main() {
 	match cli_args.run().await {
 		Ok(str) => {
 			if let Some(s) = str {
-				// log::info!("{}", s);
 				println!("{}", s);
 			}
 		}
