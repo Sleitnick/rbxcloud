@@ -6,7 +6,7 @@ pub mod error;
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams, IncrementEntryParams, DeleteEntryParams, ListEntryVersionsResponse, ListEntryVersionsParams}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams, IncrementEntryParams, DeleteEntryParams, ListEntryVersionsResponse, ListEntryVersionsParams, GetEntryVersionParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -142,6 +142,17 @@ impl RbxDataStore {
 			sort_order: sort_order,
 			limit: limit,
 			cursor: cursor,
+		}).await
+	}
+
+	pub async fn get_entry_version(&self, name: String, scope: Option<String>, key: String, version_id: String) -> anyhow::Result<String> {
+		datastore::get_entry_version(&GetEntryVersionParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
+			version_id: version_id,
 		}).await
 	}
 }

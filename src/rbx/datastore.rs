@@ -187,6 +187,15 @@ pub struct ListEntryVersion {
 	pub object_created_time: String,
 }
 
+pub struct GetEntryVersionParams {
+    pub api_key: String,
+    pub universe_id: u64,
+	pub datastore_name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub version_id: String,
+}
+
 async fn handle_res<T: DeserializeOwned>(res: Response) -> anyhow::Result<T> {
 	match res.status().is_success() {
 		true => {
@@ -443,4 +452,25 @@ pub async fn list_entry_versions(params: &ListEntryVersionsParams) -> anyhow::Re
         .send()
         .await?;
 	handle_res::<ListEntryVersionsResponse>(res).await
+}
+
+pub async fn get_entry_version(params: &GetEntryVersionParams) -> anyhow::Result<String> {
+	let client = reqwest::Client::new();
+	let url = format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/versions/version",
+		universeId=params.universe_id
+	);
+	let query: Vec<(&str, String)> = vec![
+		("datastoreName", params.datastore_name.clone()),
+		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("entryKey", params.key.to_string()),
+		("versionId", params.version_id.to_string()),
+	];
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+		.query(&query)
+        .send()
+        .await?;
+	handle_res_string(res).await
 }

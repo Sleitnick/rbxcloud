@@ -2,8 +2,6 @@ use clap::{Subcommand, Args, ValueEnum};
 
 use crate::rbx::RbxCloud;
 
-use anyhow::anyhow;
-
 #[derive(Debug, Subcommand)]
 pub enum DataStoreCommands {
 	ListStores {
@@ -366,7 +364,17 @@ impl DataStore {
 			}
 
 			DataStoreCommands::GetVersion { datastore_name, scope, key, version_id, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.get_entry_version(datastore_name, scope, key, version_id).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(data))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			}
 		}
 	}
