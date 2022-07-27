@@ -12,7 +12,7 @@ Common use-cases:
 ### Foreman
 Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file:
 ```toml
-rbxcloud = { github = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.2" }
+rbxcloud = { github = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.4" }
 ```
 
 ## Experience
@@ -46,7 +46,6 @@ OPTIONS:
 ```
 
 ## DataStore
-:warning: Under Development :warning:
 
 ### List Stores
 ```
