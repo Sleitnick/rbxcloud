@@ -294,7 +294,17 @@ impl DataStore {
 				}
 			},
 			DataStoreCommands::Get { datastore_name, scope, key, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.get_entry_string(datastore_name, scope, key).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(data))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			},
 			DataStoreCommands::Set { datastore_name, scope, key, match_version, exclusive_create, data, user_ids, attributes, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))

@@ -1,4 +1,4 @@
-mod rbx;
+pub mod rbx;
 mod cli;
 
 use std::process;

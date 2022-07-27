@@ -1,11 +1,12 @@
-mod experience;
-mod messaging;
-mod datastore;
-mod error;
+pub mod experience;
+pub mod messaging;
+pub mod datastore;
+pub mod error;
 
 pub use experience::PublishVersionType;
+use serde::de::DeserializeOwned;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -68,6 +69,26 @@ impl RbxDataStore {
 			prefix: prefix,
 			limit: limit,
 			cursor: cursor,
+		}).await
+	}
+
+	pub async fn get_entry_string(&self, name: String, scope: Option<String>, key: String) -> anyhow::Result<String> {
+		datastore::get_entry_string(&GetEntryParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
+		}).await
+	}
+
+	pub async fn get_entry<T: DeserializeOwned>(&self, name: String, scope: Option<String>, key: String) -> anyhow::Result<T> {
+		datastore::get_entry::<T>(&GetEntryParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
 		}).await
 	}
 }
