@@ -6,7 +6,7 @@ pub mod error;
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -89,6 +89,21 @@ impl RbxDataStore {
 			datastore_name: name,
 			scope: scope,
 			key: key,
+		}).await
+	}
+
+	pub async fn set_entry(&self, name: String, scope: Option<String>, key: String, match_version: Option<String>, exclusive_create: Option<bool>, roblox_entry_user_ids: Option<Vec<u64>>, roblox_entry_attributes: Option<String>, data: String) -> anyhow::Result<SetEntryResponse> {
+		datastore::set_entry(&SetEntryParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
+			match_version: match_version,
+			exclusive_create: exclusive_create,
+			roblox_entry_user_ids: roblox_entry_user_ids,
+			roblox_entry_attributes: roblox_entry_attributes,
+			data: data,
 		}).await
 	}
 }

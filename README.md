@@ -20,7 +20,7 @@ rbxcloud = { source = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.2" }
 ### Publish
 ```
 USAGE:
-    rbxcloud.exe experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
+    rbxcloud experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>              Roblox Open Cloud API Key
@@ -36,7 +36,7 @@ OPTIONS:
 ### Publish
 ```
 USAGE:
-    rbxcloud.exe messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>            Roblox Open Cloud API Key
@@ -51,7 +51,7 @@ OPTIONS:
 ### List Stores
 ```
 USAGE:
-    rbxcloud.exe datastore list-stores [OPTIONS] --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore list-stores [OPTIONS] --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>            Roblox Open Cloud API Key
@@ -65,7 +65,7 @@ OPTIONS:
 ### List Keys
 ```
 USAGE:
-    rbxcloud.exe datastore list [OPTIONS] --datastore-name <DATASTORE_NAME> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore list [OPTIONS] --datastore-name <DATASTORE_NAME> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -82,7 +82,7 @@ OPTIONS:
 ### List Versions of Key
 ```
 USAGE:
-    rbxcloud.exe datastore list-versions [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --sort-order <SORT_ORDER> --limit <LIMIT> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore list-versions [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --sort-order <SORT_ORDER> --limit <LIMIT> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -101,7 +101,7 @@ OPTIONS:
 ### Get Key
 ```
 USAGE:
-    rbxcloud.exe datastore get [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore get [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -115,7 +115,7 @@ OPTIONS:
 ### Set Key
 ```
 USAGE:
-    rbxcloud.exe datastore set [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --data <DATA> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore set [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --data <DATA> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -134,7 +134,7 @@ OPTIONS:
 ## Increment Key
 ```
 USAGE:
-    rbxcloud.exe datastore increment [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --increment-by <INCREMENT_BY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore increment [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --increment-by <INCREMENT_BY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -151,7 +151,7 @@ OPTIONS:
 ## Delete Key
 ```
 USAGE:
-    rbxcloud.exe datastore delete [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore delete [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key
@@ -165,7 +165,7 @@ OPTIONS:
 ## Get Version of Key
 ```
 USAGE:
-    rbxcloud.exe datastore get-version [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --version-id <VERSION_ID> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
+    rbxcloud datastore get-version [OPTIONS] --datastore-name <DATASTORE_NAME> --key <KEY> --version-id <VERSION_ID> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key

@@ -103,15 +103,15 @@ pub enum DataStoreCommands {
 
 		/// Only create the entry if it does not exist
 		#[clap(short, long, value_parser)]
-		exclusive_create: bool,
+		exclusive_create: Option<bool>,
 
 		/// JSON-stringified data (up to 4MB)
 		#[clap(short = 'D', long, value_parser)]
 		data: String,
 
-		/// Comma-separated list of Roblox user IDs
+		/// Associated UserID (can be multiple)
 		#[clap(short = 'U', long, value_parser)]
-		user_ids: Option<String>,
+		user_ids: Option<Vec<u64>>,
 
 		/// JSON-stringified attributes data
 		#[clap(short = 't', long, value_parser)]
@@ -273,26 +273,28 @@ impl DataStore {
 				let res = datastore.list_stores(prefix, limit, cursor).await;
 				match res {
 					Ok(data) => {
-						Ok(Some(format!("{:?}", data)))
+						Ok(Some(format!("{:#?}", data)))
 					}
 					Err(err) => {
 						Err(err)
 					}
 				}
 			},
+
 			DataStoreCommands::List { prefix, limit, cursor, universe_id, api_key, datastore_name, scope, all_scopes } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
 				let res = datastore.list_entries(datastore_name, scope, all_scopes, prefix, limit, cursor).await;
 				match res {
 					Ok(data) => {
-						Ok(Some(format!("{:?}", data)))
+						Ok(Some(format!("{:#?}", data)))
 					}
 					Err(err) => {
 						Err(err)
 					}
 				}
 			},
+
 			DataStoreCommands::Get { datastore_name, scope, key, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
@@ -306,9 +308,21 @@ impl DataStore {
 					}
 				}
 			},
+
 			DataStoreCommands::Set { datastore_name, scope, key, match_version, exclusive_create, data, user_ids, attributes, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.set_entry(datastore_name, scope, key, match_version, exclusive_create, user_ids, attributes, data).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(format!("{:#?}", data)))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			}
+
 			DataStoreCommands::Increment { datastore_name, scope, key, increment_by, user_ids, attributes, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))
 			}
