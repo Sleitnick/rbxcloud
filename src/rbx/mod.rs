@@ -6,7 +6,7 @@ pub mod error;
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams, IncrementEntryParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -104,6 +104,19 @@ impl RbxDataStore {
 			roblox_entry_user_ids: roblox_entry_user_ids,
 			roblox_entry_attributes: roblox_entry_attributes,
 			data: data,
+		}).await
+	}
+
+	pub async fn increment_entry(&self, name: String, scope: Option<String>, key: String, roblox_entry_user_ids: Option<Vec<u64>>, roblox_entry_attributes: Option<String>, increment: f64) -> anyhow::Result<f64> {
+		datastore::increment_entry(&IncrementEntryParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
+			roblox_entry_user_ids: roblox_entry_user_ids,
+			roblox_entry_attributes: roblox_entry_attributes,
+			increment_by: increment,
 		}).await
 	}
 }

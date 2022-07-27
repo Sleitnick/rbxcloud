@@ -145,7 +145,7 @@ pub enum DataStoreCommands {
 
 		/// Comma-separated list of Roblox user IDs
 		#[clap(short = 'U', long, value_parser)]
-		user_ids: Option<String>,
+		user_ids: Option<Vec<u64>>,
 
 		/// JSON-stringified attributes data
 		#[clap(short = 't', long, value_parser)]
@@ -324,8 +324,19 @@ impl DataStore {
 			}
 
 			DataStoreCommands::Increment { datastore_name, scope, key, increment_by, user_ids, attributes, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.increment_entry(datastore_name, scope, key, user_ids, attributes, increment_by).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(format!("{}", data)))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			}
+
 			DataStoreCommands::Delete { datastore_name, scope, key, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))
 			}

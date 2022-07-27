@@ -138,6 +138,23 @@ pub struct SetEntryResponse {
 	pub object_created_time: String,
 }
 
+pub struct IncrementEntryParams {
+    pub api_key: String,
+    pub universe_id: u64,
+	pub datastore_name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub roblox_entry_user_ids: Option<Vec<u64>>,
+	pub roblox_entry_attributes: Option<String>,
+	pub increment_by: f64,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct IncrementEntryResponse {
+
+}
+
 async fn handle_res<T: DeserializeOwned>(res: Response) -> anyhow::Result<T> {
 	match res.status().is_success() {
 		true => {
@@ -249,6 +266,16 @@ pub async fn get_entry<T: DeserializeOwned>(params: &GetEntryParams) -> anyhow::
 	handle_res::<T>(res).await
 }
 
+fn build_ids_csv(ids: &Option<Vec<u64>>) -> String {
+	ids
+		.as_ref()
+		.unwrap_or(&vec![])
+		.iter()
+		.map(|id| format!("{}", id))
+		.collect::<Vec<String>>()
+		.join(",")
+}
+
 pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryResponse> {
 	let client = reqwest::Client::new();
 	let url = format!(
@@ -266,13 +293,7 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
 	if let Some(exclusive_create) = &params.exclusive_create {
 		query.push(("exclusiveCreate", exclusive_create.to_string()));
 	}
-	let ids = params.roblox_entry_user_ids
-		.as_ref()
-		.unwrap_or(&vec![])
-		.iter()
-		.map(|id| format!("{}", id))
-		.collect::<Vec<String>>()
-		.join(",");
+	let ids = build_ids_csv(&params.roblox_entry_user_ids);
 	let mut hasher = Md5::new();
 	hasher.update(&params.data.as_bytes());
 	let checksum = hasher.finalize();
@@ -289,4 +310,43 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
         .send()
         .await?;
 	handle_res::<SetEntryResponse>(res).await
+}
+
+pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f64> {
+	let client = reqwest::Client::new();
+	let url = format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/increment",
+		universeId=params.universe_id
+	);
+	let query: Vec<(&str, String)> = vec![
+		("datastoreName", params.datastore_name.clone()),
+		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("entryKey", params.key.clone()),
+		("incrementBy", params.increment_by.to_string()),
+	];
+	let ids = build_ids_csv(&params.roblox_entry_user_ids);
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+		.header("Content-Type", "application/json")
+		.header("roblox-entry-userids", format!("[{}]", ids))
+		.header("roblox-entry-attributes", params.roblox_entry_attributes.as_ref().unwrap_or(&"{}".to_string()))
+		.query(&query)
+        .send()
+        .await?;
+	match handle_res_string(res).await {
+		Ok(data) => {
+			match data.parse::<f64>() {
+				Ok(num) => {
+					Ok(num)
+				}
+				Err(e) => {
+					bail!(format!("failed to parse number from data: {}", data))
+				}
+			}
+		}
+		Err(err) => {
+			bail!(err)
+		}
+	}
 }
