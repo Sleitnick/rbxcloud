@@ -352,8 +352,19 @@ impl DataStore {
 			}
 
 			DataStoreCommands::ListVersions { datastore_name, scope, key, start_time, end_time, sort_order, limit, cursor, universe_id, api_key } => {
-				Err(anyhow!("not yet implemented"))
+				let rbx_cloud = RbxCloud::new(api_key, universe_id);
+				let datastore = rbx_cloud.datastore();
+				let res = datastore.list_entry_versions(datastore_name, scope, key, start_time, end_time, format!("{:?}", sort_order), limit, cursor).await;
+				match res {
+					Ok(data) => {
+						Ok(Some(format!("{:#?}", data)))
+					}
+					Err(err) => {
+						Err(err)
+					}
+				}
 			}
+
 			DataStoreCommands::GetVersion { datastore_name, scope, key, version_id, universe_id, api_key } => {
 				Err(anyhow!("not yet implemented"))
 			}

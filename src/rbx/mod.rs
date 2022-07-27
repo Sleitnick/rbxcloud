@@ -6,7 +6,7 @@ pub mod error;
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
-use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams, IncrementEntryParams, DeleteEntryParams}};
+use self::{experience::{PublishExperienceParams, PublishExperienceResponse}, messaging::PublishMessageParams, datastore::{ListDataStoresParams, ListDataStoresResponse, ListEntriesResponse, ListEntriesParams, GetEntryParams, SetEntryResponse, SetEntryParams, IncrementEntryParams, DeleteEntryParams, ListEntryVersionsResponse, ListEntryVersionsParams}};
 
 pub struct RbxExperience {
 	pub universe_id: u64,
@@ -127,6 +127,21 @@ impl RbxDataStore {
 			datastore_name: name,
 			scope: scope,
 			key: key,
+		}).await
+	}
+
+	pub async fn list_entry_versions(&self, name: String, scope: Option<String>, key: String, start_time: Option<String>, end_time: Option<String>, sort_order: String, limit: u64, cursor: Option<String>) -> anyhow::Result<ListEntryVersionsResponse> {
+		datastore::list_entry_versions(&ListEntryVersionsParams {
+			api_key: self.api_key.clone(),
+			universe_id: self.universe_id,
+			datastore_name: name,
+			scope: scope,
+			key: key,
+			start_time: start_time,
+			end_time: end_time,
+			sort_order: sort_order,
+			limit: limit,
+			cursor: cursor,
 		}).await
 	}
 }

@@ -157,6 +157,36 @@ pub struct DeleteEntryParams {
 	pub key: String,
 }
 
+pub struct ListEntryVersionsParams {
+    pub api_key: String,
+    pub universe_id: u64,
+	pub datastore_name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub start_time: Option<String>,
+	pub end_time: Option<String>,
+	pub sort_order: String,
+	pub limit: u64,
+	pub cursor: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListEntryVersionsResponse {
+	pub versions: Vec<ListEntryVersion>,
+	pub next_page_cursor: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ListEntryVersion {
+	pub version: String,
+	pub deleted: bool,
+	pub content_length: u64,
+	pub created_time: String,
+	pub object_created_time: String,
+}
+
 async fn handle_res<T: DeserializeOwned>(res: Response) -> anyhow::Result<T> {
 	match res.status().is_success() {
 		true => {
@@ -353,7 +383,7 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
 				Ok(num) => {
 					Ok(num)
 				}
-				Err(e) => {
+				Err(_) => {
 					bail!(format!("failed to parse number from data: {}", data))
 				}
 			}
@@ -382,4 +412,35 @@ pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
         .send()
         .await?;
 	handle_res_ok(res).await
+}
+
+pub async fn list_entry_versions(params: &ListEntryVersionsParams) -> anyhow::Result<ListEntryVersionsResponse> {
+	let client = reqwest::Client::new();
+	let url = format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/versions",
+		universeId=params.universe_id
+	);
+	let mut query: Vec<(&str, String)> = vec![
+		("datastoreName", params.datastore_name.clone()),
+		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("entryKey", params.key.to_string()),
+		("limit", params.limit.to_string()),
+		("sortOrder", params.sort_order.to_string()),
+	];
+	if let Some(start_time) = &params.start_time {
+		query.push(("startTime", start_time.clone()));
+	}
+	if let Some(end_time) = &params.end_time {
+		query.push(("endTime", end_time.clone()));
+	}
+	if let Some(cursor) = &params.cursor {
+		query.push(("cursor", cursor.clone()));
+	}
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+		.query(&query)
+        .send()
+        .await?;
+	handle_res::<ListEntryVersionsResponse>(res).await
 }
