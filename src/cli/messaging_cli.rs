@@ -4,6 +4,7 @@ use crate::rbx::RbxCloud;
 
 #[derive(Debug, Subcommand)]
 pub enum MessagingCommands {
+	/// Publish a message
 	Publish {
         /// Message topic
         #[clap(short, long, value_parser)]

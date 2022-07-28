@@ -4,6 +4,7 @@ use crate::rbx::{RbxCloud, PublishVersionType};
 
 #[derive(Debug, Subcommand)]
 pub enum ExperienceCommands {
+    /// Publish an experience
     Publish {
         /// Filename (full or relative) of the RBXL file
         #[clap(short, long, value_parser)]

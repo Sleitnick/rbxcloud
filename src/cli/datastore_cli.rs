@@ -4,6 +4,7 @@ use crate::rbx::{RbxCloud, DataStoreListStores, DataStoreListEntries, DataStoreG
 
 #[derive(Debug, Subcommand)]
 pub enum DataStoreCommands {
+	/// List all DataStores in a given universe
 	ListStores {
 		/// Return only DataStores with this prefix
 		#[clap(short, long, value_parser)]
@@ -26,6 +27,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// List all entries in a DataStore
 	List {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -60,6 +62,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// Get a DataStore entry
 	Get {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -82,6 +85,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// Set or create the value of a DataStore entry
 	Set {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -124,6 +128,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// Increment or create the value of a DataStore entry
 	Increment {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -158,6 +163,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// Delete a DataStore entry
 	Delete {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -180,6 +186,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// List all versions of a DataStore entry
 	ListVersions {
 		/// DataStore name
 		#[clap(short, long, value_parser)]
@@ -222,6 +229,7 @@ pub enum DataStoreCommands {
         api_key: String,
 	},
 
+	/// Get the value of a specific entry version
 	GetVersion {
 		/// DataStore name
 		#[clap(short, long, value_parser)]

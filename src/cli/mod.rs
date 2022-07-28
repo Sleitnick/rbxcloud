@@ -7,7 +7,7 @@ use clap::{Parser, Subcommand};
 use self::{experience_cli::Experience, messaging_cli::Messaging, datastore_cli::DataStore};
 
 #[derive(Debug, Parser)]
-#[clap(name = "Rbx Cloud", version, about, author)]
+#[clap(name = "rbxcloud", version, about)]
 pub struct Cli {
 	#[clap(subcommand)]
 	pub command: Command,
@@ -15,9 +15,13 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    #[clap(arg_required_else_help = true)]
+	/// Access the Roblox Experience API
 	Experience(Experience),
+
+	/// Access the Roblox Messaging API
 	Messaging(Messaging),
+
+	/// Access the Roblox DataStore API
 	Datastore(DataStore),
 }
 
