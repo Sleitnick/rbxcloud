@@ -19,7 +19,10 @@ rbxcloud = { github = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.4" }
 ```
 
 ### Cargo
-**_TODO_**: Publish to cargo
+Install from cargo:
+```sh
+$ cargo install rbxcloud
+```
 
 ### From Release
 Download and unzip the tool for your OS from the [releases](https://github.com/Sleitnick/rbx-cloud-cli/releases) page. You will then need to put it in your desired location and point your path variable to the executable location.
