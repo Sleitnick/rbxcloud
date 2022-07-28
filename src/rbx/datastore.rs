@@ -272,7 +272,7 @@ pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntr
 		("datastoreName", params.datastore_name.clone()),
 		("limit", params.limit.to_string()),
 		("AllScopes", params.all_scopes.to_string()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 	];
 	if let Some(prefix) = &params.prefix {
 		query.push(("prefix", prefix.clone()));
@@ -297,7 +297,7 @@ async fn get_entry_response(params: &GetEntryParams) -> anyhow::Result<Response>
 	);
 	let query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
 	];
     let res = client
@@ -337,7 +337,7 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
 	);
 	let mut query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
 	];
 	if let Some(match_version) = &params.match_version {
@@ -373,7 +373,7 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
 	);
 	let query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
 		("incrementBy", params.increment_by.to_string()),
 	];
@@ -411,7 +411,7 @@ pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
 	);
 	let query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
 	];
     let res = client
@@ -431,7 +431,7 @@ pub async fn list_entry_versions(params: &ListEntryVersionsParams) -> anyhow::Re
 	);
 	let mut query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.to_string()),
 		("limit", params.limit.to_string()),
 		("sortOrder", params.sort_order.to_string()),
@@ -462,7 +462,7 @@ pub async fn get_entry_version(params: &GetEntryVersionParams) -> anyhow::Result
 	);
 	let query: Vec<(&str, String)> = vec![
 		("datastoreName", params.datastore_name.clone()),
-		("scope", params.scope.clone().unwrap_or("global".to_string())),
+		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.to_string()),
 		("versionId", params.version_id.to_string()),
 	];
