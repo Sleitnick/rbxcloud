@@ -4,7 +4,7 @@ mod datastore_cli;
 
 use clap::{Parser, Subcommand};
 
-use self::{experience_cli::{Experience}, messaging_cli::Messaging, datastore_cli::DataStore};
+use self::{experience_cli::Experience, messaging_cli::Messaging, datastore_cli::DataStore};
 
 #[derive(Debug, Parser)]
 #[clap(name = "Rbx Cloud", version, about, author)]

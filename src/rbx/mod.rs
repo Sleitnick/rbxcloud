@@ -15,13 +15,13 @@ pub struct RbxExperience {
 }
 
 impl RbxExperience {
-	pub async fn publish(&self, filename: &String, version_type: PublishVersionType) -> anyhow::Result<PublishExperienceResponse> {
+	pub async fn publish(&self, filename: &str, version_type: PublishVersionType) -> anyhow::Result<PublishExperienceResponse> {
 		experience::publish_experience(&PublishExperienceParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
 			place_id: self.place_id,
-			version_type: version_type,
-			filename: filename.clone(),
+			version_type,
+			filename: filename.to_string(),
 		}).await
 	}
 }
@@ -38,7 +38,7 @@ impl RbxMessaging {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
 			topic: self.topic.clone(),
-			message: message,
+			message,
 		}).await
 	}
 }
@@ -48,75 +48,134 @@ pub struct RbxDataStore {
 	pub universe_id: u64,
 }
 
+pub struct DataStoreListStores {
+	pub prefix: Option<String>,
+	pub limit: u64,
+	pub cursor: Option<String>,
+}
+
+pub struct DataStoreListEntries {
+	pub name: String,
+	pub scope: Option<String>,
+	pub all_scopes: bool,
+	pub prefix: Option<String>,
+	pub limit: u64,
+	pub cursor: Option<String>,
+}
+
+pub struct DataStoreGetEntry {
+	pub name: String,
+	pub scope: Option<String>,
+	pub key: String,
+}
+
+pub struct DataStoreSetEntry {
+	pub name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub match_version: Option<String>,
+	pub exclusive_create: Option<bool>,
+	pub roblox_entry_user_ids: Option<Vec<u64>>,
+	pub roblox_entry_attributes: Option<String>,
+	pub data: String,
+}
+
+pub struct DataStoreIncrementEntry {
+	pub name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub roblox_entry_user_ids: Option<Vec<u64>>,
+	pub roblox_entry_attributes: Option<String>,
+	pub increment_by: f64,
+}
+
+pub struct DataStoreListEntryVersions {
+	pub name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub start_time: Option<String>,
+	pub end_time: Option<String>,
+	pub sort_order: String,
+	pub limit: u64,
+	pub cursor: Option<String>,
+}
+
+pub struct DataStoreGetEntryVersion {
+	pub name: String,
+	pub scope: Option<String>,
+	pub key: String,
+	pub version_id: String
+}
+
 impl RbxDataStore {
-	pub async fn list_stores(&self, prefix: Option<String>, limit: u64, cursor: Option<String>) -> anyhow::Result<ListDataStoresResponse> {
+	pub async fn list_stores(&self, params: &DataStoreListStores) -> anyhow::Result<ListDataStoresResponse> {
 		datastore::list_datastores(&ListDataStoresParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			prefix: prefix,
-			limit: limit,
-			cursor: cursor,
+			prefix: params.prefix.clone(),
+			limit: params.limit,
+			cursor: params.cursor.clone(),
 		}).await
 	}
 
-	pub async fn list_entries(&self, name: String, scope: Option<String>, all_scopes: bool, prefix: Option<String>, limit: u64, cursor: Option<String>) -> anyhow::Result<ListEntriesResponse> {
+	pub async fn list_entries(&self, params: &DataStoreListEntries) -> anyhow::Result<ListEntriesResponse> {
 		datastore::list_entries(&ListEntriesParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			all_scopes: all_scopes,
-			prefix: prefix,
-			limit: limit,
-			cursor: cursor,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			all_scopes: params.all_scopes,
+			prefix: params.prefix.clone(),
+			limit: params.limit,
+			cursor: params.cursor.clone(),
 		}).await
 	}
 
-	pub async fn get_entry_string(&self, name: String, scope: Option<String>, key: String) -> anyhow::Result<String> {
+	pub async fn get_entry_string(&self, params: &DataStoreGetEntry) -> anyhow::Result<String> {
 		datastore::get_entry_string(&GetEntryParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
 		}).await
 	}
 
-	pub async fn get_entry<T: DeserializeOwned>(&self, name: String, scope: Option<String>, key: String) -> anyhow::Result<T> {
+	pub async fn get_entry<T: DeserializeOwned>(&self, params: &DataStoreGetEntry) -> anyhow::Result<T> {
 		datastore::get_entry::<T>(&GetEntryParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
 		}).await
 	}
 
-	pub async fn set_entry(&self, name: String, scope: Option<String>, key: String, match_version: Option<String>, exclusive_create: Option<bool>, roblox_entry_user_ids: Option<Vec<u64>>, roblox_entry_attributes: Option<String>, data: String) -> anyhow::Result<SetEntryResponse> {
+	pub async fn set_entry(&self, params: &DataStoreSetEntry) -> anyhow::Result<SetEntryResponse> {
 		datastore::set_entry(&SetEntryParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
-			match_version: match_version,
-			exclusive_create: exclusive_create,
-			roblox_entry_user_ids: roblox_entry_user_ids,
-			roblox_entry_attributes: roblox_entry_attributes,
-			data: data,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
+			match_version: params.match_version.clone(),
+			exclusive_create: params.exclusive_create,
+			roblox_entry_user_ids: params.roblox_entry_user_ids.clone(),
+			roblox_entry_attributes: params.roblox_entry_attributes.clone(),
+			data: params.data.clone(),
 		}).await
 	}
 
-	pub async fn increment_entry(&self, name: String, scope: Option<String>, key: String, roblox_entry_user_ids: Option<Vec<u64>>, roblox_entry_attributes: Option<String>, increment: f64) -> anyhow::Result<f64> {
+	pub async fn increment_entry(&self, params: &DataStoreIncrementEntry) -> anyhow::Result<f64> {
 		datastore::increment_entry(&IncrementEntryParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
-			roblox_entry_user_ids: roblox_entry_user_ids,
-			roblox_entry_attributes: roblox_entry_attributes,
-			increment_by: increment,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
+			roblox_entry_user_ids: params.roblox_entry_user_ids.clone(),
+			roblox_entry_attributes: params.roblox_entry_attributes.clone(),
+			increment_by: params.increment_by,
 		}).await
 	}
 
@@ -125,34 +184,34 @@ impl RbxDataStore {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
 			datastore_name: name,
-			scope: scope,
-			key: key,
+			scope,
+			key,
 		}).await
 	}
 
-	pub async fn list_entry_versions(&self, name: String, scope: Option<String>, key: String, start_time: Option<String>, end_time: Option<String>, sort_order: String, limit: u64, cursor: Option<String>) -> anyhow::Result<ListEntryVersionsResponse> {
+	pub async fn list_entry_versions(&self, params: &DataStoreListEntryVersions) -> anyhow::Result<ListEntryVersionsResponse> {
 		datastore::list_entry_versions(&ListEntryVersionsParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
-			start_time: start_time,
-			end_time: end_time,
-			sort_order: sort_order,
-			limit: limit,
-			cursor: cursor,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
+			start_time: params.start_time.clone(),
+			end_time: params.end_time.clone(),
+			sort_order: params.sort_order.clone(),
+			limit: params.limit,
+			cursor: params.cursor.clone(),
 		}).await
 	}
 
-	pub async fn get_entry_version(&self, name: String, scope: Option<String>, key: String, version_id: String) -> anyhow::Result<String> {
+	pub async fn get_entry_version(&self, params: &DataStoreGetEntryVersion) -> anyhow::Result<String> {
 		datastore::get_entry_version(&GetEntryVersionParams {
 			api_key: self.api_key.clone(),
 			universe_id: self.universe_id,
-			datastore_name: name,
-			scope: scope,
-			key: key,
-			version_id: version_id,
+			datastore_name: params.name.clone(),
+			scope: params.scope.clone(),
+			key: params.key.clone(),
+			version_id: params.version_id.clone(),
 		}).await
 	}
 }
@@ -170,14 +229,14 @@ impl RbxCloud {
 	}
 
 	pub fn experience(&self, place_id: u64) -> RbxExperience {
-		RbxExperience { api_key: self.api_key.clone(), universe_id: self.universe_id.clone(), place_id }
+		RbxExperience { api_key: self.api_key.clone(), universe_id: self.universe_id, place_id }
 	}
 
-	pub fn messaging(&self, topic: &String) -> RbxMessaging {
-		RbxMessaging { api_key: self.api_key.clone(), universe_id: self.universe_id.clone(), topic: topic.clone() }
+	pub fn messaging(&self, topic: &str) -> RbxMessaging {
+		RbxMessaging { api_key: self.api_key.clone(), universe_id: self.universe_id, topic: topic.to_string() }
 	}
 
 	pub fn datastore(&self) -> RbxDataStore {
-		RbxDataStore { api_key: self.api_key.clone(), universe_id: self.universe_id.clone() }
+		RbxDataStore { api_key: self.api_key.clone(), universe_id: self.universe_id }
 	}
 }

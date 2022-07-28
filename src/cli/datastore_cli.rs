@@ -1,6 +1,6 @@
 use clap::{Subcommand, Args, ValueEnum};
 
-use crate::rbx::RbxCloud;
+use crate::rbx::{RbxCloud, DataStoreListStores, DataStoreListEntries, DataStoreGetEntry, DataStoreSetEntry, DataStoreIncrementEntry, DataStoreListEntryVersions, DataStoreGetEntryVersion};
 
 #[derive(Debug, Subcommand)]
 pub enum DataStoreCommands {
@@ -268,7 +268,11 @@ impl DataStore {
 			DataStoreCommands::ListStores { prefix, limit, cursor, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.list_stores(prefix, limit, cursor).await;
+				let res = datastore.list_stores(&DataStoreListStores {
+					cursor,
+					limit,
+					prefix,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(format!("{:#?}", data)))
@@ -282,7 +286,14 @@ impl DataStore {
 			DataStoreCommands::List { prefix, limit, cursor, universe_id, api_key, datastore_name, scope, all_scopes } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.list_entries(datastore_name, scope, all_scopes, prefix, limit, cursor).await;
+				let res = datastore.list_entries(&DataStoreListEntries {
+					name: datastore_name,
+					scope,
+					all_scopes,
+					prefix,
+					limit,
+					cursor,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(format!("{:#?}", data)))
@@ -296,7 +307,11 @@ impl DataStore {
 			DataStoreCommands::Get { datastore_name, scope, key, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.get_entry_string(datastore_name, scope, key).await;
+				let res = datastore.get_entry_string(&DataStoreGetEntry {
+					name: datastore_name,
+					scope,
+					key,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(data))
@@ -310,7 +325,16 @@ impl DataStore {
 			DataStoreCommands::Set { datastore_name, scope, key, match_version, exclusive_create, data, user_ids, attributes, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.set_entry(datastore_name, scope, key, match_version, exclusive_create, user_ids, attributes, data).await;
+				let res = datastore.set_entry(&DataStoreSetEntry {
+					name: datastore_name,
+					scope,
+					key,
+					match_version,
+					exclusive_create,
+					roblox_entry_user_ids: user_ids,
+					roblox_entry_attributes: attributes,
+					data,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(format!("{:#?}", data)))
@@ -324,7 +348,14 @@ impl DataStore {
 			DataStoreCommands::Increment { datastore_name, scope, key, increment_by, user_ids, attributes, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.increment_entry(datastore_name, scope, key, user_ids, attributes, increment_by).await;
+				let res = datastore.increment_entry(&DataStoreIncrementEntry {
+					name: datastore_name,
+					scope,
+					key,
+					roblox_entry_user_ids: user_ids,
+					roblox_entry_attributes: attributes,
+					increment_by,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(format!("{}", data)))
@@ -352,7 +383,16 @@ impl DataStore {
 			DataStoreCommands::ListVersions { datastore_name, scope, key, start_time, end_time, sort_order, limit, cursor, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.list_entry_versions(datastore_name, scope, key, start_time, end_time, format!("{:?}", sort_order), limit, cursor).await;
+				let res = datastore.list_entry_versions(&DataStoreListEntryVersions {
+					name: datastore_name,
+					scope,
+					key,
+					start_time,
+					end_time,
+					sort_order: format!("{:?}", sort_order),
+					limit,
+					cursor,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(format!("{:#?}", data)))
@@ -366,7 +406,12 @@ impl DataStore {
 			DataStoreCommands::GetVersion { datastore_name, scope, key, version_id, universe_id, api_key } => {
 				let rbx_cloud = RbxCloud::new(api_key, universe_id);
 				let datastore = rbx_cloud.datastore();
-				let res = datastore.get_entry_version(datastore_name, scope, key, version_id).await;
+				let res = datastore.get_entry_version(&DataStoreGetEntryVersion {
+					name: datastore_name,
+					scope,
+					key,
+					version_id,
+				}).await;
 				match res {
 					Ok(data) => {
 						Ok(Some(data))

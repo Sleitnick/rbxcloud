@@ -34,15 +34,15 @@ pub async fn publish_message(params: &PublishMessageParams) -> anyhow::Result<()
     if !status.is_success() {
         let code = status.as_u16();
         if code == 400 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "invalid request".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "invalid request".to_string() });
         } else if code == 401 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "api key not valid for operation".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "api key not valid for operation".to_string() });
         } else if code == 403 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "publish not allowed on place".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "publish not allowed on place".to_string() });
         } else if code == 500 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "internal server error".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "internal server error".to_string() });
         }
-		bail!(RbxError::HttpStatusError { code: code, msg: status.canonical_reason().unwrap_or_default().to_string() });
+		bail!(RbxError::HttpStatusError { code, msg: status.canonical_reason().unwrap_or_default().to_string() });
     }
 	Ok(())
 }

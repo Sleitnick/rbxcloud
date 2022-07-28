@@ -39,7 +39,7 @@ pub async fn publish_experience(params: &PublishExperienceParams) -> anyhow::Res
         "https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType={versionType}",
         universeId=params.universe_id,
         placeId=params.place_id,
-        versionType=params.version_type.to_string(),
+        versionType=params.version_type,
     );
     let res = client
         .post(url)
@@ -52,19 +52,19 @@ pub async fn publish_experience(params: &PublishExperienceParams) -> anyhow::Res
     if !status.is_success() {
         let code = status.as_u16();
         if code == 400 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "invalid request or file content".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "invalid request or file content".to_string() });
         } else if code == 401 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "api key not valid for operation".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "api key not valid for operation".to_string() });
         } else if code == 403 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "publish not allowed on place".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "publish not allowed on place".to_string() });
         } else if code == 404 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "place or universe does not exist".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "place or universe does not exist".to_string() });
         } else if code == 409 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "place not part of the universe".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "place not part of the universe".to_string() });
         } else if code == 500 {
-			bail!(RbxError::HttpStatusError { code: code, msg: "internal server error".to_string() });
+			bail!(RbxError::HttpStatusError { code, msg: "internal server error".to_string() });
         }
-		bail!(RbxError::HttpStatusError { code: code, msg: status.canonical_reason().unwrap_or_default().to_string() });
+		bail!(RbxError::HttpStatusError { code, msg: status.canonical_reason().unwrap_or_default().to_string() });
     }
     let body_res = res.json::<PublishExperienceResponse>().await;
     if let Err(e) = body_res {
