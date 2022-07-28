@@ -5,6 +5,8 @@ use md5::{Md5, Digest};
 use reqwest::Response;
 use serde::{Deserialize, de::DeserializeOwned};
 
+type QueryString = Vec<(&'static str, String)>;
+
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct DataStoreEntry {
@@ -240,13 +242,24 @@ async fn handle_res_ok(res: Response) -> anyhow::Result<()> {
 	}
 }
 
+fn build_url(endpoint: &str, universe_id: u64) -> String {
+	format!(
+		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/{endpoint}",
+		universeId=universe_id,
+		endpoint=endpoint,
+	)
+}
+
+fn get_checksum_base64(data: &String) -> String {
+	let mut md5_hash = Md5::new();
+	md5_hash.update(&data.as_bytes());
+	base64::encode(md5_hash.finalize())
+}
+
 pub async fn list_datastores(params: &ListDataStoresParams) -> anyhow::Result<ListDataStoresResponse> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores",
-		universeId=params.universe_id
-	);
-	let mut query: Vec<(&str, String)> = vec![("limit", params.limit.to_string())];
+	let url = build_url("", params.universe_id);
+	let mut query: QueryString = vec![("limit", params.limit.to_string())];
 	if let Some(prefix) = &params.prefix {
 		query.push(("prefix", prefix.clone()));
 	}
@@ -264,11 +277,8 @@ pub async fn list_datastores(params: &ListDataStoresParams) -> anyhow::Result<Li
 
 pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntriesResponse> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries",
-		universeId=params.universe_id
-	);
-	let mut query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries", params.universe_id);
+	let mut query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("limit", params.limit.to_string()),
 		("AllScopes", params.all_scopes.to_string()),
@@ -291,11 +301,8 @@ pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntr
 
 async fn get_entry_response(params: &GetEntryParams) -> anyhow::Result<Response> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry",
-		universeId=params.universe_id
-	);
-	let query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry", params.universe_id);
+	let query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
@@ -331,11 +338,8 @@ fn build_ids_csv(ids: &Option<Vec<u64>>) -> String {
 
 pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryResponse> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry",
-		universeId=params.universe_id
-	);
-	let mut query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry", params.universe_id);
+	let mut query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
@@ -346,18 +350,13 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
 	if let Some(exclusive_create) = &params.exclusive_create {
 		query.push(("exclusiveCreate", exclusive_create.to_string()));
 	}
-	let ids = build_ids_csv(&params.roblox_entry_user_ids);
-	let mut hasher = Md5::new();
-	hasher.update(&params.data.as_bytes());
-	let checksum = hasher.finalize();
-	let checksum_b64 = base64::encode(&checksum);
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
 		.header("Content-Type", "application/json")
-		.header("roblox-entry-userids", format!("[{}]", ids))
-		.header("roblox-entry-attributes", params.roblox_entry_attributes.as_ref().unwrap_or(&"{}".to_string()))
-		.header("content-md5", checksum_b64)
+		.header("roblox-entry-userids", format!("[{}]", build_ids_csv(&params.roblox_entry_user_ids)))
+		.header("roblox-entry-attributes", params.roblox_entry_attributes.as_ref().unwrap_or(&String::from("{}")))
+		.header("content-md5", get_checksum_base64(&params.data))
 		.body(params.data.clone())
 		.query(&query)
         .send()
@@ -367,11 +366,8 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
 
 pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f64> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/increment",
-		universeId=params.universe_id
-	);
-	let query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry/increment", params.universe_id);
+	let query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
@@ -405,11 +401,8 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
 
 pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry",
-		universeId=params.universe_id
-	);
-	let query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry", params.universe_id);
+	let query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.clone()),
@@ -425,11 +418,8 @@ pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
 
 pub async fn list_entry_versions(params: &ListEntryVersionsParams) -> anyhow::Result<ListEntryVersionsResponse> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/versions",
-		universeId=params.universe_id
-	);
-	let mut query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry/versions", params.universe_id);
+	let mut query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.to_string()),
@@ -456,11 +446,8 @@ pub async fn list_entry_versions(params: &ListEntryVersionsParams) -> anyhow::Re
 
 pub async fn get_entry_version(params: &GetEntryVersionParams) -> anyhow::Result<String> {
 	let client = reqwest::Client::new();
-	let url = format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/datastore/entries/entry/versions/version",
-		universeId=params.universe_id
-	);
-	let query: Vec<(&str, String)> = vec![
+	let url = build_url("/datastore/entries/entry/versions/version", params.universe_id);
+	let query: QueryString = vec![
 		("datastoreName", params.datastore_name.clone()),
 		("scope", params.scope.clone().unwrap_or_else(|| "global".to_string())),
 		("entryKey", params.key.to_string()),
