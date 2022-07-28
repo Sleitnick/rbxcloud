@@ -3,8 +3,8 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  lint:
-    name: Lint
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -14,16 +14,9 @@ jobs:
           components: clippy
           override: true
       - uses: actions-rs/clippy-check@v1
+        name: Lint
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: cargo test --all-features
+      - name: Test
+        run: cargo test --all-features
