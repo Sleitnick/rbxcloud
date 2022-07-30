@@ -11,7 +11,6 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-
       - name: Get version from cargo.toml
         uses: SebRollen/toml-action@v1.0.0
         id: cargo_version
@@ -22,7 +21,7 @@ jobs:
       - name: Verify package version is equal to tag version
         if: "!contains(steps.read_toml.outputs.value, github.ref"
         run: exit 1
-        
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
