@@ -23,7 +23,7 @@ jobs:
           field: 'package.version'
 
       - name: Verify package version is equal to tag version
-        if: ${{ "v" + steps.cargo_version.outputs.value != github.ref}}
+        if: ${{ format('v{0}', steps.cargo_version.outputs.value) != github.ref}}
         run: "exit 1"
 
       - name: Create Release
