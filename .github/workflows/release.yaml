@@ -23,8 +23,12 @@ jobs:
           field: 'package.version'
 
       - name: Verify package version is equal to tag version
-        if: "!contains(steps.read_toml.outputs.value, github.ref)"
-        run: exit 1
+        if: ${{ "v" + steps.cargo_version.outputs.value != github.ref}}
+        run: | 
+        echo "${{ steps.cargo_version.outputs.value }}"
+        echo "${{ github.ref }}"
+        echo "Cargo version did not match tag version! Termianting..."
+        exit 1
 
       - name: Create Release
         id: create_release
