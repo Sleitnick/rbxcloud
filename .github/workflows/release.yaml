@@ -25,6 +25,8 @@ jobs:
       - name: Verify package version is equal to tag version
         if: ${{ format('v{0}', steps.cargo_version.outputs.value) != github.ref}}
         run: "exit 1"
+        run: "echo ${{ format('v{0}', steps.cargo_version.outputs.value) }}"
+        run: "echo ${{ github.ref }}"
 
       - name: Create Release
         id: create_release
