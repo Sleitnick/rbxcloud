@@ -22,11 +22,15 @@ jobs:
           file: 'Cargo.toml'
           field: 'package.version'
 
+      - name: Get the tag of current release
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Verify package version is equal to tag version
-        if: ${{ format('v{0}', steps.cargo_version.outputs.value) != github.ref}}
+        if: ${{ format('v{0}', steps.cargo_version.outputs.value) != steps.get_version.outputs.VERSION }}
         run: |
           echo "${{ format('v{0}', steps.cargo_version.outputs.value) }}"
-          echo "${{ github.ref }}"
+          echo "${{ steps.get_version.outputs.VERSION }}"
           exit 1
 
       - name: Create Release
@@ -35,7 +39,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
           release_name: ${{ github.ref }}
           draft: true
           prerelease: false
