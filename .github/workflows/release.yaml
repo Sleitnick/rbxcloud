@@ -19,7 +19,7 @@ jobs:
         uses: SebRollen/toml-action@v1.0.0
         id: cargo_version
         with:
-          file: 'cargo.toml'
+          file: 'Cargo.toml'
           field: 'package.version'
 
       - name: Verify package version is equal to tag version
