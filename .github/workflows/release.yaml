@@ -25,8 +25,8 @@ jobs:
       - name: Verify package version is equal to tag version
         if: ${{ "v" + steps.cargo_version.outputs.value != github.ref}}
         run: | 
-        echo "${{ steps.cargo_version.outputs.value }}"
-        echo "${{ github.ref }}"
+        echo ${{ steps.cargo_version.outputs.value }}
+        echo ${{ github.ref }}
         echo "Cargo version did not match tag version! Termianting..."
         exit 1
 
