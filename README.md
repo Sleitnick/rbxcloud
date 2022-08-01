@@ -15,13 +15,13 @@ Common use-cases:
 ### Foreman
 Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file:
 ```toml
-rbxcloud = { github = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.6" }
+rbxcloud = { github = "Sleitnick/rbx-cloud-cli", version = "0.1.0-alpha.7" }
 ```
 
 ### Cargo
 Install from cargo:
 ```sh
-$ cargo install rbxcloud@0.1.0-alpha.6
+$ cargo install rbxcloud@0.1.0-alpha.7
 ```
 
 ### From Release
