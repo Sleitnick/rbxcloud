@@ -1,10 +1,7 @@
-pub mod rbx;
-mod cli;
-
 use std::process;
 
 use clap::Parser;
-use cli::Cli;
+use rbxcloud::cli::Cli;
 
 #[tokio::main]
 async fn main() {
