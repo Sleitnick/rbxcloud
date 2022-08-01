@@ -1,6 +1,6 @@
 use clap::{Subcommand, ValueEnum, Args};
 
-use crate::rbx::{RbxCloud, PublishVersionType};
+use rbxcloud::rbx::{RbxCloud, PublishVersionType};
 
 #[derive(Debug, Subcommand)]
 pub enum ExperienceCommands {

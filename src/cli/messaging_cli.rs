@@ -1,6 +1,6 @@
 use clap::{Subcommand, Args};
 
-use crate::rbx::RbxCloud;
+use rbxcloud::rbx::RbxCloud;
 
 #[derive(Debug, Subcommand)]
 pub enum MessagingCommands {

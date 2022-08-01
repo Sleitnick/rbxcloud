@@ -1,6 +1,6 @@
 use clap::{Subcommand, Args, ValueEnum};
 
-use crate::rbx::{RbxCloud, DataStoreListStores, DataStoreListEntries, DataStoreGetEntry, DataStoreSetEntry, DataStoreIncrementEntry, DataStoreListEntryVersions, DataStoreGetEntryVersion};
+use rbxcloud::rbx::{RbxCloud, DataStoreListStores, DataStoreListEntries, DataStoreGetEntry, DataStoreSetEntry, DataStoreIncrementEntry, DataStoreListEntryVersions, DataStoreGetEntryVersion};
 
 #[derive(Debug, Subcommand)]
 pub enum DataStoreCommands {
