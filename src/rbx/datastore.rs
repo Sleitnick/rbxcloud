@@ -9,7 +9,7 @@ type QueryString = Vec<(&'static str, String)>;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct DataStoreEntry {
+pub struct ListDataStoreEntry {
 	pub name: String,
 	pub created_time: String,
 }
@@ -17,7 +17,7 @@ pub struct DataStoreEntry {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListDataStoresResponse {
-	pub datastores: Vec<DataStoreEntry>,
+	pub datastores: Vec<ListDataStoreEntry>,
 	pub next_page_cursor: Option<String>,
 }
 
@@ -243,11 +243,18 @@ async fn handle_res_ok(res: Response) -> anyhow::Result<()> {
 }
 
 fn build_url(endpoint: &str, universe_id: u64) -> String {
-	format!(
-		"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/{endpoint}",
-		universeId=universe_id,
-		endpoint=endpoint,
-	)
+	if endpoint.is_empty() {
+		format!(
+			"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores",
+			universeId=universe_id,
+		)
+	} else {
+		format!(
+			"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/{endpoint}",
+			universeId=universe_id,
+			endpoint=endpoint,
+		)
+	}
 }
 
 fn get_checksum_base64(data: &String) -> String {
