@@ -1,8 +1,8 @@
-# Roblox Open Cloud CLI
-:warning: Under Development :warning:
-
 [![CI](https://github.com/Sleitnick/rbx-cloud-cli/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sleitnick/rbx-cloud-cli/actions/workflows/ci.yaml)
 [![Release](https://github.com/Sleitnick/rbx-cloud-cli/actions/workflows/release.yaml/badge.svg)](https://github.com/Sleitnick/rbx-cloud-cli/actions/workflows/release.yaml)
+
+# Roblox Open Cloud CLI
+:warning: Under Development :warning:
 
 The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud APIs.
 
