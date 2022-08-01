@@ -6,6 +6,7 @@ authors = ["Stephen Leitnick"]
 license = "MIT"
 repository = "https://github.com/Sleitnick/rbxcloud"
 readme = "README.md"
+documentation = "https://sleitnick.github.io/rbxcloud/"
 edition = "2021"
 
 [dependencies]
