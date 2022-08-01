@@ -27,6 +27,17 @@ $ cargo install rbxcloud@0.1.0-alpha.7
 ### From Release
 Download and unzip the tool for your OS from the [releases](https://github.com/Sleitnick/rbx-cloud-cli/releases) page. You will then need to put it in your desired location and point your path variable to the executable location.
 
+### From Source
+Download the repository and build from the source:
+```sh
+# Clone repo and set as current directory:
+$ git clone https://github.com/Sleitnick/rbx-cloud-cli.git
+$ cd rbx-cloud-cli
+
+# Build binary:
+$ cargo build --release
+```
+
 ## Experience
 
 ### Publish
