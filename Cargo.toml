@@ -4,7 +4,7 @@ version = "0.1.0-alpha.7"
 description = "CLI for the Roblox Open Cloud APIs"
 authors = ["Stephen Leitnick"]
 license = "MIT"
-repository = "https://github.com/Sleitnick/rbx-cloud-cli"
+repository = "https://github.com/Sleitnick/rbxcloud"
 readme = "README.md"
 edition = "2021"
 
