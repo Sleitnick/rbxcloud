@@ -1,0 +1,46 @@
+site_name: rbxcloud
+site_url: https://sleitnick.github.io/rbxcloud/
+
+repo_name: rbxcloud
+repo_url: https://github.com/Sleitnick/rbxcloud
+
+nav:
+  - Home: index.md
+  - CLI:
+    - Install: cli/cli-install.md
+    - Experience: cli/cli-experience.md
+    - Messaging: cli/cli-messaging.md
+    - DataStore: cli/cli-datastore.md
+  - Rust Lib:
+    - Install: lib/lib-install.md
+
+theme:
+  name: material
+  include_search_page: false
+  search_index_only: true
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to Dark Mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to Light Mode
+  icon:
+    logo: material/cloud-tags
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true
