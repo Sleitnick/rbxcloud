@@ -1,5 +1,8 @@
 {
 	"yaml.schemas": {
 		"https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
+	},
+	"[rust]": {
+		"editor.formatOnSave": true
 	}
 }

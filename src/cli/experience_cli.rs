@@ -1,6 +1,6 @@
-use clap::{Subcommand, ValueEnum, Args};
+use clap::{Args, Subcommand, ValueEnum};
 
-use rbxcloud::rbx::{RbxCloud, PublishVersionType};
+use rbxcloud::rbx::{PublishVersionType, RbxCloud};
 
 #[derive(Debug, Subcommand)]
 pub enum ExperienceCommands {
@@ -13,7 +13,7 @@ pub enum ExperienceCommands {
         /// Place ID of the experience
         #[clap(short, long, value_parser)]
         place_id: u64,
-    
+
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
@@ -41,24 +41,35 @@ pub enum VersionType {
 }
 
 impl Experience {
-	pub async fn run(self) -> anyhow::Result<Option<String>> {
-		match self.command {
-			ExperienceCommands::Publish {place_id,universe_id,version_type,api_key, filename } => {
-				let rbx_cloud = RbxCloud::new(api_key, universe_id);
-				let publish_version_type = match version_type {
-					VersionType::Published => PublishVersionType::Published,
-					VersionType::Saved => PublishVersionType::Saved,
-				};
-				let res = rbx_cloud.experience(place_id).publish(&filename, publish_version_type).await;
-				match res {
-					Ok(body) => {
-						Ok(Some(format!("{:?} {}/{} with version number {}", version_type, universe_id, place_id, body.version_number).to_lowercase()))
-					}
-					Err(err) => {
-						Err(err)
-					}
-				}
-			}
-		}
-	}
+    pub async fn run(self) -> anyhow::Result<Option<String>> {
+        match self.command {
+            ExperienceCommands::Publish {
+                place_id,
+                universe_id,
+                version_type,
+                api_key,
+                filename,
+            } => {
+                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let publish_version_type = match version_type {
+                    VersionType::Published => PublishVersionType::Published,
+                    VersionType::Saved => PublishVersionType::Saved,
+                };
+                let res = rbx_cloud
+                    .experience(place_id)
+                    .publish(&filename, publish_version_type)
+                    .await;
+                match res {
+                    Ok(body) => Ok(Some(
+                        format!(
+                            "{:?} {}/{} with version number {}",
+                            version_type, universe_id, place_id, body.version_number
+                        )
+                        .to_lowercase(),
+                    )),
+                    Err(err) => Err(err),
+                }
+            }
+        }
+    }
 }
