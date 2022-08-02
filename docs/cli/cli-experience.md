@@ -1,7 +1,7 @@
 # Experience API
 
-## Publish Experience
-Publish an experience to Roblox. This takes an `*.rbxl` file and publishes it to a specific Place ID.
+## Publish Place
+Publish a place to a Roblox experience. This takes an `*.rbxl` file and publishes it to a specific Place ID.
 ```
 USAGE:
     rbxcloud experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
@@ -15,7 +15,38 @@ OPTIONS:
     -t, --version-type <VERSION_TYPE>    Version type [possible values: saved, published]
 ```
 
-Example:
+### Example
 ```
 $ rbxcloud experience publish -f myplace.rbxl -v published -p 12345 -u 98765 -a MY_KEY
+```
+
+### GitHub Action
+A common practice is to create a CD pipeline to deploy a place automatically. This can be done with GitHub actions. Below is an example GitHub Action workflow. The example assumes that Foreman is being used and that `rbxcloud` is listed within the `foreman.toml` file.
+
+```yaml
+# Deploy any time code is pushed to the 'main' branch
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Roblox/setup-foreman@v1
+        name: Install Foreman
+        with:
+            version: "^1.0.0"
+            token: ${{ SECRETS.GITHUB_TOKEN }}
+      - name: Publish
+        shell: bash
+        env:
+          UID: 123456789 # Universe ID
+          PID: 123456789 # Place ID
+          API_KEY: ${{ secrets.key }} # API Key (keep this in your GitHub Repository Secrets)
+          FILE: my_place.rbxl # Roblox place file (e.g. might have a step before this to build the file with Rojo)
+        run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -v published -f "$FILE"
 ```
