@@ -17,7 +17,7 @@ OPTIONS:
 
 ### Example
 ```
-$ rbxcloud experience publish -f myplace.rbxl -v published -p 12345 -u 98765 -a MY_KEY
+$ rbxcloud experience publish -f myplace.rbxl -t published -p 12345 -u 98765 -a MY_KEY
 ```
 
 ### GitHub Action
@@ -36,17 +36,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: Roblox/setup-foreman@v1
         name: Install Foreman
         with:
-            version: "^1.0.0"
-            token: ${{ SECRETS.GITHUB_TOKEN }}
+          version: "^1.0.0"
+          token: ${{ SECRETS.GITHUB_TOKEN }}
+
       - name: Publish
         shell: bash
         env:
-          UID: 123456789 # Universe ID
-          PID: 123456789 # Place ID
+          UID: 123456789              # Universe ID
+          PID: 123456789              # Place ID
           API_KEY: ${{ secrets.key }} # API Key (keep this in your GitHub Repository Secrets)
-          FILE: my_place.rbxl # Roblox place file (e.g. might have a step before this to build the file with Rojo)
-        run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -v published -f "$FILE"
+          FILE: my_place.rbxl         # Roblox place file (e.g. might have a step before this to build the file with Rojo)
+
+        run: rbxcloud experience publish -a "$API_KEY" -u "$UID" -p "$PID" -t published -f "$FILE"
 ```
