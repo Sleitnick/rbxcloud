@@ -7,7 +7,7 @@ There are a few different ways to install the `rbxcloud` CLI.
 ### Foreman
 Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file.
 ```toml
-rbxcloud = { github = "Sleitnick/rbxcloud", version = "0.1.0-alpha.9" }
+rbxcloud = { github = "Sleitnick/rbxcloud", version = "0.1.0-alpha.10" }
 ```
 
 Next, run `foreman install`. To update, simply change the `version` field and then run `foreman install` again.
@@ -20,7 +20,7 @@ cargo install rbxcloud
 
 Alternatively, install or update to a specific version.
 ```sh
-cargo install rbxcloud@0.1.0-alpha.9
+cargo install rbxcloud@0.1.0-alpha.10
 ```
 
 ### Releases
