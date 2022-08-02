@@ -293,7 +293,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{:#?}", data))),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -321,7 +321,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{:#?}", data))),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -343,7 +343,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(data)),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -375,7 +375,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{:#?}", data))),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -403,7 +403,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{}", data))),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -419,7 +419,7 @@ impl DataStore {
                 let res = datastore.delete_entry(datastore_name, scope, key).await;
                 match res {
                     Ok(_) => Ok(None),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -451,7 +451,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{:#?}", data))),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
 
@@ -475,7 +475,7 @@ impl DataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(data)),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
         }

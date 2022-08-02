@@ -1,7 +1,6 @@
-use anyhow::{bail, Context};
 use serde_json::json;
 
-use crate::rbx::error::RbxError;
+use crate::rbx::error::Error;
 
 pub struct PublishMessageParams {
     pub api_key: String,
@@ -10,8 +9,7 @@ pub struct PublishMessageParams {
     pub message: String,
 }
 
-pub async fn publish_message(params: &PublishMessageParams) -> anyhow::Result<()> {
-    // https://apis.roblox.com/messaging-service/v1/universes/{universeId}/topics/{topic}
+pub async fn publish_message(params: &PublishMessageParams) -> Result<(), Error> {
     let client = reqwest::Client::new();
     let url = format!(
         "https://apis.roblox.com/messaging-service/v1/universes/{universeId}/topics/{topic}",
@@ -19,10 +17,9 @@ pub async fn publish_message(params: &PublishMessageParams) -> anyhow::Result<()
         topic = params.topic,
     );
     let body_json = json!({
-        // "message": serde_json::to_string(&serde_json::from_str::<Value>(&params.message).unwrap()).unwrap(),
         "message": &params.message,
     });
-    let body = serde_json::to_string(&body_json).context("failed to parse json")?;
+    let body = serde_json::to_string(&body_json)?;
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
@@ -34,29 +31,29 @@ pub async fn publish_message(params: &PublishMessageParams) -> anyhow::Result<()
     if !status.is_success() {
         let code = status.as_u16();
         if code == 400 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "invalid request".to_string()
+                msg: "invalid request".to_string(),
             });
         } else if code == 401 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "api key not valid for operation".to_string()
+                msg: "api key not valid for operation".to_string(),
             });
         } else if code == 403 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "publish not allowed on place".to_string()
+                msg: "publish not allowed on place".to_string(),
             });
         } else if code == 500 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "internal server error".to_string()
+                msg: "internal server error".to_string(),
             });
         }
-        bail!(RbxError::HttpStatusError {
+        return Err(Error::HttpStatusError {
             code,
-            msg: status.canonical_reason().unwrap_or_default().to_string()
+            msg: status.canonical_reason().unwrap_or_default().to_string(),
         });
     }
     Ok(())

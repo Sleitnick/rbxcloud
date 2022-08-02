@@ -12,6 +12,7 @@ use self::{
         ListDataStoresParams, ListDataStoresResponse, ListEntriesParams, ListEntriesResponse,
         ListEntryVersionsParams, ListEntryVersionsResponse, SetEntryParams, SetEntryResponse,
     },
+    error::Error,
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
 };
@@ -27,7 +28,7 @@ impl RbxExperience {
         &self,
         filename: &str,
         version_type: PublishVersionType,
-    ) -> anyhow::Result<PublishExperienceResponse> {
+    ) -> Result<PublishExperienceResponse, Error> {
         experience::publish_experience(&PublishExperienceParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -46,7 +47,7 @@ pub struct RbxMessaging {
 }
 
 impl RbxMessaging {
-    pub async fn publish(&self, message: String) -> anyhow::Result<()> {
+    pub async fn publish(&self, message: String) -> Result<(), Error> {
         messaging::publish_message(&PublishMessageParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -125,7 +126,7 @@ impl RbxDataStore {
     pub async fn list_stores(
         &self,
         params: &DataStoreListStores,
-    ) -> anyhow::Result<ListDataStoresResponse> {
+    ) -> Result<ListDataStoresResponse, Error> {
         datastore::list_datastores(&ListDataStoresParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -139,7 +140,7 @@ impl RbxDataStore {
     pub async fn list_entries(
         &self,
         params: &DataStoreListEntries,
-    ) -> anyhow::Result<ListEntriesResponse> {
+    ) -> Result<ListEntriesResponse, Error> {
         datastore::list_entries(&ListEntriesParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -153,7 +154,7 @@ impl RbxDataStore {
         .await
     }
 
-    pub async fn get_entry_string(&self, params: &DataStoreGetEntry) -> anyhow::Result<String> {
+    pub async fn get_entry_string(&self, params: &DataStoreGetEntry) -> Result<String, Error> {
         datastore::get_entry_string(&GetEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -167,7 +168,7 @@ impl RbxDataStore {
     pub async fn get_entry<T: DeserializeOwned>(
         &self,
         params: &DataStoreGetEntry,
-    ) -> anyhow::Result<T> {
+    ) -> Result<T, Error> {
         datastore::get_entry::<T>(&GetEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -178,7 +179,7 @@ impl RbxDataStore {
         .await
     }
 
-    pub async fn set_entry(&self, params: &DataStoreSetEntry) -> anyhow::Result<SetEntryResponse> {
+    pub async fn set_entry(&self, params: &DataStoreSetEntry) -> Result<SetEntryResponse, Error> {
         datastore::set_entry(&SetEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -194,7 +195,7 @@ impl RbxDataStore {
         .await
     }
 
-    pub async fn increment_entry(&self, params: &DataStoreIncrementEntry) -> anyhow::Result<f64> {
+    pub async fn increment_entry(&self, params: &DataStoreIncrementEntry) -> Result<f64, Error> {
         datastore::increment_entry(&IncrementEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -213,7 +214,7 @@ impl RbxDataStore {
         name: String,
         scope: Option<String>,
         key: String,
-    ) -> anyhow::Result<()> {
+    ) -> Result<(), Error> {
         datastore::delete_entry(&DeleteEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -227,7 +228,7 @@ impl RbxDataStore {
     pub async fn list_entry_versions(
         &self,
         params: &DataStoreListEntryVersions,
-    ) -> anyhow::Result<ListEntryVersionsResponse> {
+    ) -> Result<ListEntryVersionsResponse, Error> {
         datastore::list_entry_versions(&ListEntryVersionsParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
@@ -246,7 +247,7 @@ impl RbxDataStore {
     pub async fn get_entry_version(
         &self,
         params: &DataStoreGetEntryVersion,
-    ) -> anyhow::Result<String> {
+    ) -> Result<String, Error> {
         datastore::get_entry_version(&GetEntryVersionParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,

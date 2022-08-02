@@ -12,7 +12,7 @@ OPTIONS:
     -h, --help                           Print help information
     -p, --place-id <PLACE_ID>            Place ID of the experience
     -u, --universe-id <UNIVERSE_ID>      Universe ID of the experience
-    -v, --version-type <VERSION_TYPE>    Version type [possible values: saved, published]
+    -t, --version-type <VERSION_TYPE>    Version type [possible values: saved, published]
 ```
 
 Example:

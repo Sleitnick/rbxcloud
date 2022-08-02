@@ -19,7 +19,7 @@ pub enum ExperienceCommands {
         universe_id: u64,
 
         /// Version type
-        #[clap(short, long, value_enum)]
+        #[clap(short = 't', long, value_enum)]
         version_type: VersionType,
 
         /// Roblox Open Cloud API Key
@@ -67,7 +67,7 @@ impl Experience {
                         )
                         .to_lowercase(),
                     )),
-                    Err(err) => Err(err),
+                    Err(err) => Err(err.into()),
                 }
             }
         }

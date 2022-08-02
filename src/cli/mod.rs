@@ -7,7 +7,7 @@ use clap::{Parser, Subcommand};
 use self::{datastore_cli::DataStore, experience_cli::Experience, messaging_cli::Messaging};
 
 #[derive(Debug, Parser)]
-#[clap(name = "rbxcloud", version, about)]
+#[clap(name = "rbxcloud", version)]
 pub struct Cli {
     #[clap(subcommand)]
     pub command: Command,

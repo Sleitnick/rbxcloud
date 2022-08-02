@@ -1,9 +1,10 @@
 use std::fmt;
 
-use anyhow::bail;
 use md5::{Digest, Md5};
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
+
+use crate::rbx::error::Error;
 
 type QueryString = Vec<(&'static str, String)>;
 
@@ -200,44 +201,38 @@ pub struct GetEntryVersionParams {
     pub version_id: String,
 }
 
-async fn handle_res<T: DeserializeOwned>(res: Response) -> anyhow::Result<T> {
+async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
     match res.status().is_success() {
         true => {
-            let body_res = res.json::<T>().await;
-            match body_res {
-                Ok(body) => Ok(body),
-                Err(err) => bail!(err),
-            }
+            let body = res.json::<T>().await?;
+            Ok(body)
         }
         false => {
             let err_res = res.json::<DataStoreErrorResponse>().await?;
-            bail!(err_res)
+            Err(Error::DataStoreError(err_res))
         }
     }
 }
 
-async fn handle_res_string(res: Response) -> anyhow::Result<String> {
+async fn handle_res_string(res: Response) -> Result<String, Error> {
     match res.status().is_success() {
         true => {
-            let body_res = res.text().await;
-            match body_res {
-                Ok(body) => Ok(body),
-                Err(err) => bail!(err),
-            }
+            let body = res.text().await?;
+            Ok(body)
         }
         false => {
             let err_res = res.json::<DataStoreErrorResponse>().await?;
-            bail!(err_res)
+            Err(Error::DataStoreError(err_res))
         }
     }
 }
 
-async fn handle_res_ok(res: Response) -> anyhow::Result<()> {
+async fn handle_res_ok(res: Response) -> Result<(), Error> {
     match res.status().is_success() {
         true => Ok(()),
         false => {
             let err_res = res.json::<DataStoreErrorResponse>().await?;
-            bail!(err_res)
+            Err(Error::DataStoreError(err_res))
         }
     }
 }
@@ -265,7 +260,7 @@ fn get_checksum_base64(data: &String) -> String {
 
 pub async fn list_datastores(
     params: &ListDataStoresParams,
-) -> anyhow::Result<ListDataStoresResponse> {
+) -> Result<ListDataStoresResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("", params.universe_id);
     let mut query: QueryString = vec![("limit", params.limit.to_string())];
@@ -284,7 +279,7 @@ pub async fn list_datastores(
     handle_res::<ListDataStoresResponse>(res).await
 }
 
-pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntriesResponse> {
+pub async fn list_entries(params: &ListEntriesParams) -> Result<ListEntriesResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries", params.universe_id);
     let mut query: QueryString = vec![
@@ -311,7 +306,7 @@ pub async fn list_entries(params: &ListEntriesParams) -> anyhow::Result<ListEntr
     handle_res::<ListEntriesResponse>(res).await
 }
 
-async fn get_entry_response(params: &GetEntryParams) -> anyhow::Result<Response> {
+async fn get_entry_response(params: &GetEntryParams) -> Result<Response, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry", params.universe_id);
     let query: QueryString = vec![
@@ -331,12 +326,12 @@ async fn get_entry_response(params: &GetEntryParams) -> anyhow::Result<Response>
     Ok(res)
 }
 
-pub async fn get_entry_string(params: &GetEntryParams) -> anyhow::Result<String> {
+pub async fn get_entry_string(params: &GetEntryParams) -> Result<String, Error> {
     let res = get_entry_response(params).await?;
     handle_res_string(res).await
 }
 
-pub async fn get_entry<T: DeserializeOwned>(params: &GetEntryParams) -> anyhow::Result<T> {
+pub async fn get_entry<T: DeserializeOwned>(params: &GetEntryParams) -> Result<T, Error> {
     let res = get_entry_response(params).await?;
     handle_res::<T>(res).await
 }
@@ -350,7 +345,7 @@ fn build_ids_csv(ids: &Option<Vec<u64>>) -> String {
         .join(",")
 }
 
-pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryResponse> {
+pub async fn set_entry(params: &SetEntryParams) -> Result<SetEntryResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry", params.universe_id);
     let mut query: QueryString = vec![
@@ -390,7 +385,7 @@ pub async fn set_entry(params: &SetEntryParams) -> anyhow::Result<SetEntryRespon
     handle_res::<SetEntryResponse>(res).await
 }
 
-pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f64> {
+pub async fn increment_entry(params: &IncrementEntryParams) -> Result<f64, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry/increment", params.universe_id);
     let query: QueryString = vec![
@@ -420,17 +415,13 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> anyhow::Result<f6
     match handle_res_string(res).await {
         Ok(data) => match data.parse::<f64>() {
             Ok(num) => Ok(num),
-            Err(_) => {
-                bail!(format!("failed to parse number from data: {}", data))
-            }
+            Err(e) => Err(e.into()),
         },
-        Err(err) => {
-            bail!(err)
-        }
+        Err(err) => Err(err),
     }
 }
 
-pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
+pub async fn delete_entry(params: &DeleteEntryParams) -> Result<(), Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry", params.universe_id);
     let query: QueryString = vec![
@@ -452,7 +443,7 @@ pub async fn delete_entry(params: &DeleteEntryParams) -> anyhow::Result<()> {
 
 pub async fn list_entry_versions(
     params: &ListEntryVersionsParams,
-) -> anyhow::Result<ListEntryVersionsResponse> {
+) -> Result<ListEntryVersionsResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry/versions", params.universe_id);
     let mut query: QueryString = vec![
@@ -483,7 +474,7 @@ pub async fn list_entry_versions(
     handle_res::<ListEntryVersionsResponse>(res).await
 }
 
-pub async fn get_entry_version(params: &GetEntryVersionParams) -> anyhow::Result<String> {
+pub async fn get_entry_version(params: &GetEntryVersionParams) -> Result<String, Error> {
     let client = reqwest::Client::new();
     let url = build_url(
         "/datastore/entries/entry/versions/version",

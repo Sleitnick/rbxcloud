@@ -1,9 +1,8 @@
 use std::fmt;
 
-use anyhow::{bail, Context};
 use serde::Deserialize;
 
-use crate::rbx::error::RbxError;
+use crate::rbx::error::Error;
 
 #[derive(Debug, Clone)]
 pub enum PublishVersionType {
@@ -33,11 +32,9 @@ pub struct PublishExperienceResponse {
 
 pub async fn publish_experience(
     params: &PublishExperienceParams,
-) -> anyhow::Result<PublishExperienceResponse> {
-    // https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions
+) -> Result<PublishExperienceResponse, Error> {
     let client = reqwest::Client::new();
-    let bytes_data_buf = std::fs::read(&params.filename)
-        .with_context(|| RbxError::FileLoadError(params.filename.clone()))?;
+    let bytes_data_buf = std::fs::read(&params.filename)?;
     let url = format!(
         "https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions?versionType={versionType}",
         universeId=params.universe_id,
@@ -55,44 +52,41 @@ pub async fn publish_experience(
     if !status.is_success() {
         let code = status.as_u16();
         if code == 400 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "invalid request or file content".to_string()
+                msg: "invalid request or file content".to_string(),
             });
         } else if code == 401 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "api key not valid for operation".to_string()
+                msg: "api key not valid for operation".to_string(),
             });
         } else if code == 403 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "publish not allowed on place".to_string()
+                msg: "publish not allowed on place".to_string(),
             });
         } else if code == 404 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "place or universe does not exist".to_string()
+                msg: "place or universe does not exist".to_string(),
             });
         } else if code == 409 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "place not part of the universe".to_string()
+                msg: "place not part of the universe".to_string(),
             });
         } else if code == 500 {
-            bail!(RbxError::HttpStatusError {
+            return Err(Error::HttpStatusError {
                 code,
-                msg: "internal server error".to_string()
+                msg: "internal server error".to_string(),
             });
         }
-        bail!(RbxError::HttpStatusError {
+        return Err(Error::HttpStatusError {
             code,
-            msg: status.canonical_reason().unwrap_or_default().to_string()
+            msg: status.canonical_reason().unwrap_or_default().to_string(),
         });
     }
-    let body_res = res.json::<PublishExperienceResponse>().await;
-    if let Err(e) = body_res {
-        bail!(e);
-    }
-    Ok(body_res.unwrap())
+    let body = res.json::<PublishExperienceResponse>().await?;
+    Ok(body)
 }

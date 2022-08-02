@@ -6,11 +6,6 @@ use std::process;
 
 #[tokio::main]
 async fn main() {
-    env_logger::builder()
-        .format_timestamp(None)
-        .filter_level(log::LevelFilter::Info)
-        .init();
-
     let cli_args = Cli::parse();
 
     match cli_args.run().await {
@@ -20,7 +15,7 @@ async fn main() {
             }
         }
         Err(err) => {
-            log::error!("{:?}", err);
+            eprintln!("{:?}", err);
             process::exit(1);
         }
     }
