@@ -24,6 +24,13 @@ Install from cargo:
 $ cargo install rbxcloud@0.1.0-alpha.8
 ```
 
+Install from cargo dependency file:
+```toml
+rbxcloud = { git = "https://github.com/Sleitnick/rbxcloud.git", branch = "main" }
+```
+
+
+
 ### From Release
 Download and unzip the tool for your OS from the [releases](https://github.com/Sleitnick/rbxcloud/releases) page. You will then need to put it in your desired location and point your path variable to the executable location.
 
