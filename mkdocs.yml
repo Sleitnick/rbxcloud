@@ -32,8 +32,10 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to Light Mode
-  icon:
-    logo: material/cloud-tags
+  # icon:
+  #   logo: material/cloud-tags
+  favicon: img/logo_64.png
+  logo: img/logo_64.png
 
 markdown_extensions:
   - pymdownx.highlight:
