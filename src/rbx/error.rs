@@ -1,5 +1,7 @@
+//! Error handling.
 use super::datastore::DataStoreErrorResponse;
 
+/// `rbxcloud` error.
 #[derive(Debug)]
 pub enum Error {
     /// An error occurred regarding reading a file from the file system.

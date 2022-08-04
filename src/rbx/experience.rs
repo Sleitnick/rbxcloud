@@ -1,3 +1,4 @@
+//! Low-level Experience API operations.
 use std::fmt;
 
 use serde::Deserialize;

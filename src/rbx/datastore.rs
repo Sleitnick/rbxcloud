@@ -1,3 +1,8 @@
+//! Low-level DataStore API operations.
+//!
+//! Typically, these operations should be consumed through the `RbxExperience`
+//! struct, obtained through the `RbxCloud` struct.
+
 use std::fmt;
 
 use md5::{Digest, Md5};

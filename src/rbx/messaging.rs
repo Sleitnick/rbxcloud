@@ -1,9 +1,11 @@
+//! Low-level Messaging API operations.
 use serde_json::json;
 
 use crate::rbx::error::Error;
 
 use super::UniverseId;
 
+/// Message publishing parameters.
 pub struct PublishMessageParams {
     pub api_key: String,
     pub universe_id: UniverseId,
@@ -11,6 +13,7 @@ pub struct PublishMessageParams {
     pub message: String,
 }
 
+/// Publish a message.
 pub async fn publish_message(params: &PublishMessageParams) -> Result<(), Error> {
     let client = reqwest::Client::new();
     let url = format!(

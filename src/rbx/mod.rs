@@ -1,3 +1,6 @@
+//! Access into Roblox APIs.
+//!
+//! Most usage should go through the `RbxCloud` struct.
 pub mod datastore;
 pub mod error;
 pub mod experience;
@@ -17,27 +20,21 @@ use self::{
     messaging::PublishMessageParams,
 };
 
+/// Represents the UniverseId of a Roblox experience.
 #[derive(Debug, Clone, Copy)]
 pub struct UniverseId(pub u64);
 
+/// Represents the PlaceId of a specific place within a Roblox experience.
 #[derive(Debug, Clone, Copy)]
 pub struct PlaceId(pub u64);
 
+// Number of items to return.
 #[derive(Debug, Clone, Copy)]
 pub struct ReturnLimit(pub u64);
 
+/// Represents a Roblox user's ID.
 #[derive(Debug, Clone, Copy)]
 pub struct RobloxUserId(pub u64);
-
-// impl FromIterator<u64> for RobloxUserId {
-//     fn from_iter<I: IntoIterator<Item = u64>>(iter: I) -> Self {
-//         let mut c = vec![];
-//         for i in iter {
-//             c.push(i);
-//         }
-//         c
-//     }
-// }
 
 impl std::fmt::Display for UniverseId {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
