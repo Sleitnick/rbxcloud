@@ -6,6 +6,8 @@ use serde::{de::DeserializeOwned, Deserialize};
 
 use crate::rbx::error::Error;
 
+use super::{ReturnLimit, RobloxUserId, UniverseId};
+
 type QueryString = Vec<(&'static str, String)>;
 
 #[derive(Deserialize, Debug)]
@@ -24,9 +26,9 @@ pub struct ListDataStoresResponse {
 
 pub struct ListDataStoresParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub prefix: Option<String>,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -89,12 +91,12 @@ impl fmt::Display for DataStoreErrorResponse {
 
 pub struct ListEntriesParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub all_scopes: bool,
     pub prefix: Option<String>,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -114,7 +116,7 @@ pub struct ListEntriesKey {
 
 pub struct GetEntryParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
@@ -122,13 +124,13 @@ pub struct GetEntryParams {
 
 pub struct SetEntryParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
     pub match_version: Option<String>,
     pub exclusive_create: Option<bool>,
-    pub roblox_entry_user_ids: Option<Vec<u64>>,
+    pub roblox_entry_user_ids: Option<Vec<RobloxUserId>>,
     pub roblox_entry_attributes: Option<String>,
     pub data: String,
 }
@@ -145,18 +147,18 @@ pub struct SetEntryResponse {
 
 pub struct IncrementEntryParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
-    pub roblox_entry_user_ids: Option<Vec<u64>>,
+    pub roblox_entry_user_ids: Option<Vec<RobloxUserId>>,
     pub roblox_entry_attributes: Option<String>,
     pub increment_by: f64,
 }
 
 pub struct DeleteEntryParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
@@ -164,14 +166,14 @@ pub struct DeleteEntryParams {
 
 pub struct ListEntryVersionsParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
     pub start_time: Option<String>,
     pub end_time: Option<String>,
     pub sort_order: String,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -194,7 +196,7 @@ pub struct ListEntryVersion {
 
 pub struct GetEntryVersionParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub datastore_name: String,
     pub scope: Option<String>,
     pub key: String,
@@ -237,7 +239,7 @@ async fn handle_res_ok(res: Response) -> Result<(), Error> {
     }
 }
 
-fn build_url(endpoint: &str, universe_id: u64) -> String {
+fn build_url(endpoint: &str, universe_id: UniverseId) -> String {
     if endpoint.is_empty() {
         format!(
             "https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores",
@@ -336,7 +338,7 @@ pub async fn get_entry<T: DeserializeOwned>(params: &GetEntryParams) -> Result<T
     handle_res::<T>(res).await
 }
 
-fn build_ids_csv(ids: &Option<Vec<u64>>) -> String {
+fn build_ids_csv(ids: &Option<Vec<RobloxUserId>>) -> String {
     ids.as_ref()
         .unwrap_or(&vec![])
         .iter()

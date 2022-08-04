@@ -4,9 +4,18 @@ use serde::Deserialize;
 
 use crate::rbx::error::Error;
 
+use super::{PlaceId, UniverseId};
+
+/// The version type of a place publish operation.
 #[derive(Debug, Clone)]
 pub enum PublishVersionType {
+    /// Place is saved as the most-recent version. Players who play
+    /// the game will _not_ see this version, but it _will_ be the
+    /// version that is seen when loaded in with Studio.
     Saved,
+
+    /// Place is saved as the most-recent live version. Players who
+    /// play the game will play this version.
     Published,
 }
 
@@ -16,20 +25,26 @@ impl fmt::Display for PublishVersionType {
     }
 }
 
+/// Parameters for publishing a place.
 pub struct PublishExperienceParams {
     pub api_key: String,
-    pub universe_id: u64,
-    pub place_id: u64,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
     pub version_type: PublishVersionType,
     pub filename: String,
 }
 
+/// Response from Roblox when place is published or saved.
+///
+/// The version number represents the latest version uploaded
+/// to Roblox.
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct PublishExperienceResponse {
     pub version_number: u64,
 }
 
+/// Publish a place under a specific experience.
 pub async fn publish_experience(
     params: &PublishExperienceParams,
 ) -> Result<PublishExperienceResponse, Error> {

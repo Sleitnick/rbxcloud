@@ -2,12 +2,25 @@ use super::datastore::DataStoreErrorResponse;
 
 #[derive(Debug)]
 pub enum Error {
+    /// An error occurred regarding reading a file from the file system.
     FileLoadError(String),
+
+    /// A non-OK HTTP status was returned.
     HttpStatusError { code: u16, msg: String },
+
+    /// An error within the `reqwest` module occurred.
     ReqwestError(reqwest::Error),
+
+    /// An IO error occurred.
     IOError(std::io::Error),
+
+    /// A JSON serialization error occurred.
     SerdeJsonError(serde_json::Error),
+
+    /// A DataStore error occurred.
     DataStoreError(DataStoreErrorResponse),
+
+    /// Failed to parse a float.
     ParseFloatError(std::num::ParseFloatError),
 }
 

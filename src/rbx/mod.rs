@@ -17,9 +17,55 @@ use self::{
     messaging::PublishMessageParams,
 };
 
+#[derive(Debug, Clone, Copy)]
+pub struct UniverseId(pub u64);
+
+#[derive(Debug, Clone, Copy)]
+pub struct PlaceId(pub u64);
+
+#[derive(Debug, Clone, Copy)]
+pub struct ReturnLimit(pub u64);
+
+#[derive(Debug, Clone, Copy)]
+pub struct RobloxUserId(pub u64);
+
+// impl FromIterator<u64> for RobloxUserId {
+//     fn from_iter<I: IntoIterator<Item = u64>>(iter: I) -> Self {
+//         let mut c = vec![];
+//         for i in iter {
+//             c.push(i);
+//         }
+//         c
+//     }
+// }
+
+impl std::fmt::Display for UniverseId {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::fmt::Display for PlaceId {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::fmt::Display for ReturnLimit {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::fmt::Display for RobloxUserId {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 pub struct RbxExperience {
-    pub universe_id: u64,
-    pub place_id: u64,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
     pub api_key: String,
 }
 
@@ -42,17 +88,17 @@ impl RbxExperience {
 
 pub struct RbxMessaging {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub topic: String,
 }
 
 impl RbxMessaging {
-    pub async fn publish(&self, message: String) -> Result<(), Error> {
+    pub async fn publish(&self, message: &str) -> Result<(), Error> {
         messaging::publish_message(&PublishMessageParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             topic: self.topic.clone(),
-            message,
+            message: message.to_string(),
         })
         .await
     }
@@ -60,12 +106,12 @@ impl RbxMessaging {
 
 pub struct RbxDataStore {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
 }
 
 pub struct DataStoreListStores {
     pub prefix: Option<String>,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -74,7 +120,7 @@ pub struct DataStoreListEntries {
     pub scope: Option<String>,
     pub all_scopes: bool,
     pub prefix: Option<String>,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -90,7 +136,7 @@ pub struct DataStoreSetEntry {
     pub key: String,
     pub match_version: Option<String>,
     pub exclusive_create: Option<bool>,
-    pub roblox_entry_user_ids: Option<Vec<u64>>,
+    pub roblox_entry_user_ids: Option<Vec<RobloxUserId>>,
     pub roblox_entry_attributes: Option<String>,
     pub data: String,
 }
@@ -99,9 +145,15 @@ pub struct DataStoreIncrementEntry {
     pub name: String,
     pub scope: Option<String>,
     pub key: String,
-    pub roblox_entry_user_ids: Option<Vec<u64>>,
+    pub roblox_entry_user_ids: Option<Vec<RobloxUserId>>,
     pub roblox_entry_attributes: Option<String>,
     pub increment_by: f64,
+}
+
+pub struct DataStoreDeleteEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub key: String,
 }
 
 pub struct DataStoreListEntryVersions {
@@ -111,7 +163,7 @@ pub struct DataStoreListEntryVersions {
     pub start_time: Option<String>,
     pub end_time: Option<String>,
     pub sort_order: String,
-    pub limit: u64,
+    pub limit: ReturnLimit,
     pub cursor: Option<String>,
 }
 
@@ -209,18 +261,13 @@ impl RbxDataStore {
         .await
     }
 
-    pub async fn delete_entry(
-        &self,
-        name: String,
-        scope: Option<String>,
-        key: String,
-    ) -> Result<(), Error> {
+    pub async fn delete_entry(&self, params: &DataStoreDeleteEntry) -> Result<(), Error> {
         datastore::delete_entry(&DeleteEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
-            datastore_name: name,
-            scope,
-            key,
+            datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            key: params.key.clone(),
         })
         .await
     }
@@ -263,18 +310,18 @@ impl RbxDataStore {
 #[derive(Debug)]
 pub struct RbxCloud {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
 }
 
 impl RbxCloud {
-    pub fn new(api_key: String, universe_id: u64) -> RbxCloud {
+    pub fn new(api_key: &str, universe_id: UniverseId) -> RbxCloud {
         RbxCloud {
-            api_key,
+            api_key: api_key.to_string(),
             universe_id,
         }
     }
 
-    pub fn experience(&self, place_id: u64) -> RbxExperience {
+    pub fn experience(&self, place_id: PlaceId) -> RbxExperience {
         RbxExperience {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,

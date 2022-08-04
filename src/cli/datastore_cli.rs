@@ -1,8 +1,9 @@
 use clap::{Args, Subcommand, ValueEnum};
 
 use rbxcloud::rbx::{
-    DataStoreGetEntry, DataStoreGetEntryVersion, DataStoreIncrementEntry, DataStoreListEntries,
-    DataStoreListEntryVersions, DataStoreListStores, DataStoreSetEntry, RbxCloud,
+    DataStoreDeleteEntry, DataStoreGetEntry, DataStoreGetEntryVersion, DataStoreIncrementEntry,
+    DataStoreListEntries, DataStoreListEntryVersions, DataStoreListStores, DataStoreSetEntry,
+    RbxCloud, ReturnLimit, RobloxUserId, UniverseId,
 };
 
 #[derive(Debug, Subcommand)]
@@ -272,6 +273,15 @@ pub struct DataStore {
     command: DataStoreCommands,
 }
 
+#[inline]
+fn u64_ids_to_roblox_ids(user_ids: Option<Vec<u64>>) -> Option<Vec<RobloxUserId>> {
+    user_ids.map(|ids| {
+        ids.into_iter()
+            .map(RobloxUserId)
+            .collect::<Vec<RobloxUserId>>()
+    })
+}
+
 impl DataStore {
     pub async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
@@ -282,12 +292,12 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
                 let res = datastore
                     .list_stores(&DataStoreListStores {
                         cursor,
-                        limit,
+                        limit: ReturnLimit(limit),
                         prefix,
                     })
                     .await;
@@ -307,7 +317,7 @@ impl DataStore {
                 scope,
                 all_scopes,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
                 let res = datastore
                     .list_entries(&DataStoreListEntries {
@@ -315,7 +325,7 @@ impl DataStore {
                         scope,
                         all_scopes,
                         prefix,
-                        limit,
+                        limit: ReturnLimit(limit),
                         cursor,
                     })
                     .await;
@@ -332,7 +342,7 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
                 let res = datastore
                     .get_entry_string(&DataStoreGetEntry {
@@ -359,8 +369,9 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
+                let ids = u64_ids_to_roblox_ids(user_ids);
                 let res = datastore
                     .set_entry(&DataStoreSetEntry {
                         name: datastore_name,
@@ -368,7 +379,7 @@ impl DataStore {
                         key,
                         match_version,
                         exclusive_create,
-                        roblox_entry_user_ids: user_ids,
+                        roblox_entry_user_ids: ids,
                         roblox_entry_attributes: attributes,
                         data,
                     })
@@ -389,14 +400,15 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
+                let ids = u64_ids_to_roblox_ids(user_ids);
                 let res = datastore
                     .increment_entry(&DataStoreIncrementEntry {
                         name: datastore_name,
                         scope,
                         key,
-                        roblox_entry_user_ids: user_ids,
+                        roblox_entry_user_ids: ids,
                         roblox_entry_attributes: attributes,
                         increment_by,
                     })
@@ -414,9 +426,15 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
-                let res = datastore.delete_entry(datastore_name, scope, key).await;
+                let res = datastore
+                    .delete_entry(&DataStoreDeleteEntry {
+                        name: datastore_name,
+                        scope,
+                        key,
+                    })
+                    .await;
                 match res {
                     Ok(_) => Ok(None),
                     Err(err) => Err(err.into()),
@@ -435,7 +453,7 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
                 let res = datastore
                     .list_entry_versions(&DataStoreListEntryVersions {
@@ -445,7 +463,7 @@ impl DataStore {
                         start_time,
                         end_time,
                         sort_order: format!("{:?}", sort_order),
-                        limit,
+                        limit: ReturnLimit(limit),
                         cursor,
                     })
                     .await;
@@ -463,7 +481,7 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let datastore = rbx_cloud.datastore();
                 let res = datastore
                     .get_entry_version(&DataStoreGetEntryVersion {

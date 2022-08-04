@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand, ValueEnum};
 
-use rbxcloud::rbx::{PublishVersionType, RbxCloud};
+use rbxcloud::rbx::{PlaceId, PublishVersionType, RbxCloud, UniverseId};
 
 #[derive(Debug, Subcommand)]
 pub enum ExperienceCommands {
@@ -50,13 +50,13 @@ impl Experience {
                 api_key,
                 filename,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let publish_version_type = match version_type {
                     VersionType::Published => PublishVersionType::Published,
                     VersionType::Saved => PublishVersionType::Saved,
                 };
                 let res = rbx_cloud
-                    .experience(place_id)
+                    .experience(PlaceId(place_id))
                     .publish(&filename, publish_version_type)
                     .await;
                 match res {

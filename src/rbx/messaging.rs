@@ -2,9 +2,11 @@ use serde_json::json;
 
 use crate::rbx::error::Error;
 
+use super::UniverseId;
+
 pub struct PublishMessageParams {
     pub api_key: String,
-    pub universe_id: u64,
+    pub universe_id: UniverseId,
     pub topic: String,
     pub message: String,
 }

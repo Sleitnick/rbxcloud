@@ -1,20 +1,25 @@
-use rbxcloud::rbx::RbxCloud;
+use rbxcloud::rbx::{error::Error, RbxCloud, UniverseId};
 
-#[tokio::main]
-async fn main() {
+async fn publish_message() -> Result<(), Error> {
     // Inputs:
-    let api_key = String::from("MY_API_KEY");
+    let api_key = "MY_API_KEY";
     let universe_id = 9876543210;
     let topic = "MyTopic";
 
-    let message = String::from("Hello, this is my message");
+    let message = "Hello, this is my message";
 
     // Define RbxCloud Messaging instance:
-    let cloud = RbxCloud::new(api_key, universe_id);
+    let cloud = RbxCloud::new(api_key, UniverseId(universe_id));
     let messaging = cloud.messaging(topic);
 
     // Publish a message:
-    let message_result = messaging.publish(message).await;
+    messaging.publish(message).await
+}
+
+#[tokio::main]
+async fn main() {
+    // Publish a message:
+    let message_result = publish_message().await;
     match message_result {
         Ok(()) => {
             println!("Message successfully published");

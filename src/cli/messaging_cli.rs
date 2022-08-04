@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 
-use rbxcloud::rbx::RbxCloud;
+use rbxcloud::rbx::{RbxCloud, UniverseId};
 
 #[derive(Debug, Subcommand)]
 pub enum MessagingCommands {
@@ -39,9 +39,9 @@ impl Messaging {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(api_key, universe_id);
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let messaging = rbx_cloud.messaging(&topic);
-                let res = messaging.publish(message).await;
+                let res = messaging.publish(&message).await;
                 match res {
                     Ok(()) => Ok(Some(format!("published message to topic {}", topic))),
                     Err(err) => Err(anyhow::anyhow!(err)),
