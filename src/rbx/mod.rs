@@ -328,6 +328,8 @@ impl RbxDataStore {
 /// Access into the Roblox Open Cloud APIs.
 ///
 /// ```rust,no_run
+/// use rbxcloud::rbx::{RbxCloud, UniverseId};
+///
 /// let cloud = RbxCloud::new("API_KEY", UniverseId(9876543210));
 /// ```
 #[derive(Debug)]
