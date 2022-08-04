@@ -259,12 +259,14 @@ fn build_url(endpoint: &str, universe_id: UniverseId) -> String {
     }
 }
 
+#[inline]
 fn get_checksum_base64(data: &String) -> String {
     let mut md5_hash = Md5::new();
     md5_hash.update(&data.as_bytes());
     base64::encode(md5_hash.finalize())
 }
 
+/// List all DataStores within an experience.
 pub async fn list_datastores(
     params: &ListDataStoresParams,
 ) -> Result<ListDataStoresResponse, Error> {
@@ -286,6 +288,7 @@ pub async fn list_datastores(
     handle_res::<ListDataStoresResponse>(res).await
 }
 
+/// List all entries of a DataStore.
 pub async fn list_entries(params: &ListEntriesParams) -> Result<ListEntriesResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries", params.universe_id);
@@ -333,11 +336,13 @@ async fn get_entry_response(params: &GetEntryParams) -> Result<Response, Error> 
     Ok(res)
 }
 
+/// Get the value of an entry as a string.
 pub async fn get_entry_string(params: &GetEntryParams) -> Result<String, Error> {
     let res = get_entry_response(params).await?;
     handle_res_string(res).await
 }
 
+/// Get the value of an entry as a JSON-deserialized type `T`.
 pub async fn get_entry<T: DeserializeOwned>(params: &GetEntryParams) -> Result<T, Error> {
     let res = get_entry_response(params).await?;
     handle_res::<T>(res).await
@@ -352,6 +357,7 @@ fn build_ids_csv(ids: &Option<Vec<RobloxUserId>>) -> String {
         .join(",")
 }
 
+/// Set the value of an entry.
 pub async fn set_entry(params: &SetEntryParams) -> Result<SetEntryResponse, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry", params.universe_id);
@@ -392,6 +398,7 @@ pub async fn set_entry(params: &SetEntryParams) -> Result<SetEntryResponse, Erro
     handle_res::<SetEntryResponse>(res).await
 }
 
+/// Increment the value of an entry.
 pub async fn increment_entry(params: &IncrementEntryParams) -> Result<f64, Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry/increment", params.universe_id);
@@ -428,6 +435,7 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> Result<f64, Error
     }
 }
 
+/// Delete an entry.
 pub async fn delete_entry(params: &DeleteEntryParams) -> Result<(), Error> {
     let client = reqwest::Client::new();
     let url = build_url("/datastore/entries/entry", params.universe_id);
@@ -448,6 +456,7 @@ pub async fn delete_entry(params: &DeleteEntryParams) -> Result<(), Error> {
     handle_res_ok(res).await
 }
 
+/// List all of the versions of an entry.
 pub async fn list_entry_versions(
     params: &ListEntryVersionsParams,
 ) -> Result<ListEntryVersionsResponse, Error> {
@@ -481,6 +490,7 @@ pub async fn list_entry_versions(
     handle_res::<ListEntryVersionsResponse>(res).await
 }
 
+/// Get the value of a specific entry version.
 pub async fn get_entry_version(params: &GetEntryVersionParams) -> Result<String, Error> {
     let client = reqwest::Client::new();
     let url = build_url(
