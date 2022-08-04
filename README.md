@@ -1,6 +1,8 @@
 # Roblox Open Cloud CLI &emsp; ![Logo](imgs/icon_32_bottom.png)
 [![CI](https://github.com/Sleitnick/rbxcloud/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sleitnick/rbxcloud/actions/workflows/ci.yaml)
 [![Release](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml/badge.svg)](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml)
+[![Crate](https://img.shields.io/crates/v/rbxcloud.svg)](https://crates.io/crates/rbxcloud)
+[![Docs](https://docs.rs/rbxcloud/badge.svg)](https://docs.rs/rbxcloud)
 
 :warning: Under Development :warning:
 
