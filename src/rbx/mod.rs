@@ -70,6 +70,9 @@ pub struct RbxExperience {
 }
 
 impl RbxExperience {
+    /// Publish a place.
+    ///
+    /// The filename should point to a `*.rbxl` or `*.rbxlx` file.
     pub async fn publish(
         &self,
         filename: &str,
@@ -93,6 +96,7 @@ pub struct RbxMessaging {
 }
 
 impl RbxMessaging {
+    /// Publish a message.
     pub async fn publish(&self, message: &str) -> Result<(), Error> {
         messaging::publish_message(&PublishMessageParams {
             api_key: self.api_key.clone(),
@@ -175,6 +179,7 @@ pub struct DataStoreGetEntryVersion {
 }
 
 impl RbxDataStore {
+    /// List DataStores within the experience.
     pub async fn list_stores(
         &self,
         params: &DataStoreListStores,
@@ -189,6 +194,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// List key entries in a specific DataStore.
     pub async fn list_entries(
         &self,
         params: &DataStoreListEntries,
@@ -206,6 +212,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// Get the entry string representation of a specific key.
     pub async fn get_entry_string(&self, params: &DataStoreGetEntry) -> Result<String, Error> {
         datastore::get_entry_string(&GetEntryParams {
             api_key: self.api_key.clone(),
@@ -217,6 +224,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// Get the entry of a specific key, deserialized as `T`.
     pub async fn get_entry<T: DeserializeOwned>(
         &self,
         params: &DataStoreGetEntry,
@@ -231,6 +239,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// Set (or create) the entry value of a specific key.
     pub async fn set_entry(&self, params: &DataStoreSetEntry) -> Result<SetEntryResponse, Error> {
         datastore::set_entry(&SetEntryParams {
             api_key: self.api_key.clone(),
@@ -247,6 +256,13 @@ impl RbxDataStore {
         .await
     }
 
+    /// Increment (or create) the value of a specific key.
+    ///
+    /// If the value does not yet exist, it will be treated as `0`, and thus
+    /// the resulting value will simply be the increment amount.
+    ///
+    /// If the value _does_ exist, but it is _not_ a number, then the increment
+    /// process will fail, and a DataStore error will be returned in the result.
     pub async fn increment_entry(&self, params: &DataStoreIncrementEntry) -> Result<f64, Error> {
         datastore::increment_entry(&IncrementEntryParams {
             api_key: self.api_key.clone(),
@@ -261,6 +277,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// Delete an entry.
     pub async fn delete_entry(&self, params: &DataStoreDeleteEntry) -> Result<(), Error> {
         datastore::delete_entry(&DeleteEntryParams {
             api_key: self.api_key.clone(),
@@ -272,6 +289,9 @@ impl RbxDataStore {
         .await
     }
 
+    /// List all versions of an entry.
+    ///
+    /// To get the specific value of a given entry, use `get_entry_version()`.
     pub async fn list_entry_versions(
         &self,
         params: &DataStoreListEntryVersions,
@@ -291,6 +311,7 @@ impl RbxDataStore {
         .await
     }
 
+    /// Get the entry value of a specific version.
     pub async fn get_entry_version(
         &self,
         params: &DataStoreGetEntryVersion,
@@ -307,9 +328,17 @@ impl RbxDataStore {
     }
 }
 
+/// Access into the Roblox Open Cloud APIs.
+///
+/// ```rust,no_run
+/// let cloud = RbxCloud::new("API_KEY", UniverseId(9876543210));
+/// ```
 #[derive(Debug)]
 pub struct RbxCloud {
+    /// Roblox API key.
     pub api_key: String,
+
+    /// The UniverseId of a given Roblox experience.
     pub universe_id: UniverseId,
 }
 
