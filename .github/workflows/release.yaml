@@ -24,15 +24,16 @@ jobs:
 
       - name: Get the tag of current release
         id: get_version
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF#refs/tags/v)
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+
 
       - name: Verify package version is equal to tag version
-        if: ${{ format('v{0}', steps.cargo_version.outputs.value) != steps.get_version.outputs.VERSION }}
+        if: ${{ steps.cargo_version.outputs.value != steps.get_version.outputs.VERSION }}
         run: |
-          echo "${{ format('v{0}', steps.cargo_version.outputs.value) }}"
+          echo "${{ steps.cargo_version.outputs.value }}"
           echo "${{ steps.get_version.outputs.VERSION }}"
           exit 1
-
+          
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
