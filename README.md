@@ -4,14 +4,14 @@
 [![Crate](https://img.shields.io/crates/v/rbxcloud.svg)](https://crates.io/crates/rbxcloud)
 [![Docs](https://docs.rs/rbxcloud/badge.svg)](https://docs.rs/rbxcloud)
 
-:warning: Under Development :warning:
+The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud APIs. The underlying library can also be used to build tools and applications that utilize the various APIs.
 
-The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud APIs.
-
-Common use-cases:
-- CD pipelines
+Possible use-cases:
+- Deployment pipelines
+- Live-ops
+- Custom analytics
+- Handling data removal requests (see [GDPR & CCPA info](https://create.roblox.com/docs/production/publishing/about-GDPR-and-CCPA))
 - Debugging DataStores
-- _TODO: More use-cases_
 
 ## Install
 ### Foreman
