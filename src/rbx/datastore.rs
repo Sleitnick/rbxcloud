@@ -9,9 +9,7 @@ use md5::{Digest, Md5};
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
 
-use crate::rbx::error::Error;
-
-use super::{ReturnLimit, RobloxUserId, UniverseId};
+use crate::rbx::{error::Error, ReturnLimit, RobloxUserId, UniverseId};
 
 type QueryString = Vec<(&'static str, String)>;
 

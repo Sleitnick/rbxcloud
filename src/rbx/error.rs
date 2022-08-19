@@ -1,5 +1,5 @@
 //! Error handling.
-use super::datastore::DataStoreErrorResponse;
+use crate::rbx::datastore::DataStoreErrorResponse;
 
 /// `rbxcloud` error.
 #[derive(Debug)]
