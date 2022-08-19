@@ -17,7 +17,7 @@ Possible use-cases:
 ### Aftman
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.2.0
+$ aftman add Sleitnick/rbxcloud@0.2.1
 ```
 
 ### From Release
@@ -32,7 +32,7 @@ Visit the documentation site for information on installation and usage: https://
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.2.0"
+rbxcloud = "0.2.1"
 ```
 
 Alternatively, use `cargo add`.
