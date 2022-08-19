@@ -13,32 +13,31 @@ Possible use-cases:
 - Handling data removal requests (see [GDPR & CCPA info](https://create.roblox.com/docs/production/publishing/about-GDPR-and-CCPA))
 - Debugging DataStores
 
-## Install
-### Foreman
-Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file:
-```toml
-rbxcloud = { github = "Sleitnick/rbxcloud", version = "0.2.0" }
-```
-
-### Cargo
-Install from cargo:
+## Install CLI
+### Aftman
+Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ cargo install rbxcloud@0.2.0
+$ aftman add Sleitnick/rbxcloud@0.2.0
 ```
 
 ### From Release
 Download and unzip the tool for your OS from the [releases](https://github.com/Sleitnick/rbxcloud/releases) page. You will then need to put it in your desired location and point your path variable to the executable location.
 
-### From Source
-Download the repository and build from the source:
-```sh
-# Clone repo and set as current directory:
-$ git clone https://github.com/Sleitnick/rbxcloud.git
-$ cd rbxcloud
+## CLI Documentation
+Visit the documentation site for information on installation and usage: https://sleitnick.github.io/rbxcloud/
 
-# Build binary:
-$ cargo build --release
+## Install Rust Library
+### Add Dependency
+
+To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
+```toml
+[dependencies]
+rbxcloud = "0.2.0"
 ```
 
-## Documentation
-Visit the documentation site for information on installation and usage: https://sleitnick.github.io/rbxcloud/
+Alternatively, use `cargo add`.
+```sh
+$ cargo add rbxcloud
+```
+
+See the [docs.rs](https://docs.rs/rbxcloud/latest/rbxcloud/) page for library documentation.
