@@ -20,6 +20,11 @@ Run the `aftman add` command within your project directory. This will add `rbxcl
 $ aftman add Sleitnick/rbxcloud@0.2.1
 ```
 
+Install from cargo dependency file:
+```toml
+rbxcloud = { git = "https://github.com/Sleitnick/rbxcloud.git", branch = "main" }
+```
+
 ### From Release
 Download and unzip the tool for your OS from the [releases](https://github.com/Sleitnick/rbxcloud/releases) page. You will then need to put it in your desired location and point your path variable to the executable location.
 
