@@ -19,7 +19,7 @@ pub enum MessagingCommands {
         universe_id: u64,
 
         /// Roblox Open Cloud API Key
-        #[clap(short, long, value_parser)]
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
 }

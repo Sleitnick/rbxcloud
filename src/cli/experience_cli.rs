@@ -23,7 +23,7 @@ pub enum ExperienceCommands {
         version_type: VersionType,
 
         /// Roblox Open Cloud API Key
-        #[clap(short, long, value_parser)]
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
 }
