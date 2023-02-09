@@ -24,10 +24,10 @@ async fn main() {
     // Print entry result or error:
     match entry_result {
         Ok(result) => {
-            println!("{}", result);
+            println!("{result}");
         }
         Err(e) => {
-            eprintln!("{:?}", e);
+            eprintln!("{e:?}");
         }
     }
 }
