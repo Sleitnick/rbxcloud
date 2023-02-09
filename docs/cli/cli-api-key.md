@@ -5,6 +5,7 @@ Roblox API keys will auto-expire if not used for over 60 days. Use the Credentia
 
 ## Security
 As a general rule of practice for any API key:
+
 - Use the least number of permissions as needed
 - Keep the key in a secret location (e.g. GitHub Secrets, AWS Secrets Manager, etc.)
 - Never commit a key to a source code repository
