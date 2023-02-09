@@ -55,13 +55,13 @@ impl From<std::num::ParseFloatError> for Error {
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         match self {
-            Self::FileLoadError(s) => write!(f, "failed to read file: {}", s),
-            Self::HttpStatusError { code, msg } => write!(f, "http {}: {}", code, msg),
-            Self::ReqwestError(e) => write!(f, "{:?}", e),
-            Self::IOError(e) => write!(f, "{:?}", e),
-            Self::SerdeJsonError(e) => write!(f, "{:?}", e),
-            Self::DataStoreError(e) => write!(f, "{:?}", e),
-            Self::ParseFloatError(e) => write!(f, "{:?}", e),
+            Self::FileLoadError(s) => write!(f, "failed to read file: {s}"),
+            Self::HttpStatusError { code, msg } => write!(f, "http {code}: {msg}"),
+            Self::ReqwestError(e) => write!(f, "{e:?}"),
+            Self::IOError(e) => write!(f, "{e:?}"),
+            Self::SerdeJsonError(e) => write!(f, "{e:?}"),
+            Self::DataStoreError(e) => write!(f, "{e:?}"),
+            Self::ParseFloatError(e) => write!(f, "{e:?}"),
         }
     }
 }

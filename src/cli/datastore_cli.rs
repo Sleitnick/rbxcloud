@@ -302,7 +302,7 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{:#?}", data))),
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(err.into()),
                 }
             }
@@ -330,7 +330,7 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{:#?}", data))),
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(err.into()),
                 }
             }
@@ -385,7 +385,7 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{:#?}", data))),
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(err.into()),
                 }
             }
@@ -414,7 +414,7 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{}", data))),
+                    Ok(data) => Ok(Some(format!("{data}"))),
                     Err(err) => Err(err.into()),
                 }
             }
@@ -462,13 +462,13 @@ impl DataStore {
                         key,
                         start_time,
                         end_time,
-                        sort_order: format!("{:?}", sort_order),
+                        sort_order: format!("{sort_order:?}"),
                         limit: ReturnLimit(limit),
                         cursor,
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{:#?}", data))),
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(err.into()),
                 }
             }

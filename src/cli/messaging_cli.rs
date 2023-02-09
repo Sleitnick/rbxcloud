@@ -43,7 +43,7 @@ impl Messaging {
                 let messaging = rbx_cloud.messaging(&topic);
                 let res = messaging.publish(&message).await;
                 match res {
-                    Ok(()) => Ok(Some(format!("published message to topic {}", topic))),
+                    Ok(()) => Ok(Some(format!("published message to topic {topic}"))),
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
