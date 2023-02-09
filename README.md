@@ -1,6 +1,6 @@
 # Roblox Open Cloud CLI &emsp; ![Logo](imgs/icon_32_bottom.png)
 [![CI](https://github.com/Sleitnick/rbxcloud/actions/workflows/ci.yaml/badge.svg)](https://github.com/Sleitnick/rbxcloud/actions/workflows/ci.yaml)
-[![Release](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml/badge.svg)](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml)
+[![Release](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml/badge.svg?event=push)](https://github.com/Sleitnick/rbxcloud/actions/workflows/release.yaml)
 [![Crate](https://img.shields.io/crates/v/rbxcloud.svg)](https://crates.io/crates/rbxcloud)
 [![Docs](https://docs.rs/rbxcloud/badge.svg)](https://docs.rs/rbxcloud)
 
@@ -17,7 +17,7 @@ Possible use-cases:
 ### Aftman
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.2.1
+$ aftman add Sleitnick/rbxcloud@0.2.2
 ```
 
 ### From Release
@@ -32,7 +32,7 @@ Visit the documentation site for information on installation and usage: https://
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.2.1"
+rbxcloud = "0.2.2"
 ```
 
 Alternatively, use `cargo add`.
