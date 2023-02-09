@@ -27,6 +27,8 @@ Download and unzip the tool for your OS from the [releases](https://github.com/S
 Visit the documentation site for information on installation and usage: https://sleitnick.github.io/rbxcloud/
 
 ## Install Rust Library
+The library built for the CLI tool is available to use directly in Rust projects. This is essentially an SDK for the Roblox Open Cloud APIs.
+
 ### Add Dependency
 
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
