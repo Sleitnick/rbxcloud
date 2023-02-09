@@ -7,7 +7,7 @@ USAGE:
     rbxcloud messaging publish --topic <TOPIC> --message <MESSAGE> --universe-id <UNIVERSE_ID> --api-key <API_KEY>
 
 OPTIONS:
-    -a, --api-key <API_KEY>            Roblox Open Cloud API Key
+    -a, --api-key <API_KEY>            Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
     -h, --help                         Print help information
     -m, --message <MESSAGE>            Message to send
     -t, --topic <TOPIC>                Message topic

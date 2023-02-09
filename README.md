@@ -17,7 +17,7 @@ Possible use-cases:
 ### Aftman
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.2.2
+$ aftman add Sleitnick/rbxcloud@0.3.0
 ```
 
 ### From Release
@@ -27,12 +27,14 @@ Download and unzip the tool for your OS from the [releases](https://github.com/S
 Visit the documentation site for information on installation and usage: https://sleitnick.github.io/rbxcloud/
 
 ## Install Rust Library
+The library built for the CLI tool is available to use directly in Rust projects. This is essentially an SDK for the Roblox Open Cloud APIs.
+
 ### Add Dependency
 
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.2.2"
+rbxcloud = "0.3.0"
 ```
 
 Alternatively, use `cargo add`.

@@ -7,7 +7,7 @@ USAGE:
     rbxcloud experience publish --filename <FILENAME> --place-id <PLACE_ID> --universe-id <UNIVERSE_ID> --version-type <VERSION_TYPE> --api-key <API_KEY>
 
 OPTIONS:
-    -a, --api-key <API_KEY>              Roblox Open Cloud API Key
+    -a, --api-key <API_KEY>              Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
     -f, --filename <FILENAME>            Filename (full or relative) of the RBXL file
     -h, --help                           Print help information
     -p, --place-id <PLACE_ID>            Place ID of the experience
