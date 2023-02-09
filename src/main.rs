@@ -11,11 +11,11 @@ async fn main() {
     match cli_args.run().await {
         Ok(str) => {
             if let Some(s) = str {
-                println!("{}", s);
+                println!("{s}");
             }
         }
         Err(err) => {
-            eprintln!("{:?}", err);
+            eprintln!("{err:?}");
             process::exit(1);
         }
     }

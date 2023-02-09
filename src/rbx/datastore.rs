@@ -244,15 +244,10 @@ async fn handle_res_ok(res: Response) -> Result<(), Error> {
 
 fn build_url(endpoint: &str, universe_id: UniverseId) -> String {
     if endpoint.is_empty() {
-        format!(
-            "https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores",
-            universeId = universe_id,
-        )
+        format!("https://apis.roblox.com/datastores/v1/universes/{universe_id}/standard-datastores",)
     } else {
         format!(
-			"https://apis.roblox.com/datastores/v1/universes/{universeId}/standard-datastores/{endpoint}",
-			universeId=universe_id,
-			endpoint=endpoint,
+			"https://apis.roblox.com/datastores/v1/universes/{universe_id}/standard-datastores{endpoint}",
 		)
     }
 }
@@ -260,7 +255,7 @@ fn build_url(endpoint: &str, universe_id: UniverseId) -> String {
 #[inline]
 fn get_checksum_base64(data: &String) -> String {
     let mut md5_hash = Md5::new();
-    md5_hash.update(&data.as_bytes());
+    md5_hash.update(data.as_bytes());
     base64::encode(md5_hash.finalize())
 }
 
@@ -350,7 +345,7 @@ fn build_ids_csv(ids: &Option<Vec<RobloxUserId>>) -> String {
     ids.as_ref()
         .unwrap_or(&vec![])
         .iter()
-        .map(|id| format!("{}", id))
+        .map(|id| format!("{id}"))
         .collect::<Vec<String>>()
         .join(",")
 }
@@ -413,7 +408,7 @@ pub async fn increment_entry(params: &IncrementEntryParams) -> Result<f64, Error
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
-        .header("roblox-entry-userids", format!("[{}]", ids))
+        .header("roblox-entry-userids", format!("[{ids}]"))
         .header(
             "roblox-entry-attributes",
             params

@@ -25,7 +25,7 @@ async fn main() {
             println!("Message successfully published");
         }
         Err(e) => {
-            eprintln!("{:?}", e);
+            eprintln!("{e:?}");
         }
     }
 

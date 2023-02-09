@@ -20,7 +20,7 @@ async fn main() {
             println!("Published place! New version: {}", result.version_number);
         }
         Err(e) => {
-            eprintln!("{:?}", e);
+            eprintln!("{e:?}");
         }
     }
 }
