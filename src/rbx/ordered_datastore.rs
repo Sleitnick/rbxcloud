@@ -46,6 +46,14 @@ pub struct OrderedListEntriesResponse {
     pub next_page_token: Option<String>,
 }
 
+pub struct OrderedGetEntryParams {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+    pub ordered_datastore_name: String,
+    pub scope: Option<String>,
+    pub id: String,
+}
+
 async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
     match res.status().is_success() {
         true => {
@@ -62,7 +70,7 @@ async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
 fn build_url(endpoint: &str, universe_id: UniverseId, scope: Option<&str>) -> String {
     let s = scope.unwrap_or("global");
     if endpoint.is_empty() {
-        format!("https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/scopes/{s}",)
+        format!("https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/scopes/{s}")
     } else {
         format!(
 			"https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/scopes/{s}{endpoint}",
@@ -112,6 +120,21 @@ pub async fn create_entry(params: &OrderedCreateEntryParams) -> Result<OrderedEn
         .header("x-api-key", &params.api_key)
         .query(&query)
         .body(body)
+        .send()
+        .await?;
+    handle_res::<OrderedEntry>(res).await
+}
+
+pub async fn get_entry(params: &OrderedGetEntryParams) -> Result<OrderedEntry, Error> {
+    let client = reqwest::Client::new();
+    let url = build_url(
+        format!("/entries/{entry}", entry = params.id).as_str(),
+        params.universe_id,
+        params.scope.as_deref(),
+    );
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
         .send()
         .await?;
     handle_res::<OrderedEntry>(res).await

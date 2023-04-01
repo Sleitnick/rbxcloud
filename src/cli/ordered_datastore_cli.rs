@@ -1,11 +1,12 @@
 use clap::{Args, Subcommand};
 use rbxcloud::rbx::{
-    OrderedDataStoreCreateEntry, OrderedDataStoreListEntries, RbxCloud, UniverseId,
+    OrderedDataStoreCreateEntry, OrderedDataStoreGetEntry, OrderedDataStoreListEntries, RbxCloud,
+    UniverseId,
 };
 
 #[derive(Debug, Subcommand)]
 pub enum OrderedDataStoreCommands {
-    /// List entries in an OrderedDataStore
+    /// List entries
     List {
         /// DataStore name
         #[clap(short, long, value_parser)]
@@ -40,7 +41,7 @@ pub enum OrderedDataStoreCommands {
         api_key: String,
     },
 
-    /// Create an entry in an OrderedDataStore
+    /// Create or overwrite an entry
     Create {
         /// DataStore name
         #[clap(short, long, value_parser)]
@@ -57,6 +58,29 @@ pub enum OrderedDataStoreCommands {
         /// The value of the entry
         #[clap(short, long, value_parser)]
         value: i64,
+
+        /// Universe ID of the experience
+        #[clap(short, long, value_parser)]
+        universe_id: u64,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Get an entry
+    Get {
+        /// DataStore name
+        #[clap(short, long, value_parser)]
+        ordered_datastore_name: String,
+
+        /// DataStore scope
+        #[clap(short, long, value_parser)]
+        scope: Option<String>,
+
+        /// The ID of the entry
+        #[clap(short, long, value_parser)]
+        id: String,
 
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
@@ -121,6 +145,28 @@ impl OrderedDataStore {
                         scope,
                         id,
                         value,
+                    })
+                    .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(err.into()),
+                }
+            }
+
+            OrderedDataStoreCommands::Get {
+                ordered_datastore_name,
+                scope,
+                id,
+                universe_id,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
+                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let res = ordered_datastore
+                    .get_entry(&OrderedDataStoreGetEntry {
+                        name: ordered_datastore_name,
+                        scope,
+                        id,
                     })
                     .await;
                 match res {
