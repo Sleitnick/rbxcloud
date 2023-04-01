@@ -3,15 +3,15 @@
 //! Typically, these operations should be consumed through the `RbxExperience`
 //! struct, obtained through the `RbxCloud` struct.
 
-use std::fmt;
-
-use md5::{Digest, Md5};
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
 
-use crate::rbx::{error::Error, ReturnLimit, RobloxUserId, UniverseId};
-
-type QueryString = Vec<(&'static str, String)>;
+use crate::rbx::{
+    ds_error::DataStoreErrorResponse,
+    error::Error,
+    util::{get_checksum_base64, QueryString},
+    ReturnLimit, RobloxUserId, UniverseId,
+};
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -33,63 +33,6 @@ pub struct ListDataStoresParams {
     pub prefix: Option<String>,
     pub limit: ReturnLimit,
     pub cursor: Option<String>,
-}
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct DataStoreErrorResponse {
-    pub error: String,
-    pub message: String,
-    pub error_details: Vec<DataStoreErrorDetail>,
-}
-
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct DataStoreErrorDetail {
-    pub error_detail_type: String,
-    pub datastore_error_code: DataStoreErrorCode,
-}
-
-#[derive(Deserialize, Debug)]
-pub enum DataStoreErrorCode {
-    ContentLengthRequired,
-    InvalidUniverseId,
-    InvalidCursor,
-    InvalidVersionId,
-    ExistingValueNotNumeric,
-    IncrementValueTooLarge,
-    IncrementValueTooSmall,
-    InvalidDataStoreScope,
-    InvalidEntryKey,
-    InvalidDataStoreName,
-    InvalidStartTime,
-    InvalidEndTime,
-    InvalidAttributes,
-    InvalidUserIds,
-    ExclusiveCreateAndMatchVersionCannotBeSet,
-    ContentTooBig,
-    ChecksumMismatch,
-    ContentNotJson,
-    InvalidSortOrder,
-    Forbidden,
-    InsufficientScope,
-    DatastoreNotFound,
-    EntryNotFound,
-    VersionNotFound,
-    TooManyRequests,
-    Unknown,
-}
-
-impl fmt::Display for DataStoreErrorResponse {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let details = self
-            .error_details
-            .iter()
-            .map(|item| format!("{:?}", item.datastore_error_code))
-            .collect::<Vec<String>>()
-            .join(", ");
-        write!(f, "[{}] - {}", details, self.message)
-    }
 }
 
 pub struct ListEntriesParams {
@@ -250,13 +193,6 @@ fn build_url(endpoint: &str, universe_id: UniverseId) -> String {
 			"https://apis.roblox.com/datastores/v1/universes/{universe_id}/standard-datastores{endpoint}",
 		)
     }
-}
-
-#[inline]
-fn get_checksum_base64(data: &String) -> String {
-    let mut md5_hash = Md5::new();
-    md5_hash.update(data.as_bytes());
-    base64::encode(md5_hash.finalize())
 }
 
 /// List all DataStores within an experience.
