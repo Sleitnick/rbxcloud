@@ -9,8 +9,8 @@ pub enum OrderedDataStoreCommands {
     /// List entries
     List {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -44,8 +44,8 @@ pub enum OrderedDataStoreCommands {
     /// Create or overwrite an entry
     Create {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -71,8 +71,8 @@ pub enum OrderedDataStoreCommands {
     /// Get an entry
     Get {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -94,8 +94,8 @@ pub enum OrderedDataStoreCommands {
     /// Delete an entry
     Delete {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -117,8 +117,8 @@ pub enum OrderedDataStoreCommands {
     /// Update an entry
     Update {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -132,8 +132,8 @@ pub enum OrderedDataStoreCommands {
         #[clap(short, long, value_parser)]
         value: i64,
 
-        /// Create the entry if it does not yet exist
-        #[clap(short, long, value_parser)]
+        /// Create if missing
+        #[clap(short = 'm', long, value_parser)]
         allow_missing: Option<bool>,
 
         /// Universe ID of the experience
@@ -148,8 +148,8 @@ pub enum OrderedDataStoreCommands {
     /// Increment an entry
     Increment {
         /// DataStore name
-        #[clap(short, long, value_parser)]
-        ordered_datastore_name: String,
+        #[clap(long, value_parser)]
+        datastore_name: String,
 
         /// DataStore scope
         #[clap(short, long, value_parser)]
@@ -160,7 +160,7 @@ pub enum OrderedDataStoreCommands {
         id: String,
 
         /// The incremented value of the entry
-        #[clap(short, long, value_parser)]
+        #[clap(short = 'n', long, value_parser)]
         increment: i64,
 
         /// Universe ID of the experience
@@ -183,7 +183,7 @@ impl OrderedDataStore {
     pub async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
             OrderedDataStoreCommands::List {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 max_page_size,
                 page_token,
@@ -196,7 +196,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .list_entries(&OrderedDataStoreListEntries {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         max_page_size: max_page_size.map(|p| p.into()),
                         page_token,
@@ -211,7 +211,7 @@ impl OrderedDataStore {
             }
 
             OrderedDataStoreCommands::Create {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 id,
                 value,
@@ -222,7 +222,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .create_entry(&OrderedDataStoreCreateEntry {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         id,
                         value,
@@ -235,7 +235,7 @@ impl OrderedDataStore {
             }
 
             OrderedDataStoreCommands::Get {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 id,
                 universe_id,
@@ -245,7 +245,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .get_entry(&OrderedDataStoreEntry {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         id,
                     })
@@ -257,7 +257,7 @@ impl OrderedDataStore {
             }
 
             OrderedDataStoreCommands::Delete {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 id,
                 universe_id,
@@ -267,7 +267,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .delete_entry(&OrderedDataStoreEntry {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         id,
                     })
@@ -279,7 +279,7 @@ impl OrderedDataStore {
             }
 
             OrderedDataStoreCommands::Update {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 id,
                 value,
@@ -291,7 +291,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .update_entry(&OrderedDataStoreUpdateEntry {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         id,
                         value,
@@ -305,7 +305,7 @@ impl OrderedDataStore {
             }
 
             OrderedDataStoreCommands::Increment {
-                ordered_datastore_name,
+                datastore_name,
                 scope,
                 id,
                 increment,
@@ -316,7 +316,7 @@ impl OrderedDataStore {
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
                     .increment_entry(&OrderedDataStoreIncrementEntry {
-                        name: ordered_datastore_name,
+                        name: datastore_name,
                         scope,
                         id,
                         increment,
