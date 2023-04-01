@@ -21,7 +21,10 @@ use self::{
     error::Error,
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
-    ordered_datastore::{OrderedListEntriesParams, OrderedListEntriesResponse},
+    ordered_datastore::{
+        OrderedCreateEntryParams, OrderedEntry, OrderedListEntriesParams,
+        OrderedListEntriesResponse,
+    },
 };
 
 /// Represents the UniverseId of a Roblox experience.
@@ -358,6 +361,13 @@ pub struct OrderedDataStoreListEntries {
     pub filter: Option<String>,
 }
 
+pub struct OrderedDataStoreCreateEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub value: i64,
+}
+
 impl RbxOrderedDataStore {
     /// List key entries in a specific OrderedDataStore.
     pub async fn list_entries(
@@ -373,6 +383,21 @@ impl RbxOrderedDataStore {
             page_token: params.page_token.clone(),
             order_by: params.order_by.clone(),
             filter: params.filter.clone(),
+        })
+        .await
+    }
+
+    pub async fn create_entry(
+        &self,
+        params: &OrderedDataStoreCreateEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::create_entry(&OrderedCreateEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            value: params.value,
         })
         .await
     }

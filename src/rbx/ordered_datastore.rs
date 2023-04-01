@@ -6,6 +6,7 @@
 
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
+use serde_json::json;
 
 use crate::rbx::{
     ds_error::DataStoreErrorResponse, error::Error, util::QueryString, PageSize, UniverseId,
@@ -20,6 +21,15 @@ pub struct OrderedListEntriesParams {
     pub page_token: Option<String>,
     pub order_by: Option<String>,
     pub filter: Option<String>,
+}
+
+pub struct OrderedCreateEntryParams {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+    pub ordered_datastore_name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub value: i64,
 }
 
 #[derive(Deserialize, Debug)]
@@ -60,7 +70,7 @@ fn build_url(endpoint: &str, universe_id: UniverseId, scope: Option<&str>) -> St
     }
 }
 
-/// List all entries of a DataStore.
+/// List entries of an OrderedDataStore.
 pub async fn list_entries(
     params: &OrderedListEntriesParams,
 ) -> Result<OrderedListEntriesResponse, Error> {
@@ -86,4 +96,23 @@ pub async fn list_entries(
         .send()
         .await?;
     handle_res::<OrderedListEntriesResponse>(res).await
+}
+
+/// Add a new entry to an OrderedDataStore.
+pub async fn create_entry(params: &OrderedCreateEntryParams) -> Result<OrderedEntry, Error> {
+    let client = reqwest::Client::new();
+    let url = build_url("/entries", params.universe_id, params.scope.as_deref());
+    let query: QueryString = vec![("id", params.id.to_string())];
+    let body_json = json!({
+        "value": &params.value,
+    });
+    let body = serde_json::to_string(&body_json)?;
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .query(&query)
+        .body(body)
+        .send()
+        .await?;
+    handle_res::<OrderedEntry>(res).await
 }
