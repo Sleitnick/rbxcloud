@@ -1,7 +1,7 @@
 use clap::{Args, Subcommand};
 use rbxcloud::rbx::{
-    OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreListEntries,
-    OrderedDataStoreUpdateEntry, RbxCloud, UniverseId,
+    OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreIncrementEntry,
+    OrderedDataStoreListEntries, OrderedDataStoreUpdateEntry, RbxCloud, UniverseId,
 };
 
 #[derive(Debug, Subcommand)]
@@ -144,6 +144,33 @@ pub enum OrderedDataStoreCommands {
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
+
+    /// Increment an entry
+    Increment {
+        /// DataStore name
+        #[clap(short, long, value_parser)]
+        ordered_datastore_name: String,
+
+        /// DataStore scope
+        #[clap(short, long, value_parser)]
+        scope: Option<String>,
+
+        /// The ID of the entry
+        #[clap(short, long, value_parser)]
+        id: String,
+
+        /// The incremented value of the entry
+        #[clap(short, long, value_parser)]
+        increment: i64,
+
+        /// Universe ID of the experience
+        #[clap(short, long, value_parser)]
+        universe_id: u64,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
 }
 
 #[derive(Debug, Args)]
@@ -269,6 +296,30 @@ impl OrderedDataStore {
                         id,
                         value,
                         allow_missing,
+                    })
+                    .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(err.into()),
+                }
+            }
+
+            OrderedDataStoreCommands::Increment {
+                ordered_datastore_name,
+                scope,
+                id,
+                increment,
+                universe_id,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
+                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let res = ordered_datastore
+                    .increment_entry(&OrderedDataStoreIncrementEntry {
+                        name: ordered_datastore_name,
+                        scope,
+                        id,
+                        increment,
                     })
                     .await;
                 match res {

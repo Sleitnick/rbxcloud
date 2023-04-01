@@ -22,8 +22,8 @@ use self::{
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
     ordered_datastore::{
-        OrderedEntry, OrderedEntryParams, OrderedEntryUpdateParams, OrderedEntryValueParams,
-        OrderedListEntriesParams, OrderedListEntriesResponse,
+        OrderedCreateEntryParams, OrderedEntry, OrderedEntryParams, OrderedIncrementEntryParams,
+        OrderedListEntriesParams, OrderedListEntriesResponse, OrderedUpdateEntryParams,
     },
 };
 
@@ -376,6 +376,13 @@ pub struct OrderedDataStoreUpdateEntry {
     pub allow_missing: Option<bool>,
 }
 
+pub struct OrderedDataStoreIncrementEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub increment: i64,
+}
+
 pub struct OrderedDataStoreEntry {
     pub name: String,
     pub scope: Option<String>,
@@ -406,7 +413,7 @@ impl RbxOrderedDataStore {
         &self,
         params: &OrderedDataStoreCreateEntry,
     ) -> Result<OrderedEntry, Error> {
-        ordered_datastore::create_entry(&OrderedEntryValueParams {
+        ordered_datastore::create_entry(&OrderedCreateEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             ordered_datastore_name: params.name.clone(),
@@ -446,7 +453,7 @@ impl RbxOrderedDataStore {
         &self,
         params: &OrderedDataStoreUpdateEntry,
     ) -> Result<OrderedEntry, Error> {
-        ordered_datastore::update_entry(&OrderedEntryUpdateParams {
+        ordered_datastore::update_entry(&OrderedUpdateEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             ordered_datastore_name: params.name.clone(),
@@ -454,6 +461,22 @@ impl RbxOrderedDataStore {
             id: params.id.to_string(),
             value: params.value,
             allow_missing: params.allow_missing,
+        })
+        .await
+    }
+
+    /// Increment an entry
+    pub async fn increment_entry(
+        &self,
+        params: &OrderedDataStoreIncrementEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::increment_entry(&OrderedIncrementEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            increment: params.increment,
         })
         .await
     }
