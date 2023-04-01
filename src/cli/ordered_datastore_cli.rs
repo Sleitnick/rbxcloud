@@ -3,7 +3,7 @@ use rbxcloud::rbx::{OrderedDataStoreListEntries, RbxCloud, UniverseId};
 
 #[derive(Debug, Subcommand)]
 pub enum OrderedDataStoreCommands {
-    /// List all entries in a DataStore
+    /// List entries in an OrderedDataStore
     List {
         /// DataStore name
         #[clap(short, long, value_parser)]
