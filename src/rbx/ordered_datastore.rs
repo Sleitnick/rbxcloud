@@ -221,7 +221,7 @@ pub async fn increment_entry(params: &OrderedIncrementEntryParams) -> Result<Ord
     });
     let body = serde_json::to_string(&body_json)?;
     let res = client
-        .patch(url)
+        .post(url)
         .header("x-api-key", &params.api_key)
         .body(body)
         .send()

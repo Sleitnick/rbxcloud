@@ -4,3 +4,4 @@ api_key.txt
 test.sh
 *.ai
 *.psd
+.DS_Store
