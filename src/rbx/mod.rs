@@ -22,8 +22,8 @@ use self::{
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
     ordered_datastore::{
-        OrderedCreateEntryParams, OrderedEntry, OrderedEntryParams, OrderedListEntriesParams,
-        OrderedListEntriesResponse,
+        OrderedEntry, OrderedEntryParams, OrderedEntryUpdateParams, OrderedEntryValueParams,
+        OrderedListEntriesParams, OrderedListEntriesResponse,
     },
 };
 
@@ -368,6 +368,14 @@ pub struct OrderedDataStoreCreateEntry {
     pub value: i64,
 }
 
+pub struct OrderedDataStoreUpdateEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub value: i64,
+    pub allow_missing: Option<bool>,
+}
+
 pub struct OrderedDataStoreEntry {
     pub name: String,
     pub scope: Option<String>,
@@ -398,7 +406,7 @@ impl RbxOrderedDataStore {
         &self,
         params: &OrderedDataStoreCreateEntry,
     ) -> Result<OrderedEntry, Error> {
-        ordered_datastore::create_entry(&OrderedCreateEntryParams {
+        ordered_datastore::create_entry(&OrderedEntryValueParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             ordered_datastore_name: params.name.clone(),
@@ -429,6 +437,23 @@ impl RbxOrderedDataStore {
             ordered_datastore_name: params.name.clone(),
             scope: params.scope.clone(),
             id: params.id.to_string(),
+        })
+        .await
+    }
+
+    /// Update an entry
+    pub async fn update_entry(
+        &self,
+        params: &OrderedDataStoreUpdateEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::update_entry(&OrderedEntryUpdateParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            value: params.value,
+            allow_missing: params.allow_missing,
         })
         .await
     }
