@@ -22,7 +22,7 @@ use self::{
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
     ordered_datastore::{
-        OrderedCreateEntryParams, OrderedEntry, OrderedGetEntryParams, OrderedListEntriesParams,
+        OrderedCreateEntryParams, OrderedEntry, OrderedEntryParams, OrderedListEntriesParams,
         OrderedListEntriesResponse,
     },
 };
@@ -368,7 +368,7 @@ pub struct OrderedDataStoreCreateEntry {
     pub value: i64,
 }
 
-pub struct OrderedDataStoreGetEntry {
+pub struct OrderedDataStoreEntry {
     pub name: String,
     pub scope: Option<String>,
     pub id: String,
@@ -410,11 +410,20 @@ impl RbxOrderedDataStore {
     }
 
     /// Get an entry
-    pub async fn get_entry(
-        &self,
-        params: &OrderedDataStoreGetEntry,
-    ) -> Result<OrderedEntry, Error> {
-        ordered_datastore::get_entry(&OrderedGetEntryParams {
+    pub async fn get_entry(&self, params: &OrderedDataStoreEntry) -> Result<OrderedEntry, Error> {
+        ordered_datastore::get_entry(&OrderedEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+        })
+        .await
+    }
+
+    /// Delete an entry
+    pub async fn delete_entry(&self, params: &OrderedDataStoreEntry) -> Result<(), Error> {
+        ordered_datastore::delete_entry(&OrderedEntryParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             ordered_datastore_name: params.name.clone(),

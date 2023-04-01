@@ -46,7 +46,7 @@ pub struct OrderedListEntriesResponse {
     pub next_page_token: Option<String>,
 }
 
-pub struct OrderedGetEntryParams {
+pub struct OrderedEntryParams {
     pub api_key: String,
     pub universe_id: UniverseId,
     pub ordered_datastore_name: String,
@@ -60,6 +60,16 @@ async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
             let body = res.json::<T>().await?;
             Ok(body)
         }
+        false => {
+            let err_res = res.json::<DataStoreErrorResponse>().await?;
+            Err(Error::DataStoreError(err_res))
+        }
+    }
+}
+
+async fn handle_res_ok(res: Response) -> Result<(), Error> {
+    match res.status().is_success() {
+        true => Ok(()),
         false => {
             let err_res = res.json::<DataStoreErrorResponse>().await?;
             Err(Error::DataStoreError(err_res))
@@ -125,7 +135,7 @@ pub async fn create_entry(params: &OrderedCreateEntryParams) -> Result<OrderedEn
     handle_res::<OrderedEntry>(res).await
 }
 
-pub async fn get_entry(params: &OrderedGetEntryParams) -> Result<OrderedEntry, Error> {
+pub async fn get_entry(params: &OrderedEntryParams) -> Result<OrderedEntry, Error> {
     let client = reqwest::Client::new();
     let url = build_url(
         format!("/entries/{entry}", entry = params.id).as_str(),
@@ -138,4 +148,19 @@ pub async fn get_entry(params: &OrderedGetEntryParams) -> Result<OrderedEntry, E
         .send()
         .await?;
     handle_res::<OrderedEntry>(res).await
+}
+
+pub async fn delete_entry(params: &OrderedEntryParams) -> Result<(), Error> {
+    let client = reqwest::Client::new();
+    let url = build_url(
+        format!("/entries/{entry}", entry = params.id).as_str(),
+        params.universe_id,
+        params.scope.as_deref(),
+    );
+    let res = client
+        .delete(url)
+        .header("x-api-key", &params.api_key)
+        .send()
+        .await?;
+    handle_res_ok(res).await
 }

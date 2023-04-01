@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 use rbxcloud::rbx::{
-    OrderedDataStoreCreateEntry, OrderedDataStoreGetEntry, OrderedDataStoreListEntries, RbxCloud,
+    OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreListEntries, RbxCloud,
     UniverseId,
 };
 
@@ -70,6 +70,29 @@ pub enum OrderedDataStoreCommands {
 
     /// Get an entry
     Get {
+        /// DataStore name
+        #[clap(short, long, value_parser)]
+        ordered_datastore_name: String,
+
+        /// DataStore scope
+        #[clap(short, long, value_parser)]
+        scope: Option<String>,
+
+        /// The ID of the entry
+        #[clap(short, long, value_parser)]
+        id: String,
+
+        /// Universe ID of the experience
+        #[clap(short, long, value_parser)]
+        universe_id: u64,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Delete an entry
+    Delete {
         /// DataStore name
         #[clap(short, long, value_parser)]
         ordered_datastore_name: String,
@@ -163,7 +186,7 @@ impl OrderedDataStore {
                 let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
                 let ordered_datastore = rbx_cloud.ordered_datastore();
                 let res = ordered_datastore
-                    .get_entry(&OrderedDataStoreGetEntry {
+                    .get_entry(&OrderedDataStoreEntry {
                         name: ordered_datastore_name,
                         scope,
                         id,
@@ -171,6 +194,28 @@ impl OrderedDataStore {
                     .await;
                 match res {
                     Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(err.into()),
+                }
+            }
+
+            OrderedDataStoreCommands::Delete {
+                ordered_datastore_name,
+                scope,
+                id,
+                universe_id,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
+                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let res = ordered_datastore
+                    .delete_entry(&OrderedDataStoreEntry {
+                        name: ordered_datastore_name,
+                        scope,
+                        id,
+                    })
+                    .await;
+                match res {
+                    Ok(_) => Ok(None),
                     Err(err) => Err(err.into()),
                 }
             }
