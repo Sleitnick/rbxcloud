@@ -7,7 +7,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -f, --filter <FILTER>                    A range of qualifying values of entries to return
     -h, --help                               Print help information
     -m, --max-page-size <MAX_PAGE_SIZE>      Maximum number of items to return per page
@@ -24,7 +24,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -h, --help                               Print help information
     -i, --id <ID>                            The ID of the entry
     -s, --scope <SCOPE>                      DataStore scope
@@ -38,7 +38,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -h, --help                               Print help information
     -i, --id <ID>                            The ID of the entry
     -s, --scope <SCOPE>                      DataStore scope
@@ -53,7 +53,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -h, --help                               Print help information
     -i, --id <ID>                            The ID of the entry
     -m, --allow-missing <ALLOW_MISSING>      Create if missing [possible values: true, false]
@@ -69,7 +69,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -h, --help                               Print help information
     -i, --id <ID>                            The ID of the entry
     -n, --increment <INCREMENT>              The incremented value of the entry
@@ -84,7 +84,7 @@ USAGE:
 
 OPTIONS:
     -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
-        --datastore-name <DATASTORE_NAME>    DataStore name
+    -d  --datastore-name <DATASTORE_NAME>    DataStore name
     -h, --help                               Print help information
     -i, --id <ID>                            The ID of the entry
     -s, --scope <SCOPE>                      DataStore scope

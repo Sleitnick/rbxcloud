@@ -8,9 +8,7 @@ use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::json;
 
-use crate::rbx::{
-    ds_error::DataStoreErrorResponse, error::Error, util::QueryString, PageSize, UniverseId,
-};
+use crate::rbx::{error::Error, util::QueryString, PageSize, UniverseId};
 
 pub struct OrderedListEntriesParams {
     pub api_key: String,
@@ -55,7 +53,7 @@ pub struct OrderedIncrementEntryParams {
 pub struct OrderedEntry {
     pub path: String,
     pub id: String,
-    pub value: f64,
+    pub value: i64,
 }
 
 #[derive(Deserialize, Debug)]
@@ -74,35 +72,48 @@ pub struct OrderedEntryParams {
 }
 
 async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
-    match res.status().is_success() {
+    let status = res.status();
+    match status.is_success() {
         true => {
             let body = res.json::<T>().await?;
             Ok(body)
         }
         false => {
-            let err_res = res.json::<DataStoreErrorResponse>().await?;
-            Err(Error::DataStoreError(err_res))
+            let text = res.text().await?;
+            Err(Error::HttpStatusError {
+                code: status.as_u16(),
+                msg: text,
+            })
         }
     }
 }
 
 async fn handle_res_ok(res: Response) -> Result<(), Error> {
-    match res.status().is_success() {
+    let status = res.status();
+    match status.is_success() {
         true => Ok(()),
         false => {
-            let err_res = res.json::<DataStoreErrorResponse>().await?;
-            Err(Error::DataStoreError(err_res))
+            let text = res.text().await?;
+            Err(Error::HttpStatusError {
+                code: status.as_u16(),
+                msg: text,
+            })
         }
     }
 }
 
-fn build_url(endpoint: &str, universe_id: UniverseId, scope: Option<&str>) -> String {
+fn build_url(
+    endpoint: &str,
+    universe_id: UniverseId,
+    data_store: &str,
+    scope: Option<&str>,
+) -> String {
     let s = scope.unwrap_or("global");
     if endpoint.is_empty() {
-        format!("https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/scopes/{s}")
+        format!("https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/{data_store}/scopes/{s}")
     } else {
         format!(
-			"https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/scopes/{s}{endpoint}",
+			"https://apis.roblox.com/ordered-data-stores/v1/universes/{universe_id}/orderedDataStores/{data_store}/scopes/{s}{endpoint}",
 		)
     }
 }
@@ -112,7 +123,12 @@ pub async fn list_entries(
     params: &OrderedListEntriesParams,
 ) -> Result<OrderedListEntriesResponse, Error> {
     let client = reqwest::Client::new();
-    let url = build_url("/entries", params.universe_id, params.scope.as_deref());
+    let url = build_url(
+        "/entries",
+        params.universe_id,
+        &params.ordered_datastore_name,
+        params.scope.as_deref(),
+    );
     let mut query: QueryString = vec![];
     if let Some(max_page_size) = &params.max_page_size {
         query.push(("max_page_size", max_page_size.to_string()));
@@ -138,7 +154,12 @@ pub async fn list_entries(
 /// Add a new entry to an OrderedDataStore.
 pub async fn create_entry(params: &OrderedCreateEntryParams) -> Result<OrderedEntry, Error> {
     let client = reqwest::Client::new();
-    let url = build_url("/entries", params.universe_id, params.scope.as_deref());
+    let url = build_url(
+        "/entries",
+        params.universe_id,
+        &params.ordered_datastore_name,
+        params.scope.as_deref(),
+    );
     let query: QueryString = vec![("id", params.id.to_string())];
     let body_json = json!({
         "value": &params.value,
@@ -147,8 +168,9 @@ pub async fn create_entry(params: &OrderedCreateEntryParams) -> Result<OrderedEn
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
         .query(&query)
-        .body(body)
+        .body(body.clone())
         .send()
         .await?;
     handle_res::<OrderedEntry>(res).await
@@ -159,6 +181,7 @@ pub async fn get_entry(params: &OrderedEntryParams) -> Result<OrderedEntry, Erro
     let url = build_url(
         format!("/entries/{entry}", entry = params.id).as_str(),
         params.universe_id,
+        &params.ordered_datastore_name,
         params.scope.as_deref(),
     );
     let res = client
@@ -174,6 +197,7 @@ pub async fn delete_entry(params: &OrderedEntryParams) -> Result<(), Error> {
     let url = build_url(
         format!("/entries/{entry}", entry = params.id).as_str(),
         params.universe_id,
+        &params.ordered_datastore_name,
         params.scope.as_deref(),
     );
     let res = client
@@ -189,6 +213,7 @@ pub async fn update_entry(params: &OrderedUpdateEntryParams) -> Result<OrderedEn
     let url = build_url(
         format!("/entries/{entry}", entry = params.id).as_str(),
         params.universe_id,
+        &params.ordered_datastore_name,
         params.scope.as_deref(),
     );
     let mut query: QueryString = vec![];
@@ -202,6 +227,7 @@ pub async fn update_entry(params: &OrderedUpdateEntryParams) -> Result<OrderedEn
     let res = client
         .patch(url)
         .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
         .body(body)
         .query(&query)
         .send()
@@ -214,6 +240,7 @@ pub async fn increment_entry(params: &OrderedIncrementEntryParams) -> Result<Ord
     let url = build_url(
         format!("/entries/{entry}:increment", entry = params.id).as_str(),
         params.universe_id,
+        &params.ordered_datastore_name,
         params.scope.as_deref(),
     );
     let body_json = json!({
@@ -223,6 +250,7 @@ pub async fn increment_entry(params: &OrderedIncrementEntryParams) -> Result<Ord
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
         .body(body)
         .send()
         .await?;

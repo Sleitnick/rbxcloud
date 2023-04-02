@@ -9,7 +9,7 @@ pub enum OrderedDataStoreCommands {
     /// List entries
     List {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
@@ -44,7 +44,7 @@ pub enum OrderedDataStoreCommands {
     /// Create or overwrite an entry
     Create {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
@@ -71,7 +71,7 @@ pub enum OrderedDataStoreCommands {
     /// Get an entry
     Get {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
@@ -94,7 +94,7 @@ pub enum OrderedDataStoreCommands {
     /// Delete an entry
     Delete {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
@@ -117,7 +117,7 @@ pub enum OrderedDataStoreCommands {
     /// Update an entry
     Update {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
@@ -148,7 +148,7 @@ pub enum OrderedDataStoreCommands {
     /// Increment an entry
     Increment {
         /// DataStore name
-        #[clap(long, value_parser)]
+        #[clap(short, long, value_parser)]
         datastore_name: String,
 
         /// DataStore scope
