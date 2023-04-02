@@ -2,9 +2,12 @@
 //!
 //! Most usage should go through the `RbxCloud` struct.
 pub mod datastore;
+mod ds_error;
 pub mod error;
 pub mod experience;
 pub mod messaging;
+pub mod ordered_datastore;
+mod util;
 
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
@@ -18,6 +21,10 @@ use self::{
     error::Error,
     experience::{PublishExperienceParams, PublishExperienceResponse},
     messaging::PublishMessageParams,
+    ordered_datastore::{
+        OrderedCreateEntryParams, OrderedEntry, OrderedEntryParams, OrderedIncrementEntryParams,
+        OrderedListEntriesParams, OrderedListEntriesResponse, OrderedUpdateEntryParams,
+    },
 };
 
 /// Represents the UniverseId of a Roblox experience.
@@ -35,6 +42,9 @@ pub struct ReturnLimit(pub u64);
 /// Represents a Roblox user's ID.
 #[derive(Debug, Clone, Copy)]
 pub struct RobloxUserId(pub u64);
+
+#[derive(Debug, Clone, Copy)]
+pub struct PageSize(pub u64);
 
 impl std::fmt::Display for UniverseId {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -57,6 +67,18 @@ impl std::fmt::Display for ReturnLimit {
 impl std::fmt::Display for RobloxUserId {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl std::fmt::Display for PageSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::convert::From<u64> for PageSize {
+    fn from(item: u64) -> Self {
+        PageSize(item)
     }
 }
 
@@ -325,6 +347,141 @@ impl RbxDataStore {
     }
 }
 
+pub struct RbxOrderedDataStore {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+}
+
+pub struct OrderedDataStoreListEntries {
+    pub name: String,
+    pub scope: Option<String>,
+    pub max_page_size: Option<PageSize>,
+    pub page_token: Option<String>,
+    pub order_by: Option<String>,
+    pub filter: Option<String>,
+}
+
+pub struct OrderedDataStoreCreateEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub value: i64,
+}
+
+pub struct OrderedDataStoreUpdateEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub value: i64,
+    pub allow_missing: Option<bool>,
+}
+
+pub struct OrderedDataStoreIncrementEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+    pub increment: i64,
+}
+
+pub struct OrderedDataStoreEntry {
+    pub name: String,
+    pub scope: Option<String>,
+    pub id: String,
+}
+
+impl RbxOrderedDataStore {
+    /// List key entries
+    pub async fn list_entries(
+        &self,
+        params: &OrderedDataStoreListEntries,
+    ) -> Result<OrderedListEntriesResponse, Error> {
+        ordered_datastore::list_entries(&OrderedListEntriesParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            max_page_size: params.max_page_size,
+            page_token: params.page_token.clone(),
+            order_by: params.order_by.clone(),
+            filter: params.filter.clone(),
+        })
+        .await
+    }
+
+    /// Create an entry
+    pub async fn create_entry(
+        &self,
+        params: &OrderedDataStoreCreateEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::create_entry(&OrderedCreateEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            value: params.value,
+        })
+        .await
+    }
+
+    /// Get an entry
+    pub async fn get_entry(&self, params: &OrderedDataStoreEntry) -> Result<OrderedEntry, Error> {
+        ordered_datastore::get_entry(&OrderedEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+        })
+        .await
+    }
+
+    /// Delete an entry
+    pub async fn delete_entry(&self, params: &OrderedDataStoreEntry) -> Result<(), Error> {
+        ordered_datastore::delete_entry(&OrderedEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+        })
+        .await
+    }
+
+    /// Update an entry
+    pub async fn update_entry(
+        &self,
+        params: &OrderedDataStoreUpdateEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::update_entry(&OrderedUpdateEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            value: params.value,
+            allow_missing: params.allow_missing,
+        })
+        .await
+    }
+
+    /// Increment an entry
+    pub async fn increment_entry(
+        &self,
+        params: &OrderedDataStoreIncrementEntry,
+    ) -> Result<OrderedEntry, Error> {
+        ordered_datastore::increment_entry(&OrderedIncrementEntryParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            ordered_datastore_name: params.name.clone(),
+            scope: params.scope.clone(),
+            id: params.id.to_string(),
+            increment: params.increment,
+        })
+        .await
+    }
+}
+
 /// Access into the Roblox Open Cloud APIs.
 ///
 /// ```rust,no_run
@@ -367,6 +524,13 @@ impl RbxCloud {
 
     pub fn datastore(&self) -> RbxDataStore {
         RbxDataStore {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+        }
+    }
+
+    pub fn ordered_datastore(&self) -> RbxOrderedDataStore {
+        RbxOrderedDataStore {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
         }

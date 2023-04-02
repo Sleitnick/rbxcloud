@@ -12,6 +12,7 @@ nav:
     - Experience: cli/cli-experience.md
     - Messaging: cli/cli-messaging.md
     - DataStore: cli/cli-datastore.md
+    - OrderedDataStore: cli/cli-ordered-datastore.md
   - Rust Lib:
     - Install: lib/lib-install.md
 

@@ -7,7 +7,7 @@ There are a few different ways to install the `rbxcloud` CLI.
 ### [Aftman](https://github.com/LPGhatguy/aftman) <small>(Preferred)</small>
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.3.0
+$ aftman add Sleitnick/rbxcloud@0.4.0
 ```
 
 Next, run `aftman install` to install `rbxcloud`.
@@ -17,7 +17,7 @@ Add `rbxcloud` under the `[tools]` section of your `foreman.toml` file.
 ```toml
 # foreman.toml
 [tools]
-rbxcloud = { github = "Sleitnick/rbxcloud", version = "0.3.0" }
+rbxcloud = { github = "Sleitnick/rbxcloud", version = "0.4.0" }
 ```
 
 Next, run `foreman install` to install `rbxcloud`.
