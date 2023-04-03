@@ -21,8 +21,8 @@
 //!     let api_key = "my_api_key";
 //!     let universe_id = UniverseId(9876543210);
 //!     let topic = "MyTopic";
-//!     let cloud = RbxCloud::new(api_key, universe_id);
-//!     let messaging = cloud.messaging(topic);
+//!     let cloud = RbxCloud::new(api_key);
+//!     let messaging = cloud.messaging(universe_id, topic);
 //!     messaging.publish("Hello world").await
 //! }
 //! ```

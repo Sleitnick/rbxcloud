@@ -508,9 +508,9 @@ impl RbxAssets {
 /// Access into the Roblox Open Cloud APIs.
 ///
 /// ```rust,no_run
-/// use rbxcloud::rbx::{RbxCloud, UniverseId};
+/// use rbxcloud::rbx::RbxCloud;
 ///
-/// let cloud = RbxCloud::new("API_KEY", UniverseId(9876543210));
+/// let cloud = RbxCloud::new("API_KEY");
 /// ```
 #[derive(Debug)]
 pub struct RbxCloud {
