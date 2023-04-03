@@ -1,3 +1,4 @@
+mod assets_cli;
 mod datastore_cli;
 mod experience_cli;
 mod messaging_cli;
@@ -6,8 +7,8 @@ mod ordered_datastore_cli;
 use clap::{Parser, Subcommand};
 
 use self::{
-    datastore_cli::DataStore, experience_cli::Experience, messaging_cli::Messaging,
-    ordered_datastore_cli::OrderedDataStore,
+    assets_cli::Assets, datastore_cli::DataStore, experience_cli::Experience,
+    messaging_cli::Messaging, ordered_datastore_cli::OrderedDataStore,
 };
 
 #[derive(Debug, Parser)]
@@ -19,6 +20,9 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
+    /// Access the Roblox Assets API
+    Assets(Assets),
+
     /// Access the Roblox Experience API
     Experience(Experience),
 
@@ -35,6 +39,7 @@ pub enum Command {
 impl Cli {
     pub async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
+            Command::Assets(command) => command.run().await,
             Command::Experience(command) => command.run().await,
             Command::Messaging(command) => command.run().await,
             Command::Datastore(command) => command.run().await,

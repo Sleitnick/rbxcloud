@@ -50,13 +50,13 @@ impl Experience {
                 api_key,
                 filename,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
+                let rbx_cloud = RbxCloud::new(&api_key);
                 let publish_version_type = match version_type {
                     VersionType::Published => PublishVersionType::Published,
                     VersionType::Saved => PublishVersionType::Saved,
                 };
                 let res = rbx_cloud
-                    .experience(PlaceId(place_id))
+                    .experience(UniverseId(universe_id), PlaceId(place_id))
                     .publish(&filename, publish_version_type)
                     .await;
                 match res {

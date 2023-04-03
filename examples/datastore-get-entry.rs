@@ -9,8 +9,8 @@ async fn main() {
     let key = String::from("my_key");
 
     // Define RbxCloud DataStore instance:
-    let cloud = RbxCloud::new(api_key, UniverseId(universe_id));
-    let datastore = cloud.datastore();
+    let cloud = RbxCloud::new(api_key);
+    let datastore = cloud.datastore(UniverseId(universe_id));
 
     // Get entry:
     let entry_result = datastore

@@ -1,6 +1,7 @@
 //! Access into Roblox APIs.
 //!
 //! Most usage should go through the `RbxCloud` struct.
+pub mod assets;
 pub mod datastore;
 mod ds_error;
 pub mod error;
@@ -13,6 +14,7 @@ pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
 use self::{
+    assets::{AssetInfo, AssetOperation, CreateAssetParams},
     datastore::{
         DeleteEntryParams, GetEntryParams, GetEntryVersionParams, IncrementEntryParams,
         ListDataStoresParams, ListDataStoresResponse, ListEntriesParams, ListEntriesResponse,
@@ -482,6 +484,27 @@ impl RbxOrderedDataStore {
     }
 }
 
+pub struct RbxAssets {
+    /// Roblox API key.
+    pub api_key: String,
+}
+
+pub struct CreateAsset {
+    pub asset: AssetInfo,
+    pub file_content: String,
+}
+
+impl RbxAssets {
+    pub async fn create(&self, params: &CreateAsset) -> Result<AssetOperation, Error> {
+        assets::create_asset(&CreateAssetParams {
+            api_key: self.api_key.clone(),
+            asset: params.asset.clone(),
+            file_content: params.file_content.clone(),
+        })
+        .await
+    }
+}
+
 /// Access into the Roblox Open Cloud APIs.
 ///
 /// ```rust,no_run
@@ -493,46 +516,48 @@ impl RbxOrderedDataStore {
 pub struct RbxCloud {
     /// Roblox API key.
     pub api_key: String,
-
-    /// The UniverseId of a given Roblox experience.
-    pub universe_id: UniverseId,
 }
 
 impl RbxCloud {
-    pub fn new(api_key: &str, universe_id: UniverseId) -> RbxCloud {
+    pub fn new(api_key: &str) -> RbxCloud {
         RbxCloud {
             api_key: api_key.to_string(),
-            universe_id,
         }
     }
 
-    pub fn experience(&self, place_id: PlaceId) -> RbxExperience {
+    pub fn assets(&self) -> RbxAssets {
+        RbxAssets {
+            api_key: self.api_key.clone(),
+        }
+    }
+
+    pub fn experience(&self, universe_id: UniverseId, place_id: PlaceId) -> RbxExperience {
         RbxExperience {
             api_key: self.api_key.clone(),
-            universe_id: self.universe_id,
+            universe_id,
             place_id,
         }
     }
 
-    pub fn messaging(&self, topic: &str) -> RbxMessaging {
+    pub fn messaging(&self, universe_id: UniverseId, topic: &str) -> RbxMessaging {
         RbxMessaging {
             api_key: self.api_key.clone(),
-            universe_id: self.universe_id,
+            universe_id,
             topic: topic.to_string(),
         }
     }
 
-    pub fn datastore(&self) -> RbxDataStore {
+    pub fn datastore(&self, universe_id: UniverseId) -> RbxDataStore {
         RbxDataStore {
             api_key: self.api_key.clone(),
-            universe_id: self.universe_id,
+            universe_id,
         }
     }
 
-    pub fn ordered_datastore(&self) -> RbxOrderedDataStore {
+    pub fn ordered_datastore(&self, universe_id: UniverseId) -> RbxOrderedDataStore {
         RbxOrderedDataStore {
             api_key: self.api_key.clone(),
-            universe_id: self.universe_id,
+            universe_id,
         }
     }
 }
