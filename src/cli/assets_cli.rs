@@ -93,15 +93,16 @@ fn create_context_from_creator_type(
     creator_id: u64,
     expected_price: Option<u64>,
 ) -> AssetCreationContext {
+    let expected_price = expected_price.unwrap_or(0);
     match creator_type {
         CreatorType::User => AssetCreationContext {
-            expected_price: expected_price.unwrap_or(0),
+            expected_price,
             creator: AssetCreator::User(AssetUserCreator {
                 user_id: creator_id,
             }),
         },
         CreatorType::Group => AssetCreationContext {
-            expected_price: expected_price.unwrap_or(0),
+            expected_price,
             creator: AssetCreator::Group(AssetGroupCreator {
                 group_id: creator_id,
             }),

@@ -504,7 +504,7 @@ pub struct UpdateAsset {
 }
 
 pub struct GetAsset {
-    operation_id: u64,
+    pub operation_id: u64,
 }
 
 impl RbxAssets {
