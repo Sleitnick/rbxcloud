@@ -1,6 +1,7 @@
 use crate::rbx::error::Error;
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde_json::json;
 
 use super::util::QueryString;
 
@@ -44,7 +45,7 @@ pub struct Asset {
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct AssetInfo {
+pub struct AssetCreation {
     pub asset_type: AssetType,
     pub display_name: String,
     pub description: String,
@@ -53,7 +54,14 @@ pub struct AssetInfo {
 
 pub struct CreateAssetParams {
     pub api_key: String,
-    pub asset: AssetInfo,
+    pub asset: AssetCreation,
+    pub file_content: String,
+}
+
+pub struct UpdateAssetParams {
+    pub api_key: String,
+    pub asset_id: u64,
+    pub asset_type: AssetType,
     pub file_content: String,
 }
 
@@ -82,7 +90,7 @@ pub struct AssetErrorStatus {
     pub details: Vec<ProtobufAny>,
 }
 
-#[derive(Debug, Clone, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum)]
 pub enum AssetType {
     AudioMp3,
     AudioOgg,
@@ -166,3 +174,26 @@ pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, 
         .await?;
     handle_res::<AssetOperation>(res).await
 }
+
+pub async fn update_asset(params: &UpdateAssetParams) -> Result<AssetOperation, Error> {
+    let client = reqwest::Client::new();
+    let url = build_url(Some(params.asset_id));
+    let request_json = json!({
+        "assetId": params.asset_id,
+    });
+    let request = serde_json::to_string(&request_json)?;
+    let form_params: QueryString = vec![
+        ("request", request),
+        ("fileContents", params.file_content.to_string()),
+        ("type", params.asset_type.content_type().to_string()),
+    ];
+    let res = client
+        .patch(url)
+        .header("x-api-key", &params.api_key)
+        .form(&form_params)
+        .send()
+        .await?;
+    handle_res::<AssetOperation>(res).await
+}
+
+pub async fn get_asset(params: &GetAssetParams) -> Result<Asset, Error> {}

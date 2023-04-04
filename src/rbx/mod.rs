@@ -14,7 +14,7 @@ pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
 use self::{
-    assets::{AssetInfo, AssetOperation, CreateAssetParams},
+    assets::{AssetCreation, AssetOperation, AssetType, CreateAssetParams, UpdateAssetParams},
     datastore::{
         DeleteEntryParams, GetEntryParams, GetEntryVersionParams, IncrementEntryParams,
         ListDataStoresParams, ListDataStoresResponse, ListEntriesParams, ListEntriesResponse,
@@ -490,15 +490,33 @@ pub struct RbxAssets {
 }
 
 pub struct CreateAsset {
-    pub asset: AssetInfo,
+    pub asset: AssetCreation,
+    pub file_content: String,
+}
+
+pub struct UpdateAsset {
+    pub asset_id: u64,
+    pub asset_type: AssetType,
     pub file_content: String,
 }
 
 impl RbxAssets {
+    /// Create an asset
     pub async fn create(&self, params: &CreateAsset) -> Result<AssetOperation, Error> {
         assets::create_asset(&CreateAssetParams {
             api_key: self.api_key.clone(),
             asset: params.asset.clone(),
+            file_content: params.file_content.clone(),
+        })
+        .await
+    }
+
+    /// Update an asset
+    pub async fn update(&self, params: &UpdateAsset) -> Result<AssetOperation, Error> {
+        assets::update_asset(&UpdateAssetParams {
+            api_key: self.api_key.clone(),
+            asset_id: params.asset_id,
+            asset_type: params.asset_type,
             file_content: params.file_content.clone(),
         })
         .await
