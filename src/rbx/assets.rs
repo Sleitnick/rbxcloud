@@ -65,6 +65,11 @@ pub struct UpdateAssetParams {
     pub file_content: String,
 }
 
+pub struct GetAssetParams {
+    pub api_key: String,
+    pub operation_id: u64,
+}
+
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetOperation {
@@ -196,4 +201,16 @@ pub async fn update_asset(params: &UpdateAssetParams) -> Result<AssetOperation, 
     handle_res::<AssetOperation>(res).await
 }
 
-pub async fn get_asset(params: &GetAssetParams) -> Result<Asset, Error> {}
+pub async fn get_asset(params: &GetAssetParams) -> Result<Asset, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/operations/{operationId}",
+        operationId = params.operation_id
+    );
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+        .send()
+        .await?;
+    handle_res::<Asset>(res).await
+}

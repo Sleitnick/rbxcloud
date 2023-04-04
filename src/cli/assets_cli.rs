@@ -2,10 +2,10 @@ use clap::{Args, Subcommand};
 
 use rbxcloud::rbx::{
     assets::{
-        AssetCreationContext, AssetCreator, AssetGroupCreator, AssetInfo, AssetType,
+        AssetCreation, AssetCreationContext, AssetCreator, AssetGroupCreator, AssetType,
         AssetUserCreator,
     },
-    CreateAsset, RbxCloud,
+    CreateAsset, GetAsset, RbxCloud, UpdateAsset,
 };
 
 #[derive(Debug, Clone, clap::ValueEnum)]
@@ -50,12 +50,63 @@ pub enum AssetsCommands {
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
+
+    /// Update an asset
+    Update {
+        /// Asset type
+        #[clap(short = 't', long, value_enum)]
+        asset_type: AssetType,
+
+        /// Asset ID
+        #[clap(short = 'i', long, value_parser)]
+        asset_id: u64,
+
+        /// File content
+        #[clap(short, long, value_parser)]
+        file_content: String,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Get asset information
+    Get {
+        /// Operation ID
+        #[clap(short = 'i', long, value_parser)]
+        operation_id: u64,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
 }
 
 #[derive(Debug, Args)]
 pub struct Assets {
     #[clap(subcommand)]
     command: AssetsCommands,
+}
+
+fn create_context_from_creator_type(
+    creator_type: CreatorType,
+    creator_id: u64,
+    expected_price: Option<u64>,
+) -> AssetCreationContext {
+    match creator_type {
+        CreatorType::User => AssetCreationContext {
+            expected_price: expected_price.unwrap_or(0),
+            creator: AssetCreator::User(AssetUserCreator {
+                user_id: creator_id,
+            }),
+        },
+        CreatorType::Group => AssetCreationContext {
+            expected_price: expected_price.unwrap_or(0),
+            creator: AssetCreator::Group(AssetGroupCreator {
+                group_id: creator_id,
+            }),
+        },
+    }
 }
 
 impl Assets {
@@ -73,23 +124,11 @@ impl Assets {
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
                 let assets = rbx_cloud.assets();
-                let creation_context = match creator_type {
-                    CreatorType::User => AssetCreationContext {
-                        expected_price: expected_price.unwrap_or(0),
-                        creator: AssetCreator::User(AssetUserCreator {
-                            user_id: creator_id,
-                        }),
-                    },
-                    CreatorType::Group => AssetCreationContext {
-                        expected_price: expected_price.unwrap_or(0),
-                        creator: AssetCreator::Group(AssetGroupCreator {
-                            group_id: creator_id,
-                        }),
-                    },
-                };
+                let creation_context =
+                    create_context_from_creator_type(creator_type, creator_id, expected_price);
                 let res = assets
                     .create(&CreateAsset {
-                        asset: AssetInfo {
+                        asset: AssetCreation {
                             asset_type,
                             display_name,
                             description,
@@ -98,6 +137,40 @@ impl Assets {
                         file_content,
                     })
                     .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            AssetsCommands::Update {
+                asset_type,
+                asset_id,
+                file_content,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let assets = rbx_cloud.assets();
+                let res = assets
+                    .update(&UpdateAsset {
+                        asset_id,
+                        asset_type,
+                        file_content,
+                    })
+                    .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            AssetsCommands::Get {
+                operation_id,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let assets = rbx_cloud.assets();
+                let res = assets.get(&GetAsset { operation_id }).await;
                 match res {
                     Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(anyhow::anyhow!(err)),
