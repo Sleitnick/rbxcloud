@@ -159,7 +159,7 @@ fn build_url(asset_id: Option<u64>) -> String {
     if let Some(asset_id) = asset_id {
         format!("https://apis.roblox.com/assets/v1/assets/{asset_id}")
     } else {
-        "https://apis.roblox.com/assets/v1/assets/".to_string()
+        "https://apis.roblox.com/assets/v1/assets".to_string()
     }
 }
 
