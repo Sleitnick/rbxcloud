@@ -14,7 +14,7 @@ anyhow = "1.0.58"
 base64 = "0.13.0"
 clap = { version = "3.2.14", features = ["derive", "env"] }
 md-5 = "0.10.1"
-reqwest = { version = "0.11.11", features = ["json"] }
+reqwest = { version = "0.11.11", features = ["json", "multipart"] }
 serde = { version = "1.0.140", features = ["derive"] }
 serde_json = "1.0.82"
 tokio = { version = "1.20.1", features = ["full"] }
