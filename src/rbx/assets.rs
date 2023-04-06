@@ -18,6 +18,7 @@ pub struct AssetGroupCreator {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(untagged)]
 pub enum AssetCreator {
     User(AssetUserCreator),
     Group(AssetGroupCreator),
