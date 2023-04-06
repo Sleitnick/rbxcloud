@@ -1,5 +1,7 @@
+use std::{fs, path::Path};
+
 use crate::rbx::error::Error;
-use reqwest::Response;
+use reqwest::{multipart, Response};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::json;
 
@@ -164,18 +166,31 @@ fn build_url(asset_id: Option<u64>) -> String {
 }
 
 pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, Error> {
+    let file_name = Path::new(&params.file_content)
+        .file_name()
+        .ok_or_else(|| Error::FileLoadError("Failed to parse file name from file path".into()))?
+        .to_os_string()
+        .into_string()
+        .or_else(|_| {
+            Err(Error::FileLoadError(
+                "Failed to convert file name to String".into(),
+            ))
+        })?;
+
+    let asset_info = serde_json::to_string(&params.asset)?;
+    let file = multipart::Part::bytes(fs::read(&params.file_content)?)
+        .file_name(file_name)
+        .mime_str(params.asset.asset_type.content_type())?;
+    let form = multipart::Form::new()
+        .text("request", asset_info)
+        .part("fileContent", file);
+
     let client = reqwest::Client::new();
     let url = build_url(None);
-    let asset_info = serde_json::to_string(&params.asset)?;
-    let form_params: QueryString = vec![
-        ("fileContents", params.file_content.to_string()),
-        ("request", asset_info),
-        ("type", params.asset.asset_type.content_type().to_string()),
-    ];
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
-        .form(&form_params)
+        .multipart(form)
         .send()
         .await?;
     handle_res::<AssetOperation>(res).await
