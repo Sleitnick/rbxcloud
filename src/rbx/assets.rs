@@ -74,11 +74,11 @@ pub struct GetAssetParams {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetOperation {
-    pub path: String,
-    pub metadata: ProtobufAny,
-    pub done: bool,
-    pub error: AssetErrorStatus,
-    pub response: ProtobufAny,
+    pub path: Option<String>,
+    pub metadata: Option<ProtobufAny>,
+    pub done: Option<bool>,
+    pub error: Option<AssetErrorStatus>,
+    pub response: Option<ProtobufAny>,
 }
 
 #[derive(Deserialize, Debug)]
