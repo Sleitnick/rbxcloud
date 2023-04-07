@@ -494,7 +494,7 @@ pub struct RbxAssets {
 
 pub struct CreateAsset {
     pub asset: AssetCreation,
-    pub file_content: String,
+    pub filepath: String,
 }
 
 pub struct UpdateAsset {
@@ -513,7 +513,7 @@ impl RbxAssets {
         assets::create_asset(&CreateAssetParams {
             api_key: self.api_key.clone(),
             asset: params.asset.clone(),
-            file_content: params.file_content.clone(),
+            filepath: params.filepath.clone(),
         })
         .await
     }

@@ -58,7 +58,7 @@ pub struct AssetCreation {
 pub struct CreateAssetParams {
     pub api_key: String,
     pub asset: AssetCreation,
-    pub file_content: String,
+    pub filepath: String,
 }
 
 pub struct UpdateAssetParams {
@@ -166,21 +166,20 @@ fn build_url(asset_id: Option<u64>) -> String {
 }
 
 pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, Error> {
-    let file_name = Path::new(&params.file_content)
+    let file_name = Path::new(&params.filepath)
         .file_name()
         .ok_or_else(|| Error::FileLoadError("Failed to parse file name from file path".into()))?
         .to_os_string()
         .into_string()
         .map_err(|err| {
-            Error::FileLoadError(
-                format!("Failed to convert file name into string: {:?}", err).into(),
-            )
+            Error::FileLoadError(format!("Failed to convert file name into string: {err:?}"))
         })?;
 
     let asset_info = serde_json::to_string(&params.asset)?;
-    let file = multipart::Part::bytes(fs::read(&params.file_content)?)
+    let file = multipart::Part::bytes(fs::read(&params.filepath)?)
         .file_name(file_name)
         .mime_str(params.asset.asset_type.content_type())?;
+
     let form = multipart::Form::new()
         .text("request", asset_info)
         .part("fileContent", file);

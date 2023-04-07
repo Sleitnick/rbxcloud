@@ -42,9 +42,9 @@ pub enum AssetsCommands {
         #[clap(short, long, value_enum)]
         creator_type: CreatorType,
 
-        /// File content
+        /// File (full or relative path)
         #[clap(short, long, value_parser)]
-        file_content: String,
+        filepath: String,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -120,7 +120,7 @@ impl Assets {
                 expected_price,
                 creator_id,
                 creator_type,
-                file_content,
+                filepath,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -135,7 +135,7 @@ impl Assets {
                             description,
                             creation_context,
                         },
-                        file_content,
+                        filepath,
                     })
                     .await;
                 match res {
