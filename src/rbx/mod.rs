@@ -15,8 +15,8 @@ use serde::de::DeserializeOwned;
 
 use self::{
     assets::{
-        Asset, AssetCreation, AssetOperation, AssetType, CreateAssetParams, GetAssetParams,
-        UpdateAssetParams,
+        AssetCreation, AssetGetOperation, AssetOperation, AssetType, CreateAssetParams,
+        GetAssetParams, UpdateAssetParams,
     },
     datastore::{
         DeleteEntryParams, GetEntryParams, GetEntryVersionParams, IncrementEntryParams,
@@ -500,11 +500,11 @@ pub struct CreateAsset {
 pub struct UpdateAsset {
     pub asset_id: u64,
     pub asset_type: AssetType,
-    pub file_content: String,
+    pub filepath: String,
 }
 
 pub struct GetAsset {
-    pub operation_id: u64,
+    pub operation_id: String,
 }
 
 impl RbxAssets {
@@ -524,16 +524,16 @@ impl RbxAssets {
             api_key: self.api_key.clone(),
             asset_id: params.asset_id,
             asset_type: params.asset_type,
-            file_content: params.file_content.clone(),
+            filepath: params.filepath.clone(),
         })
         .await
     }
 
     /// Get asset information
-    pub async fn get(&self, params: &GetAsset) -> Result<Asset, Error> {
+    pub async fn get(&self, params: &GetAsset) -> Result<AssetGetOperation, Error> {
         assets::get_asset(&GetAssetParams {
             api_key: self.api_key.clone(),
-            operation_id: params.operation_id,
+            operation_id: params.operation_id.clone(),
         })
         .await
     }

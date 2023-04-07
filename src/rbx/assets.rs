@@ -5,18 +5,16 @@ use reqwest::{multipart, Response};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::json;
 
-use super::util::QueryString;
-
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetUserCreator {
-    pub user_id: u64,
+    pub user_id: String,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGroupCreator {
-    pub group_id: u64,
+    pub group_id: String,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -30,7 +28,7 @@ pub enum AssetCreator {
 #[serde(rename_all = "camelCase")]
 pub struct AssetCreationContext {
     pub creator: AssetCreator,
-    pub expected_price: u64,
+    pub expected_price: Option<u64>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -65,12 +63,12 @@ pub struct UpdateAssetParams {
     pub api_key: String,
     pub asset_id: u64,
     pub asset_type: AssetType,
-    pub file_content: String,
+    pub filepath: String,
 }
 
 pub struct GetAssetParams {
     pub api_key: String,
-    pub operation_id: u64,
+    pub operation_id: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -88,6 +86,29 @@ pub struct AssetOperation {
 pub struct ProtobufAny {
     #[serde(rename = "@type")]
     pub message_type: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetGetOperation {
+    pub path: String,
+    pub done: bool,
+    pub response: AssetGetOperationResponse,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetGetOperationResponse {
+    #[serde(rename = "@type")]
+    pub response_type: String,
+    pub path: String,
+    pub revision_id: String,
+    pub revision_create_time: String,
+    pub asset_id: String,
+    pub display_name: String,
+    pub description: String,
+    pub asset_type: String,
+    pub creation_context: AssetCreationContext,
 }
 
 #[derive(Deserialize, Debug)]
@@ -212,27 +233,40 @@ pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, 
 }
 
 pub async fn update_asset(params: &UpdateAssetParams) -> Result<AssetOperation, Error> {
-    let client = reqwest::Client::new();
-    let url = build_url(Some(params.asset_id));
+    let file_name = Path::new(&params.filepath)
+        .file_name()
+        .ok_or_else(|| Error::FileLoadError("Failed to parse file name from file path".into()))?
+        .to_os_string()
+        .into_string()
+        .map_err(|err| {
+            Error::FileLoadError(format!("Failed to convert file name into string: {err:?}"))
+        })?;
+
+    let file = multipart::Part::bytes(fs::read(&params.filepath)?)
+        .file_name(file_name)
+        .mime_str(params.asset_type.content_type())?;
+
     let request_json = json!({
         "assetId": params.asset_id,
     });
     let request = serde_json::to_string(&request_json)?;
-    let form_params: QueryString = vec![
-        ("request", request),
-        ("fileContents", params.file_content.to_string()),
-        ("type", params.asset_type.content_type().to_string()),
-    ];
+
+    let form = multipart::Form::new()
+        .text("request", request)
+        .part("fileContent", file);
+
+    let client = reqwest::Client::new();
+    let url = build_url(Some(params.asset_id));
     let res = client
         .patch(url)
         .header("x-api-key", &params.api_key)
-        .form(&form_params)
+        .multipart(form)
         .send()
         .await?;
     handle_res::<AssetOperation>(res).await
 }
 
-pub async fn get_asset(params: &GetAssetParams) -> Result<Asset, Error> {
+pub async fn get_asset(params: &GetAssetParams) -> Result<AssetGetOperation, Error> {
     let client = reqwest::Client::new();
     let url = format!(
         "https://apis.roblox.com/assets/v1/operations/{operationId}",
@@ -243,5 +277,5 @@ pub async fn get_asset(params: &GetAssetParams) -> Result<Asset, Error> {
         .header("x-api-key", &params.api_key)
         .send()
         .await?;
-    handle_res::<Asset>(res).await
+    handle_res::<AssetGetOperation>(res).await
 }
