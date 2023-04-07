@@ -16,13 +16,13 @@ Possible use-cases:
 
 ## Supported APIs
 
-| API | |
+| | API |
 | -- | -- |
-| Assets | :white_check_mark: |
-| Experiences | :white_check_mark: |
-| Messaging | :white_check_mark: |
-| DataStores | :white_check_mark: |
-| OrderedDataStores | :white_check_mark: |
+| :white_check_mark: | Assets |
+| :white_check_mark: | Experiences |
+| :white_check_mark: | Messaging |
+| :white_check_mark: | DataStores |
+| :white_check_mark: | OrderedDataStores |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
