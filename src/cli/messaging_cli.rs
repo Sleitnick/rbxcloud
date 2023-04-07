@@ -39,8 +39,8 @@ impl Messaging {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let messaging = rbx_cloud.messaging(&topic);
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let messaging = rbx_cloud.messaging(UniverseId(universe_id), &topic);
                 let res = messaging.publish(&message).await;
                 match res {
                     Ok(()) => Ok(Some(format!("published message to topic {topic}"))),

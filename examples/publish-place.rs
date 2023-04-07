@@ -10,8 +10,8 @@ async fn main() {
     let publish_version_type = PublishVersionType::Published;
 
     // Define RbxCloud instance:
-    let cloud = RbxCloud::new(api_key, UniverseId(universe_id));
-    let experience = cloud.experience(PlaceId(place_id));
+    let cloud = RbxCloud::new(api_key);
+    let experience = cloud.experience(UniverseId(universe_id), PlaceId(place_id));
 
     // Publish place:
     let publish_result = experience.publish(filename, publish_version_type).await;

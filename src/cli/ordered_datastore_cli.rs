@@ -192,8 +192,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .list_entries(&OrderedDataStoreListEntries {
                         name: datastore_name,
@@ -218,8 +218,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .create_entry(&OrderedDataStoreCreateEntry {
                         name: datastore_name,
@@ -241,8 +241,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .get_entry(&OrderedDataStoreEntry {
                         name: datastore_name,
@@ -263,8 +263,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .delete_entry(&OrderedDataStoreEntry {
                         name: datastore_name,
@@ -287,8 +287,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .update_entry(&OrderedDataStoreUpdateEntry {
                         name: datastore_name,
@@ -312,8 +312,8 @@ impl OrderedDataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let ordered_datastore = rbx_cloud.ordered_datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let ordered_datastore = rbx_cloud.ordered_datastore(UniverseId(universe_id));
                 let res = ordered_datastore
                     .increment_entry(&OrderedDataStoreIncrementEntry {
                         name: datastore_name,

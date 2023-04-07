@@ -9,8 +9,8 @@ async fn publish_message() -> Result<(), Error> {
     let message = "Hello, this is my message";
 
     // Define RbxCloud Messaging instance:
-    let cloud = RbxCloud::new(api_key, UniverseId(universe_id));
-    let messaging = cloud.messaging(topic);
+    let cloud = RbxCloud::new(api_key);
+    let messaging = cloud.messaging(UniverseId(universe_id), topic);
 
     // Publish a message:
     messaging.publish(message).await

@@ -292,8 +292,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .list_stores(&DataStoreListStores {
                         cursor,
@@ -317,8 +317,8 @@ impl DataStore {
                 scope,
                 all_scopes,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .list_entries(&DataStoreListEntries {
                         name: datastore_name,
@@ -342,8 +342,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .get_entry_string(&DataStoreGetEntry {
                         name: datastore_name,
@@ -369,8 +369,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let ids = u64_ids_to_roblox_ids(user_ids);
                 let res = datastore
                     .set_entry(&DataStoreSetEntry {
@@ -400,8 +400,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let ids = u64_ids_to_roblox_ids(user_ids);
                 let res = datastore
                     .increment_entry(&DataStoreIncrementEntry {
@@ -426,8 +426,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .delete_entry(&DataStoreDeleteEntry {
                         name: datastore_name,
@@ -453,8 +453,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .list_entry_versions(&DataStoreListEntryVersions {
                         name: datastore_name,
@@ -481,8 +481,8 @@ impl DataStore {
                 universe_id,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key, UniverseId(universe_id));
-                let datastore = rbx_cloud.datastore();
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let datastore = rbx_cloud.datastore(UniverseId(universe_id));
                 let res = datastore
                     .get_entry_version(&DataStoreGetEntryVersion {
                         name: datastore_name,
