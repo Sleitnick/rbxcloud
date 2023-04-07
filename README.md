@@ -16,7 +16,7 @@ Possible use-cases:
 
 ## Supported APIs
 
-| API | Supported |
+| API | |
 | -- | -- |
 | Assets | :white_check_mark: |
 | Experiences | :white_check_mark: |
