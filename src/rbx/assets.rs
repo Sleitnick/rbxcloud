@@ -171,10 +171,10 @@ pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, 
         .ok_or_else(|| Error::FileLoadError("Failed to parse file name from file path".into()))?
         .to_os_string()
         .into_string()
-        .or_else(|_| {
-            Err(Error::FileLoadError(
-                "Failed to convert file name to String".into(),
-            ))
+        .map_err(|err| {
+            Error::FileLoadError(
+                format!("Failed to convert file name into string: {:?}", err).into(),
+            )
         })?;
 
     let asset_info = serde_json::to_string(&params.asset)?;
