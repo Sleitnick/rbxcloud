@@ -129,6 +129,22 @@ impl AssetType {
             Self::ModelFbx => "Model",
         }
     }
+
+    pub fn try_from_extension(extension: &str) -> Result<Self, crate::rbx::Error> {
+        match extension.to_lowercase().as_str() {
+            "mp3" => Ok(Self::AudioMp3),
+            "ogg" => Ok(Self::AudioOgg),
+            "png" => Ok(Self::DecalPng),
+            "jpg" => Ok(Self::DecalJpeg),
+            "jpeg" => Ok(Self::DecalJpeg),
+            "bmp" => Ok(Self::DecalBmp),
+            "tga" => Ok(Self::DecalTga),
+            "fbx" => Ok(Self::ModelFbx),
+            _ => Err(crate::rbx::Error::InferAssetTypeError(
+                "Unknown extension".to_string(),
+            )),
+        }
+    }
 }
 
 impl Serialize for AssetType {

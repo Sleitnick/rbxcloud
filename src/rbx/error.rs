@@ -7,6 +7,9 @@ pub enum Error {
     /// An error occurred regarding reading a file from the file system.
     FileLoadError(String),
 
+    /// Failed to infer asset type.
+    InferAssetTypeError(String),
+
     /// A non-OK HTTP status was returned.
     HttpStatusError { code: u16, msg: String },
 
@@ -56,6 +59,7 @@ impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         match self {
             Self::FileLoadError(s) => write!(f, "failed to read file: {s}"),
+            Self::InferAssetTypeError(s) => write!(f, "failed to infer asset type: {s}"),
             Self::HttpStatusError { code, msg } => write!(f, "http {code}: {msg}"),
             Self::ReqwestError(e) => write!(f, "{e:?}"),
             Self::IOError(e) => write!(f, "{e:?}"),

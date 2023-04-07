@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use clap::{Args, Subcommand};
 
 use rbxcloud::rbx::{
@@ -5,6 +7,7 @@ use rbxcloud::rbx::{
         AssetCreation, AssetCreationContext, AssetCreator, AssetGroupCreator, AssetType,
         AssetUserCreator,
     },
+    error::Error,
     CreateAsset, GetAsset, RbxCloud, UpdateAsset,
 };
 
@@ -20,7 +23,7 @@ pub enum AssetsCommands {
     Create {
         /// Asset type
         #[clap(short = 't', long, value_enum)]
-        asset_type: AssetType,
+        asset_type: Option<AssetType>,
 
         /// Display name
         #[clap(short = 'n', long, value_parser)]
@@ -110,6 +113,19 @@ fn create_context_from_creator_type(
     }
 }
 
+fn infer_asset_type_from_filepath(filepath: &String) -> Result<AssetType, Error> {
+    let path = Path::new(filepath);
+    match path.extension() {
+        Some(ext) => {
+            let ext = ext
+                .to_str()
+                .ok_or_else(|| Error::InferAssetTypeError(filepath.into()))?;
+            AssetType::try_from_extension(ext)
+        }
+        None => Err(Error::InferAssetTypeError(filepath.into())),
+    }
+}
+
 impl Assets {
     pub async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
@@ -127,6 +143,10 @@ impl Assets {
                 let assets = rbx_cloud.assets();
                 let creation_context =
                     create_context_from_creator_type(creator_type, creator_id, expected_price);
+                let asset_type = match asset_type {
+                    Some(t) => Ok(t),
+                    None => infer_asset_type_from_filepath(&filepath),
+                }?;
                 let res = assets
                     .create(&CreateAsset {
                         asset: AssetCreation {
@@ -135,7 +155,7 @@ impl Assets {
                             description,
                             creation_context,
                         },
-                        filepath,
+                        filepath: filepath.clone(),
                     })
                     .await;
                 match res {
