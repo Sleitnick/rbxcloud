@@ -8,16 +8,30 @@ The `rbxcloud` CLI lets developers easily communicate with the Roblox Open Cloud
 
 Possible use-cases:
 - Deployment pipelines
+- Asset management
 - Live-ops
 - Custom analytics
 - Handling data removal requests (see [GDPR & CCPA info](https://create.roblox.com/docs/production/publishing/about-GDPR-and-CCPA))
-- Debugging DataStores
+- Debugging DataStores and OrderedDataStores
+
+## Supported APIs
+
+| API | Supported |
+| -- | -- |
+| Assets | :white_check_mark: |
+| Experiences | :white_check_mark: |
+| Messaging | :white_check_mark: |
+| DataStores | :white_check_mark: |
+| OrderedDataStores | :white_check_mark: |
+
+- :white_check_mark: = Supported
+- :x: = Not yet supported
 
 ## Install CLI
 ### Aftman
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.4.0
+$ aftman add Sleitnick/rbxcloud@0.5.0
 ```
 
 ### From Release
@@ -34,7 +48,7 @@ The library built for the CLI tool is available to use directly in Rust projects
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.4.0"
+rbxcloud = "0.5.0"
 ```
 
 Alternatively, use `cargo add`.
