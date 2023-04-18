@@ -92,8 +92,8 @@ pub struct ProtobufAny {
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperation {
     pub path: String,
-    pub done: bool,
-    pub response: AssetGetOperationResponse,
+    pub done: Option<bool>,
+    pub response: Option<AssetGetOperationResponse>,
 }
 
 #[derive(Deserialize, Debug)]
