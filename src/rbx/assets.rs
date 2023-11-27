@@ -59,6 +59,12 @@ pub struct CreateAssetParams {
     pub filepath: String,
 }
 
+pub struct CreateAssetParamsWithContents<'a> {
+    pub api_key: String,
+    pub asset: AssetCreation,
+    pub contents: &'a [u8],
+}
+
 pub struct UpdateAssetParams {
     pub api_key: String,
     pub asset_id: u64,
@@ -216,6 +222,29 @@ pub async fn create_asset(params: &CreateAssetParams) -> Result<AssetOperation, 
     let file = multipart::Part::bytes(fs::read(&params.filepath)?)
         .file_name(file_name)
         .mime_str(params.asset.asset_type.content_type())?;
+
+    let form = multipart::Form::new()
+        .text("request", asset_info)
+        .part("fileContent", file);
+
+    let client = reqwest::Client::new();
+    let url = build_url(None);
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .multipart(form)
+        .send()
+        .await?;
+    handle_res::<AssetOperation>(res).await
+}
+
+pub async fn create_asset_with_contents<'a>(
+    params: &CreateAssetParamsWithContents<'a>,
+) -> Result<AssetOperation, Error> {
+    let file = multipart::Part::bytes(params.contents.to_vec())
+        .file_name(params.asset.display_name.clone())
+        .mime_str(params.asset.asset_type.content_type())?;
+    let asset_info = serde_json::to_string(&params.asset)?;
 
     let form = multipart::Form::new()
         .text("request", asset_info)

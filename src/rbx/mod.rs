@@ -16,7 +16,7 @@ use serde::de::DeserializeOwned;
 use self::{
     assets::{
         AssetCreation, AssetGetOperation, AssetOperation, AssetType, CreateAssetParams,
-        GetAssetParams, UpdateAssetParams,
+        CreateAssetParamsWithContents, GetAssetParams, UpdateAssetParams,
     },
     datastore::{
         DeleteEntryParams, GetEntryParams, GetEntryVersionParams, IncrementEntryParams,
@@ -497,6 +497,11 @@ pub struct CreateAsset {
     pub filepath: String,
 }
 
+pub struct CreateAssetWithContents<'a> {
+    pub asset: AssetCreation,
+    pub contents: &'a [u8],
+}
+
 pub struct UpdateAsset {
     pub asset_id: u64,
     pub asset_type: AssetType,
@@ -514,6 +519,18 @@ impl RbxAssets {
             api_key: self.api_key.clone(),
             asset: params.asset.clone(),
             filepath: params.filepath.clone(),
+        })
+        .await
+    }
+
+    pub async fn create_with_contents<'a>(
+        &self,
+        params: &CreateAssetWithContents<'a>,
+    ) -> Result<AssetOperation, Error> {
+        assets::create_asset_with_contents(&CreateAssetParamsWithContents {
+            api_key: self.api_key.clone(),
+            asset: params.asset.clone(),
+            contents: params.contents,
         })
         .await
     }
