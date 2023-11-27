@@ -21,7 +21,7 @@ $ rbxcloud experience publish -f myplace.rbxl -t published -p 12345 -u 98765 -a 
 ```
 
 ### GitHub Action
-A common practice is to create a CD pipeline to deploy a place automatically. This can be done with GitHub actions. Below is an example GitHub Action workflow. The example assumes that Foreman is being used and that `rbxcloud` is listed within the `foreman.toml` file.
+A common practice is to create a CD pipeline to deploy a place automatically. This can be done with GitHub actions. Below is an example GitHub Action workflow. The example assumes that Aftman is being used and that `rbxcloud` is listed within the `aftman.toml` file.
 
 ```yaml
 # Deploy any time code is pushed to the 'main' branch
@@ -37,11 +37,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: Roblox/setup-foreman@v1
-        name: Install Foreman
-        with:
-          version: "^1.0.0"
-          token: ${{ SECRETS.GITHUB_TOKEN }}
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0
 
       - name: Publish
         shell: bash
