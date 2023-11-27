@@ -99,8 +99,6 @@ pub struct AssetGetOperation {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperationResponse {
-    #[serde(rename = "@type")]
-    pub response_type: String,
     pub path: String,
     pub revision_id: String,
     pub revision_create_time: String,
