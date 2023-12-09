@@ -24,6 +24,7 @@ Possible use-cases:
 | :white_check_mark: | DataStores |
 | :white_check_mark: | OrderedDataStores |
 | :x: | Inventory |
+| :x: | Groups |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
