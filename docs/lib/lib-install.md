@@ -5,7 +5,7 @@
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.6.0"
+rbxcloud = "0.6.1"
 ```
 
 Alternatively, use `cargo add`.
