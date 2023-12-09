@@ -43,6 +43,12 @@ pub struct PublishExperienceResponse {
     pub version_number: u64,
 }
 
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+struct PublishExperienceErrorResponse {
+    message: String,
+}
+
 /// Publish a place under a specific experience.
 pub async fn publish_experience(
     params: &PublishExperienceParams,
@@ -55,6 +61,7 @@ pub async fn publish_experience(
         placeId=params.place_id,
         versionType=params.version_type,
     );
+
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
@@ -63,44 +70,28 @@ pub async fn publish_experience(
         .send()
         .await?;
     let status = res.status();
+
     if !status.is_success() {
         let code = status.as_u16();
-        if code == 400 {
-            return Err(Error::HttpStatusError {
+        let msg_text = res.text().await;
+        let msg_json = msg_text
+            .map(|txt| {
+                serde_json::from_str::<PublishExperienceErrorResponse>(txt.as_str())
+                    .unwrap_or(PublishExperienceErrorResponse { message: txt })
+            })
+            .map(|err| err.message);
+
+        let msg = msg_json.unwrap_or(status.canonical_reason().unwrap_or_default().to_string());
+
+        return match code {
+            400 | 401 | 403 | 404 | 409 | 500 => Err(Error::HttpStatusError { code, msg }),
+            _ => Err(Error::HttpStatusError {
                 code,
-                msg: "invalid request or file content".to_string(),
-            });
-        } else if code == 401 {
-            return Err(Error::HttpStatusError {
-                code,
-                msg: "api key not valid for operation".to_string(),
-            });
-        } else if code == 403 {
-            return Err(Error::HttpStatusError {
-                code,
-                msg: "publish not allowed on place".to_string(),
-            });
-        } else if code == 404 {
-            return Err(Error::HttpStatusError {
-                code,
-                msg: "place or universe does not exist".to_string(),
-            });
-        } else if code == 409 {
-            return Err(Error::HttpStatusError {
-                code,
-                msg: "place not part of the universe".to_string(),
-            });
-        } else if code == 500 {
-            return Err(Error::HttpStatusError {
-                code,
-                msg: "internal server error".to_string(),
-            });
-        }
-        return Err(Error::HttpStatusError {
-            code,
-            msg: status.canonical_reason().unwrap_or_default().to_string(),
-        });
+                msg: status.canonical_reason().unwrap_or_default().to_string(),
+            }),
+        };
     }
+
     let body = res.json::<PublishExperienceResponse>().await?;
     Ok(body)
 }
