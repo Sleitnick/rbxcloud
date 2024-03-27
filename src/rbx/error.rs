@@ -27,6 +27,9 @@ pub enum Error {
 
     /// Failed to parse a float.
     ParseFloatError(std::num::ParseFloatError),
+
+    /// Endpoint error.
+    EndpointError(String),
 }
 
 impl std::error::Error for Error {}
@@ -66,6 +69,7 @@ impl std::fmt::Display for Error {
             Self::SerdeJsonError(e) => write!(f, "{e:?}"),
             Self::DataStoreError(e) => write!(f, "{e:?}"),
             Self::ParseFloatError(e) => write!(f, "{e:?}"),
+            Self::EndpointError(s) => write!(f, "endpoint error: {s}"),
         }
     }
 }

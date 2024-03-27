@@ -1,6 +1,6 @@
 [package]
 name = "rbxcloud"
-version = "0.6.1"
+version = "0.6.2"
 description = "CLI and SDK for the Roblox Open Cloud APIs"
 authors = ["Stephen Leitnick"]
 license = "MIT"
@@ -10,11 +10,11 @@ documentation = "https://sleitnick.github.io/rbxcloud/"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.58"
-base64 = "0.13.0"
-clap = { version = "3.2.14", features = ["derive", "env"] }
-md-5 = "0.10.1"
-reqwest = { version = "0.11.11", features = ["json", "multipart"] }
-serde = { version = "1.0.140", features = ["derive"] }
-serde_json = "1.0.82"
-tokio = { version = "1.20.1", features = ["full"] }
+anyhow = "1.0.81"
+base64 = "0.22.0"
+clap = { version = "4.5.4", features = ["derive", "env"] }
+md-5 = "0.10.6"
+reqwest = { version = "0.12.2", features = ["json", "multipart"] }
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0.115"
+tokio = { version = "1.36.0", features = ["full"] }

@@ -149,16 +149,21 @@ pub struct GetEntryVersionParams {
     pub version_id: String,
 }
 
+async fn handle_datastore_err<T>(res: Response) -> Result<T, Error> {
+    let response_text = res.text().await?;
+    match serde_json::from_str::<DataStoreErrorResponse>(&response_text) {
+        Ok(err_res) => Err(Error::DataStoreError(err_res)),
+        Err(_) => Err(Error::EndpointError(response_text)),
+    }
+}
+
 async fn handle_res<T: DeserializeOwned>(res: Response) -> Result<T, Error> {
     match res.status().is_success() {
         true => {
             let body = res.json::<T>().await?;
             Ok(body)
         }
-        false => {
-            let err_res = res.json::<DataStoreErrorResponse>().await?;
-            Err(Error::DataStoreError(err_res))
-        }
+        false => handle_datastore_err::<T>(res).await,
     }
 }
 
@@ -168,20 +173,14 @@ async fn handle_res_string(res: Response) -> Result<String, Error> {
             let body = res.text().await?;
             Ok(body)
         }
-        false => {
-            let err_res = res.json::<DataStoreErrorResponse>().await?;
-            Err(Error::DataStoreError(err_res))
-        }
+        false => handle_datastore_err::<String>(res).await,
     }
 }
 
 async fn handle_res_ok(res: Response) -> Result<(), Error> {
     match res.status().is_success() {
         true => Ok(()),
-        false => {
-            let err_res = res.json::<DataStoreErrorResponse>().await?;
-            Err(Error::DataStoreError(err_res))
-        }
+        false => handle_datastore_err::<()>(res).await,
     }
 }
 
