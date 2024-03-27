@@ -1,0 +1,97 @@
+use clap::{Args, Subcommand};
+use rbxcloud::rbx::v2::{group::GroupId, RbxCloud};
+
+#[derive(Debug, Subcommand)]
+pub enum GroupCommands {
+    /// Get info about the group
+    Get {
+        /// Group ID
+        #[clap(short, long, value_parser)]
+        group_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Get the current shout and other metadata
+    Shout {
+        /// Group ID
+        #[clap(short, long, value_parser)]
+        group_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
+        /// Only return the shout message string
+        #[clap(short, long, value_parser, default_value_t = false)]
+        only_message: bool,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+}
+
+#[derive(Debug, Args)]
+pub struct Group {
+    #[clap(subcommand)]
+    command: GroupCommands,
+}
+
+impl Group {
+    pub async fn run(self) -> anyhow::Result<Option<String>> {
+        match self.command {
+            GroupCommands::Get {
+                group_id,
+                api_key,
+                pretty,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let group = rbx_cloud.group(GroupId(group_id));
+                let res = group.get_info().await;
+                match res {
+                    Ok(group_info) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&group_info)?
+                        } else {
+                            serde_json::to_string(&group_info)?
+                        };
+                        Ok(Some(r))
+                    }
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            GroupCommands::Shout {
+                group_id,
+                pretty,
+                only_message,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let group = rbx_cloud.group(GroupId(group_id));
+                let res = group.get_shout().await;
+                match res {
+                    Ok(group_info) => {
+                        if only_message {
+                            return Ok(Some(group_info.content));
+                        }
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&group_info)?
+                        } else {
+                            serde_json::to_string(&group_info)?
+                        };
+                        Ok(Some(r))
+                    }
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+        }
+    }
+}
