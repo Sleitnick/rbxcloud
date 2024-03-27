@@ -3,7 +3,8 @@ use std::fmt;
 
 use serde::Deserialize;
 
-use crate::rbx::{error::Error, PlaceId, UniverseId};
+use crate::rbx::error::Error;
+use crate::rbx::v1::{PlaceId, UniverseId};
 
 /// The version type of a place publish operation.
 #[derive(Debug, Clone)]

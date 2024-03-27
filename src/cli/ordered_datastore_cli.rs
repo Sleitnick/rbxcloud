@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use rbxcloud::rbx::{
+use rbxcloud::rbx::v1::{
     OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreIncrementEntry,
     OrderedDataStoreListEntries, OrderedDataStoreUpdateEntry, RbxCloud, UniverseId,
 };

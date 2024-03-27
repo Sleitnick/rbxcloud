@@ -1,7 +1,8 @@
 //! Low-level Messaging API operations.
 use serde_json::json;
 
-use crate::rbx::{error::Error, UniverseId};
+use crate::rbx::error::Error;
+use crate::rbx::v1::UniverseId;
 
 /// Message publishing parameters.
 pub struct PublishMessageParams {

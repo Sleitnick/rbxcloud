@@ -1,4 +1,4 @@
-use rbxcloud::rbx::{PlaceId, PublishVersionType, RbxCloud, UniverseId};
+use rbxcloud::rbx::v1::{PlaceId, PublishVersionType, RbxCloud, UniverseId};
 
 #[tokio::main]
 async fn main() {

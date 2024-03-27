@@ -3,12 +3,14 @@ use std::path::Path;
 use clap::{Args, Subcommand};
 
 use rbxcloud::rbx::{
-    assets::{
-        AssetCreation, AssetCreationContext, AssetCreator, AssetGroupCreator, AssetType,
-        AssetUserCreator,
-    },
     error::Error,
-    CreateAsset, GetAsset, RbxCloud, UpdateAsset,
+    v1::{
+        assets::{
+            AssetCreation, AssetCreationContext, AssetCreator, AssetGroupCreator, AssetType,
+            AssetUserCreator,
+        },
+        CreateAsset, GetAsset, RbxCloud, UpdateAsset,
+    },
 };
 
 #[derive(Debug, Clone, clap::ValueEnum)]

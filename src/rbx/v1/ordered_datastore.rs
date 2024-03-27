@@ -8,7 +8,8 @@ use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::json;
 
-use crate::rbx::{error::Error, util::QueryString, PageSize, UniverseId};
+use crate::rbx::v1::{PageSize, UniverseId};
+use crate::rbx::{error::Error, util::QueryString};
 
 pub struct OrderedListEntriesParams {
     pub api_key: String,
