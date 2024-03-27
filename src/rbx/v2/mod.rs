@@ -4,6 +4,7 @@
 
 use self::group::{
     GetGroupParams, GetGroupResponse, GetGroupShoutParams, GetGroupShoutResponse, GroupId,
+    ListGroupRolesParams, ListGroupRolesResponse,
 };
 pub mod group;
 pub(crate) mod http_err;
@@ -41,6 +42,20 @@ impl RbxGroup {
         group::get_group_shout(&GetGroupShoutParams {
             api_key: self.api_key.clone(),
             group_id: self.group_id,
+        })
+        .await
+    }
+
+    pub async fn list_roles(
+        &self,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+    ) -> Result<ListGroupRolesResponse, Error> {
+        group::list_group_roles(&ListGroupRolesParams {
+            api_key: self.api_key.clone(),
+            group_id: self.group_id,
+            max_page_size: max_page_size,
+            page_token: page_token,
         })
         .await
     }
