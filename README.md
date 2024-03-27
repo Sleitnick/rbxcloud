@@ -16,18 +16,27 @@ Possible use-cases:
 
 ## Supported APIs
 
-| | API |
+| | API v1 |
 | -- | -- |
 | :white_check_mark: | Assets |
-| :white_check_mark: | Experiences |
+| :white_check_mark: | Data Stores |
 | :white_check_mark: | Messaging |
-| :white_check_mark: | DataStores |
-| :white_check_mark: | OrderedDataStores |
-| :x: | Inventory |
+| :white_check_mark: | Place Publishing |
+
+| | API v2 (Beta) |
+| -- | -- |
 | :x: | Groups |
+| :x: | Universes |
+| :x: | Places |
+| :x: | Instances |
+| :x: | Subscriptions |
+| :x: | Inventory |
+| :x: | User Notifications |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
+
+The goal of this project is to support all API endpoints that Roblox provides.
 
 ## Install CLI
 ### Aftman
