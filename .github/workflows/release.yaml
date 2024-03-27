@@ -54,7 +54,7 @@ jobs:
     env:
       BIN: rbxcloud
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Get version from tag
         shell: bash
@@ -62,13 +62,19 @@ jobs:
           echo "PROJECT_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo "Version is ${{ env.PROJECT_VERSION }}"
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-          profile: minimal
+      # - name: Install Rust
+      #   uses: actions-rs/toolchain@v1
+      #   with:
+      #     toolchain: stable
+      #     target: ${{ matrix.target }}
+      #     override: true
+      #     profile: minimal
+
+      - name: Rust
+        run: rustup toolchain install stable-${{ matrix.target }} --profile minimal --no-self-update
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
 
       - name: Build Release
         run: cargo build --release --locked --verbose
@@ -112,7 +118,7 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1

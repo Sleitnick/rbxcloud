@@ -10,7 +10,7 @@ jobs:
     name: Build & Deploy Docs
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Deploy Docs
       uses: mhausenblas/mkdocs-deploy-gh-pages@master
       env:
