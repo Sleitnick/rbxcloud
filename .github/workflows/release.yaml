@@ -49,7 +49,7 @@ jobs:
             target: aarch64-apple-darwin
             label: macos-aarch64
 
-    name: Build (${{ matrix.target }})
+    name: Build (${{ matrix.label }})
     runs-on: ${{ matrix.os }}
     env:
       BIN: rbxcloud
