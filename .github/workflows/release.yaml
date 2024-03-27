@@ -62,14 +62,6 @@ jobs:
           echo "PROJECT_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
           echo "Version is ${{ env.PROJECT_VERSION }}"
 
-      # - name: Install Rust
-      #   uses: actions-rs/toolchain@v1
-      #   with:
-      #     toolchain: stable
-      #     target: ${{ matrix.target }}
-      #     override: true
-      #     profile: minimal
-
       - name: Rust
         run: rustup toolchain install stable-${{ matrix.target }} --profile minimal --no-self-update
 
@@ -130,4 +122,3 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
         shell: bash
         run: cargo publish
-
