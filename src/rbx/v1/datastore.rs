@@ -7,11 +7,11 @@ use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize};
 
 use crate::rbx::{
-    ds_error::DataStoreErrorResponse,
     error::Error,
     util::{get_checksum_base64, QueryString},
-    ReturnLimit, RobloxUserId, UniverseId,
 };
+
+use crate::rbx::v1::{ds_error::DataStoreErrorResponse, ReturnLimit, RobloxUserId, UniverseId};
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

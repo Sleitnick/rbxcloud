@@ -155,7 +155,7 @@ impl AssetType {
         }
     }
 
-    pub fn try_from_extension(extension: &str) -> Result<Self, crate::rbx::Error> {
+    pub fn try_from_extension(extension: &str) -> Result<Self, crate::rbx::error::Error> {
         match extension.to_lowercase().as_str() {
             "mp3" => Ok(Self::AudioMp3),
             "ogg" => Ok(Self::AudioOgg),
@@ -165,7 +165,7 @@ impl AssetType {
             "bmp" => Ok(Self::DecalBmp),
             "tga" => Ok(Self::DecalTga),
             "fbx" => Ok(Self::ModelFbx),
-            _ => Err(crate::rbx::Error::InferAssetTypeError(
+            _ => Err(crate::rbx::error::Error::InferAssetTypeError(
                 "Unknown extension".to_string(),
             )),
         }

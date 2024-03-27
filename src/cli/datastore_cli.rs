@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand, ValueEnum};
 
-use rbxcloud::rbx::{
+use rbxcloud::rbx::v1::{
     DataStoreDeleteEntry, DataStoreGetEntry, DataStoreGetEntryVersion, DataStoreIncrementEntry,
     DataStoreListEntries, DataStoreListEntryVersions, DataStoreListStores, DataStoreSetEntry,
     RbxCloud, ReturnLimit, RobloxUserId, UniverseId,
