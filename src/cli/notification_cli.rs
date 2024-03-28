@@ -6,13 +6,14 @@ use rbxcloud::rbx::{
 
 #[derive(Debug, Subcommand)]
 pub enum NotificationCommands {
+    /// Send a notification to a user
     Send {
         /// Universe ID
         #[clap(short, long, value_parser)]
         universe_id: u64,
 
         /// User ID
-        #[clap(short, long, value_parser)]
+        #[clap(short = 'U', long, value_parser)]
         user_id: u64,
 
         /// Payload
