@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use rbxcloud::rbx::v2::{group::GroupId, RbxCloud};
+use rbxcloud::rbx::v2::{group::GroupId, Client};
 
 #[derive(Debug, Subcommand)]
 pub enum GroupCommands {
@@ -59,6 +59,33 @@ pub enum GroupCommands {
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
+
+    /// List the memberships of a group
+    Memberships {
+        /// Group ID
+        #[clap(short, long, value_parser)]
+        group_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
+        /// Max items returned per page
+        #[clap(short, long, value_parser)]
+        max_page_size: Option<u32>,
+
+        /// Filter
+        #[clap(short, long, value_parser)]
+        filter: Option<String>,
+
+        /// Next page token
+        #[clap(short, long, value_parser)]
+        next_page_token: Option<String>,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
 }
 
 #[derive(Debug, Args)]
@@ -75,8 +102,8 @@ impl Group {
                 api_key,
                 pretty,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key);
-                let group = rbx_cloud.group(GroupId(group_id));
+                let client = Client::new(&api_key);
+                let group = client.group(GroupId(group_id));
                 let res = group.get_info().await;
                 match res {
                     Ok(group_info) => {
@@ -97,8 +124,8 @@ impl Group {
                 only_message,
                 api_key,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key);
-                let group = rbx_cloud.group(GroupId(group_id));
+                let client = Client::new(&api_key);
+                let group = client.group(GroupId(group_id));
                 let res = group.get_shout().await;
                 match res {
                     Ok(group_info) => {
@@ -115,6 +142,7 @@ impl Group {
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
+
             GroupCommands::Roles {
                 group_id,
                 api_key,
@@ -122,9 +150,35 @@ impl Group {
                 max_page_size,
                 next_page_token,
             } => {
-                let rbx_cloud = RbxCloud::new(&api_key);
-                let group = rbx_cloud.group(GroupId(group_id));
+                let client = Client::new(&api_key);
+                let group = client.group(GroupId(group_id));
                 let res = group.list_roles(max_page_size, next_page_token).await;
+                match res {
+                    Ok(group_info) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&group_info)?
+                        } else {
+                            serde_json::to_string(&group_info)?
+                        };
+                        Ok(Some(r))
+                    }
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            GroupCommands::Memberships {
+                group_id,
+                api_key,
+                pretty,
+                max_page_size,
+                next_page_token,
+                filter,
+            } => {
+                let client = Client::new(&api_key);
+                let group = client.group(GroupId(group_id));
+                let res = group
+                    .list_memberships(max_page_size, filter, next_page_token)
+                    .await;
                 match res {
                     Ok(group_info) => {
                         let r = if pretty {

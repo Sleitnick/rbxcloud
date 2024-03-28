@@ -1,6 +1,6 @@
 use rbxcloud::rbx::{
     error::Error,
-    v2::{group::GroupId, RbxCloud},
+    v2::{group::GroupId, Client},
 };
 
 async fn get_group_shout() -> Result<String, Error> {
@@ -8,8 +8,8 @@ async fn get_group_shout() -> Result<String, Error> {
     let api_key = "MY_API_KEY";
     let group_id = 9876543210;
 
-    let cloud = RbxCloud::new(api_key);
-    let group = cloud.group(GroupId(group_id));
+    let client = Client::new(api_key);
+    let group = client.group(GroupId(group_id));
 
     // Get the shout's content:
     group.get_shout().await.map(|r| r.content)
