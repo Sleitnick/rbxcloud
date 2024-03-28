@@ -1,7 +1,10 @@
 use clap::{Args, Subcommand};
-use rbxcloud::rbx::v1::{
-    OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreIncrementEntry,
-    OrderedDataStoreListEntries, OrderedDataStoreUpdateEntry, RbxCloud, UniverseId,
+use rbxcloud::rbx::{
+    types::UniverseId,
+    v1::{
+        OrderedDataStoreCreateEntry, OrderedDataStoreEntry, OrderedDataStoreIncrementEntry,
+        OrderedDataStoreListEntries, OrderedDataStoreUpdateEntry, RbxCloud,
+    },
 };
 
 #[derive(Debug, Subcommand)]

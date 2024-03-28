@@ -1,4 +1,7 @@
-use rbxcloud::rbx::v1::{DataStoreGetEntry, RbxCloud, UniverseId};
+use rbxcloud::rbx::{
+    types::UniverseId,
+    v1::{DataStoreGetEntry, RbxCloud},
+};
 
 #[tokio::main]
 async fn main() {

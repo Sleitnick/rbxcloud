@@ -1,7 +1,4 @@
-use rbxcloud::rbx::{
-    error::Error,
-    v1::{RbxCloud, UniverseId},
-};
+use rbxcloud::rbx::{error::Error, types::UniverseId, v1::RbxCloud};
 
 async fn publish_message() -> Result<(), Error> {
     // Inputs:

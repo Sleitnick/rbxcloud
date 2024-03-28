@@ -4,12 +4,14 @@ mod experience_cli;
 mod group_cli;
 mod messaging_cli;
 mod ordered_datastore_cli;
+mod subscription_cli;
 
 use clap::{Parser, Subcommand};
 
 use self::{
     assets_cli::Assets, datastore_cli::DataStore, experience_cli::Experience, group_cli::Group,
     messaging_cli::Messaging, ordered_datastore_cli::OrderedDataStore,
+    subscription_cli::Subscription,
 };
 
 #[derive(Debug, Parser)]
@@ -38,6 +40,9 @@ pub enum Command {
 
     /// Access the Roblox Group API
     Group(Group),
+
+    /// Access the Roblox Subscription API
+    Subscription(Subscription),
 }
 
 impl Cli {
@@ -49,6 +54,7 @@ impl Cli {
             Command::Datastore(command) => command.run().await,
             Command::OrderedDatastore(command) => command.run().await,
             Command::Group(command) => command.run().await,
+            Command::Subscription(command) => command.run().await,
         }
     }
 }

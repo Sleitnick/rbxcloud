@@ -1,5 +1,5 @@
 use clap::{Args, Subcommand};
-use rbxcloud::rbx::v2::{group::GroupId, Client};
+use rbxcloud::rbx::{types::GroupId, v2::Client};
 
 #[derive(Debug, Subcommand)]
 pub enum GroupCommands {
