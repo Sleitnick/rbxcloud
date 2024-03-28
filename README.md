@@ -31,7 +31,7 @@ Possible use-cases:
 | :x: | Instances |
 | :white_check_mark: | Subscriptions |
 | :x: | Inventory |
-| :x: | User Notifications |
+| :white_check_mark: | User Notifications |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
