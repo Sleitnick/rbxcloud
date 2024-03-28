@@ -13,6 +13,7 @@ nav:
     - Messaging: cli/cli-messaging.md
     - DataStore: cli/cli-datastore.md
     - OrderedDataStore: cli/cli-ordered-datastore.md
+    - Group: cli/cli-group.md
   - Rust Lib:
     - Install: lib/lib-install.md
 
