@@ -1,11 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::rbx::{error::Error, util::QueryString};
+use crate::rbx::{error::Error, types::GroupId, util::QueryString};
 
 use super::http_err::handle_http_err;
-
-#[derive(Debug, Clone, Copy)]
-pub struct GroupId(pub u64);
 
 impl std::fmt::Display for GroupId {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {

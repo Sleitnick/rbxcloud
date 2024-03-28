@@ -1,6 +1,6 @@
 use clap::{Args, Subcommand};
 
-use rbxcloud::rbx::v1::{RbxCloud, UniverseId};
+use rbxcloud::rbx::{types::UniverseId, v1::RbxCloud};
 
 #[derive(Debug, Subcommand)]
 pub enum MessagingCommands {

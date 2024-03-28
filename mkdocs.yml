@@ -14,6 +14,7 @@ nav:
     - DataStore: cli/cli-datastore.md
     - OrderedDataStore: cli/cli-ordered-datastore.md
     - Group: cli/cli-group.md
+    - Subscription: cli/cli-subscription.md
   - Rust Lib:
     - Install: lib/lib-install.md
 

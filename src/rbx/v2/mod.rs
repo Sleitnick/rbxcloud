@@ -2,15 +2,21 @@
 //!
 //! Most usage should go through the `Client` struct.
 
-use self::group::{
-    GetGroupParams, GetGroupResponse, GetGroupShoutParams, GetGroupShoutResponse, GroupId,
-    ListGroupMembershipsParams, ListGroupMembershipsResponse, ListGroupRolesParams,
-    ListGroupRolesResponse,
+use self::{
+    group::{
+        GetGroupParams, GetGroupResponse, GetGroupShoutParams, GetGroupShoutResponse,
+        ListGroupMembershipsParams, ListGroupMembershipsResponse, ListGroupRolesParams,
+        ListGroupRolesResponse,
+    },
+    subscription::{GetSubscriptionParams, GetSubscriptionResponse, SubscriptionView},
 };
 pub mod group;
 pub(crate) mod http_err;
+pub mod subscription;
 
 use crate::rbx::error::Error;
+
+use super::types::{GroupId, UniverseId};
 
 /// Access into the Roblox Open Cloud APIs.
 ///
@@ -28,6 +34,10 @@ pub struct Client {
 pub struct GroupClient {
     pub api_key: String,
     pub group_id: GroupId,
+}
+
+pub struct SubscriptionClient {
+    pub api_key: String,
 }
 
 impl GroupClient {
@@ -78,6 +88,25 @@ impl GroupClient {
     }
 }
 
+impl SubscriptionClient {
+    pub async fn get(
+        &self,
+        universe_id: UniverseId,
+        subscription_product: String,
+        subscription: String,
+        view: Option<SubscriptionView>,
+    ) -> Result<GetSubscriptionResponse, Error> {
+        subscription::get_subscription(&GetSubscriptionParams {
+            api_key: self.api_key.clone(),
+            universe_id,
+            subscription,
+            subscription_product,
+            view,
+        })
+        .await
+    }
+}
+
 impl Client {
     pub fn new(api_key: &str) -> Client {
         Client {
@@ -89,6 +118,12 @@ impl Client {
         GroupClient {
             api_key: self.api_key.clone(),
             group_id,
+        }
+    }
+
+    pub fn subscription(&self) -> SubscriptionClient {
+        SubscriptionClient {
+            api_key: self.api_key.clone(),
         }
     }
 }

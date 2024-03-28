@@ -1,7 +1,4 @@
-use rbxcloud::rbx::{
-    error::Error,
-    v2::{group::GroupId, Client},
-};
+use rbxcloud::rbx::{error::Error, types::GroupId, v2::Client};
 
 async fn get_group_shout() -> Result<String, Error> {
     // Inputs:
