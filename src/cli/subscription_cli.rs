@@ -13,8 +13,8 @@ pub enum SubscriptionCommands {
         universe_id: u64,
 
         /// Subscription product ID
-        #[clap(short, long, value_parser)]
-        subscription_product: String,
+        #[clap(short = 'S', long, value_parser)]
+        product: String,
 
         /// Subscription ID
         #[clap(short, long, value_parser)]
@@ -45,7 +45,7 @@ impl Subscription {
         match self.command {
             SubscriptionCommands::Get {
                 universe_id,
-                subscription_product,
+                product,
                 subscription,
                 view,
                 pretty,
@@ -54,12 +54,7 @@ impl Subscription {
                 let client = Client::new(&api_key);
                 let subscription_client = client.subscription();
                 let res = subscription_client
-                    .get(
-                        UniverseId(universe_id),
-                        subscription_product,
-                        subscription,
-                        view,
-                    )
+                    .get(UniverseId(universe_id), product, subscription, view)
                     .await;
                 match res {
                     Ok(subscription_info) => {
