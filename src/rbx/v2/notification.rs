@@ -27,14 +27,8 @@ impl std::fmt::Display for NotificationType {
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct AnalyticsData {
-    category: String,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(rename_all = "camelCase")]
 pub struct JoinExperience {
-    launch_data: String,
+    pub launch_data: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -58,7 +52,7 @@ pub struct NotificationPayload {
     pub notification_type: NotificationType,
     pub parameters: Option<HashMap<String, Parameter>>,
     pub join_experience: Option<JoinExperience>,
-    pub analytics_data: Option<AnalyticsData>,
+    pub analytics_data: Option<HashMap<String, String>>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
