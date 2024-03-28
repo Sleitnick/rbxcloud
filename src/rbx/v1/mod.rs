@@ -1,4 +1,4 @@
-//! Access into Roblox APIs.
+//! Access into Roblox v1 APIs.
 //!
 //! Most usage should go through the `RbxCloud` struct.
 pub mod assets;
