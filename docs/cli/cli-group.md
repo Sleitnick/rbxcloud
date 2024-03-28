@@ -74,3 +74,8 @@ Options:
   -n, --next-page-token <NEXT_PAGE_TOKEN>  Next page token
   -h, --help                               Print help
 ```
+
+### Example
+```
+$ rbxcloud group memberships -p -g 12345 -a MY_KEY
+```
