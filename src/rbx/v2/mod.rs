@@ -17,7 +17,7 @@ use crate::rbx::error::Error;
 /// ```rust,no_run
 /// use rbxcloud::rbx::v2::Client;
 ///
-/// let client = RbxCloud::new("API_KEY");
+/// let client = Client::new("API_KEY");
 /// ```
 #[derive(Debug)]
 pub struct Client {
