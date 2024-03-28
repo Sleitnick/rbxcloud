@@ -8,15 +8,17 @@ use self::{
         ListGroupMembershipsParams, ListGroupMembershipsResponse, ListGroupRolesParams,
         ListGroupRolesResponse,
     },
+    notification::{Notification, NotificationParams, NotificationResponse},
     subscription::{GetSubscriptionParams, GetSubscriptionResponse, SubscriptionView},
 };
 pub mod group;
 pub(crate) mod http_err;
+pub mod notification;
 pub mod subscription;
 
 use crate::rbx::error::Error;
 
-use super::types::{GroupId, UniverseId};
+use super::types::{GroupId, RobloxUserId, UniverseId};
 
 /// Access into the Roblox Open Cloud APIs.
 ///
@@ -38,6 +40,11 @@ pub struct GroupClient {
 
 pub struct SubscriptionClient {
     pub api_key: String,
+}
+
+pub struct NotificationClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
 }
 
 impl GroupClient {
@@ -107,6 +114,21 @@ impl SubscriptionClient {
     }
 }
 
+impl NotificationClient {
+    pub async fn send(
+        &self,
+        user_id: RobloxUserId,
+        notification: Notification,
+    ) -> Result<NotificationResponse, Error> {
+        notification::send_notification(&NotificationParams {
+            api_key: self.api_key.clone(),
+            user_id,
+            notification,
+        })
+        .await
+    }
+}
+
 impl Client {
     pub fn new(api_key: &str) -> Client {
         Client {
@@ -124,6 +146,13 @@ impl Client {
     pub fn subscription(&self) -> SubscriptionClient {
         SubscriptionClient {
             api_key: self.api_key.clone(),
+        }
+    }
+
+    pub fn notification(&self, universe_id: UniverseId) -> NotificationClient {
+        NotificationClient {
+            api_key: self.api_key.clone(),
+            universe_id,
         }
     }
 }
