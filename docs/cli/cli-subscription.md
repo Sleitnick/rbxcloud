@@ -2,7 +2,7 @@
 
 ## Getting Subscription Info
 ```
-Usage: rbxcloud.exe subscription get [OPTIONS] --universe-id <UNIVERSE_ID> --product <PRODUCT> --subscription <SUBSCRIPTION> --api-key <API_KEY>
+Usage: rbxcloud subscription get [OPTIONS] --universe-id <UNIVERSE_ID> --product <PRODUCT> --subscription <SUBSCRIPTION> --api-key <API_KEY>
 
 Options:
   -u, --universe-id <UNIVERSE_ID>    Universe ID
