@@ -66,6 +66,7 @@ pub struct UpdateUniverseParams {
     pub api_key: String,
     pub universe_id: UniverseId,
     pub update_mask: String,
+    pub info: UniverseInfo,
 }
 
 pub struct RestartUniverseServersParams {
@@ -109,9 +110,12 @@ pub async fn update_universe(params: &UpdateUniverseParams) -> Result<UniverseIn
     let mut query: QueryString = vec![];
     query.push(("updateMask", params.update_mask.clone()));
 
+    let body = serde_json::to_string(&params.info)?;
+
     let res = client
         .patch(url)
         .header("x-api-key", &params.api_key)
+        .body(body)
         .query(&query)
         .send()
         .await?;

@@ -2,6 +2,10 @@
 //!
 //! Most usage should go through the `Client` struct.
 
+use universe::{
+    GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseParams,
+};
+
 use self::{
     group::{
         GetGroupParams, GetGroupResponse, GetGroupShoutParams, GetGroupShoutResponse,
@@ -44,6 +48,11 @@ pub struct SubscriptionClient {
 }
 
 pub struct NotificationClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+}
+
+pub struct UniverseClient {
     pub api_key: String,
     pub universe_id: UniverseId,
 }
@@ -130,6 +139,38 @@ impl NotificationClient {
     }
 }
 
+impl UniverseClient {
+    pub async fn get(&self) -> Result<UniverseInfo, Error> {
+        universe::get_universe(&GetUniverseParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+        })
+        .await
+    }
+
+    pub async fn update(
+        &self,
+        update_mask: String,
+        info: UniverseInfo,
+    ) -> Result<UniverseInfo, Error> {
+        universe::update_universe(&UpdateUniverseParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            update_mask,
+            info: info,
+        })
+        .await
+    }
+
+    pub async fn restart_servers(&self) -> Result<(), Error> {
+        universe::restart_universe_servers(&RestartUniverseServersParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+        })
+        .await
+    }
+}
+
 impl Client {
     pub fn new(api_key: &str) -> Client {
         Client {
@@ -152,6 +193,13 @@ impl Client {
 
     pub fn notification(&self, universe_id: UniverseId) -> NotificationClient {
         NotificationClient {
+            api_key: self.api_key.clone(),
+            universe_id,
+        }
+    }
+
+    pub fn universe(&self, universe_id: UniverseId) -> UniverseClient {
+        UniverseClient {
             api_key: self.api_key.clone(),
             universe_id,
         }
