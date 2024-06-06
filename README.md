@@ -32,6 +32,8 @@ Possible use-cases:
 | :white_check_mark: | Subscriptions |
 | :x: | Inventory |
 | :white_check_mark: | User Notifications |
+| :x: | User |
+| :x: | Creator Store |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
