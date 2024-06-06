@@ -26,7 +26,7 @@ Possible use-cases:
 | | API v2 (Beta) |
 | -- | -- |
 | :white_check_mark: | Groups |
-| :x: | Universes |
+| :white_check_mark: | Universes |
 | :x: | Places |
 | :x: | Instances |
 | :white_check_mark: | Subscriptions |
