@@ -3,7 +3,8 @@
 //! Most usage should go through the `Client` struct.
 
 use universe::{
-    GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseParams,
+    GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
+    UpdateUniverseParams,
 };
 
 use self::{
@@ -151,7 +152,7 @@ impl UniverseClient {
     pub async fn update(
         &self,
         update_mask: String,
-        info: UniverseInfo,
+        info: UpdateUniverseInfo,
     ) -> Result<UniverseInfo, Error> {
         universe::update_universe(&UpdateUniverseParams {
             api_key: self.api_key.clone(),
