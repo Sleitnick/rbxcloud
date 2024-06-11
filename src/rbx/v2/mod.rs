@@ -21,6 +21,7 @@ pub(crate) mod http_err;
 pub mod notification;
 pub mod subscription;
 pub mod universe;
+pub mod user;
 
 use crate::rbx::error::Error;
 
