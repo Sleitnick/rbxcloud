@@ -6,6 +6,10 @@ use universe::{
     GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
     UpdateUniverseParams,
 };
+use user::{
+    GenerateUserThumbnailOperationResponse, GenerateUserThumbnailParams, GetUserParams,
+    GetUserResponse, UserThumbnailFormat, UserThumbnailShape, UserThumbnailSize,
+};
 
 use self::{
     group::{
@@ -57,6 +61,10 @@ pub struct NotificationClient {
 pub struct UniverseClient {
     pub api_key: String,
     pub universe_id: UniverseId,
+}
+
+pub struct UserClient {
+    pub api_key: String,
 }
 
 impl GroupClient {
@@ -173,6 +181,33 @@ impl UniverseClient {
     }
 }
 
+impl UserClient {
+    pub async fn get_user(&self, user_id: RobloxUserId) -> Result<GetUserResponse, Error> {
+        user::get_user(&GetUserParams {
+            api_key: self.api_key.clone(),
+            user_id,
+        })
+        .await
+    }
+
+    pub async fn generate_thumbnail(
+        &self,
+        user_id: RobloxUserId,
+        size: Option<UserThumbnailSize>,
+        format: Option<UserThumbnailFormat>,
+        shape: Option<UserThumbnailShape>,
+    ) -> Result<GenerateUserThumbnailOperationResponse, Error> {
+        user::generate_thumbnail(&GenerateUserThumbnailParams {
+            api_key: self.api_key.clone(),
+            user_id,
+            size,
+            shape,
+            format,
+        })
+        .await
+    }
+}
+
 impl Client {
     pub fn new(api_key: &str) -> Client {
         Client {
@@ -204,6 +239,12 @@ impl Client {
         UniverseClient {
             api_key: self.api_key.clone(),
             universe_id,
+        }
+    }
+
+    pub fn user(&self) -> UserClient {
+        UserClient {
+            api_key: self.api_key.clone(),
         }
     }
 }
