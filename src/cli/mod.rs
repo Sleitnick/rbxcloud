@@ -7,9 +7,11 @@ mod notification_cli;
 mod ordered_datastore_cli;
 mod subscription_cli;
 mod universe_cli;
+mod user_cli;
 
 use clap::{Parser, Subcommand};
 use universe_cli::Universe;
+use user_cli::User;
 
 use self::{
     assets_cli::Assets, datastore_cli::DataStore, experience_cli::Experience, group_cli::Group,
@@ -52,6 +54,9 @@ pub enum Command {
 
     /// Access the Roblox Universe API
     Universe(Universe),
+
+    /// Access the Roblox User API
+    User(User),
 }
 
 impl Cli {
@@ -66,6 +71,7 @@ impl Cli {
             Command::Subscription(command) => command.run().await,
             Command::Notification(command) => command.run().await,
             Command::Universe(command) => command.run().await,
+            Command::User(command) => command.run().await,
         }
     }
 }

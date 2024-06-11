@@ -17,6 +17,7 @@ nav:
     - Subscription: cli/cli-subscription.md
     - Notification: cli/cli-notification.md
     - Universe: cli/cli-universe.md
+    - User: cli/cli-user.md
   - Rust Lib:
     - Install: lib/lib-install.md
 
