@@ -54,13 +54,15 @@ pub struct GenerateUserThumbnailParams {
     pub shape: Option<UserThumbnailShape>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone, clap::ValueEnum)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum UserThumbnailFormat {
     Png,
     Jpeg,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone, clap::ValueEnum)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum UserThumbnailSize {
     Size48x48,
     Size50x50,
@@ -75,7 +77,8 @@ pub enum UserThumbnailSize {
     Size720x720,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone, clap::ValueEnum)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum UserThumbnailShape {
     Round,
     Square,
