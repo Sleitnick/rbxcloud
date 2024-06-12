@@ -44,7 +44,7 @@ The goal of this project is to support all API endpoints that Roblox provides.
 ### Aftman
 Run the `aftman add` command within your project directory. This will add `rbxcloud` to the project's `aftman.toml` file (or create one if it doesn't yet exist).
 ```sh
-$ aftman add Sleitnick/rbxcloud@0.12.0
+$ aftman add Sleitnick/rbxcloud@0.13.0
 ```
 
 ### From Release
@@ -61,7 +61,7 @@ The library built for the CLI tool is available to use directly in Rust projects
 To use `rbxcloud` in a Rust project, simply add `rbxcloud` to the `Cargo.toml` dependency list.
 ```toml
 [dependencies]
-rbxcloud = "0.12.0"
+rbxcloud = "0.13.0"
 ```
 
 Alternatively, use `cargo add`.
