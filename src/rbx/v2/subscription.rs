@@ -33,7 +33,66 @@ pub struct GetSubscriptionParams {
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct GetSubscriptionResponse {}
+pub struct GetSubscriptionResponse {
+    path: String,
+    create_time: String,
+    update_time: String,
+    active: bool,
+    will_renew: bool,
+    last_billing_time: String,
+    next_renew_time: String,
+    expire_time: String,
+    state: SubscriptionState,
+    expiration_details: SubscriptionExpirationDetails,
+    purchase_platform: SubscriptionPurchasePlatform,
+    payment_provider: SubscriptionPaymentProvider,
+    user: String,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscriptionExpirationDetails {
+    reason: SubscriptionExpirationReason,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SubscriptionState {
+    StateUnspecified,
+    SubscribedWillRenew,
+    SubscribedWillNotRenew,
+    SubscribedRenewalPaymentPending,
+    Expired,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SubscriptionExpirationReason {
+    ExpirationReasonUnspecified,
+    ProductInactive,
+    ProductDeleted,
+    SubscriberCancelled,
+    SubscriberRefunded,
+    Lapsed,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SubscriptionPurchasePlatform {
+    PurchasePlatformUnspecified,
+    Desktop,
+    Mobile,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SubscriptionPaymentProvider {
+    PaymentProviderUnspecified,
+    Stripe,
+    Apple,
+    Google,
+    RobloxCredit,
+}
 
 pub async fn get_subscription(
     params: &GetSubscriptionParams,
