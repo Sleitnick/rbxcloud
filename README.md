@@ -27,7 +27,7 @@ Possible use-cases:
 | -- | -- |
 | :white_check_mark: | Groups |
 | :white_check_mark: | Universes |
-| :x: | Places |
+| :white_check_mark: | Places |
 | :x: | Instances |
 | :white_check_mark: | Subscriptions |
 | :x: | Inventory |
