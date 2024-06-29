@@ -70,6 +70,29 @@ pub enum PlaceCommands {
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
     },
+
+    /// Update Place server size
+    UpdateServerSize {
+        /// Universe ID
+        #[clap(short, long, value_parser)]
+        universe_id: u64,
+
+        /// Place ID
+        #[clap(short, long, value_parser)]
+        place_id: u64,
+
+        /// New Place server size
+        #[clap(short, long, value_parser)]
+        server_size: i32,
+
+        /// Pretty-print the JSON response
+        #[clap(long, value_parser, default_value_t = false)]
+        pretty: bool,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
 }
 
 #[derive(Debug, Args)]
@@ -160,6 +183,42 @@ impl Place {
                         },
                     )
                     .await;
+                match res {
+                    Ok(place_info) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&place_info)?
+                        } else {
+                            serde_json::to_string(&place_info)?
+                        };
+                        Ok(Some(r))
+                    }
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            PlaceCommands::UpdateServerSize {
+                universe_id,
+                place_id,
+                server_size,
+                pretty,
+                api_key,
+            } => {
+                let client = Client::new(&api_key);
+                let place_client = client.place(UniverseId(universe_id), PlaceId(place_id));
+                let res = place_client
+                    .update(
+                        "serverSize".to_string(),
+                        UpdatePlaceInfo {
+                            path: None,
+                            create_time: None,
+                            update_time: None,
+                            display_name: None,
+                            description: None,
+                            server_size: Some(server_size),
+                        },
+                    )
+                    .await;
+
                 match res {
                     Ok(place_info) => {
                         let r = if pretty {
