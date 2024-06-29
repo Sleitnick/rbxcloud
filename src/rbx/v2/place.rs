@@ -20,7 +20,7 @@ pub struct PlaceInfo {
     pub update_time: String,
     pub display_name: String,
     pub description: String,
-    pub server_size: i32,
+    pub server_size: u32,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -37,7 +37,7 @@ pub struct UpdatePlaceInfo {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub server_size: Option<i32>,
+    pub server_size: Option<u32>,
 }
 
 pub struct UpdatePlaceParams {

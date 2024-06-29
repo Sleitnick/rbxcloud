@@ -83,7 +83,7 @@ pub enum PlaceCommands {
 
         /// New Place server size
         #[clap(short, long, value_parser)]
-        server_size: i32,
+        server_size: u32,
 
         /// Pretty-print the JSON response
         #[clap(long, value_parser, default_value_t = false)]
