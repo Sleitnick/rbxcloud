@@ -52,3 +52,21 @@ Options:
 ```
 $ rbxcloud universe update-description -n "Place description here." -u 12345 -p 67890 -a MY_KEY
 ```
+
+## Updating Server Size
+```
+Usage: rbxcloud place update-server-size [OPTIONS] --universe-id <UNIVERSE_ID> --place-id <PLACE_ID> --server-size <SERVER_SIZE> --api-key <API_KEY>
+
+Options:
+  -u, --universe-id <UNIVERSE_ID>  Universe ID
+  -p, --place-id <PLACE_ID>        Place ID
+  -s, --server-size <SERVER_SIZE>  New Place server size
+      --pretty                     Pretty-print the JSON response
+  -a, --api-key <API_KEY>          Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
+  -h, --help                       Print help
+```
+
+### Example
+```
+$ rbxcloud universe update-server-size -s 700 -u 12345 -p 67890 -a MY_KEY
+```
