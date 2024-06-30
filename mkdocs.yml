@@ -16,6 +16,7 @@ nav:
     - Group: cli/cli-group.md
     - Subscription: cli/cli-subscription.md
     - Notification: cli/cli-notification.md
+    - Place: cli/cli-place.md
     - Universe: cli/cli-universe.md
     - User: cli/cli-user.md
   - Rust Lib:

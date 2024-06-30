@@ -2,6 +2,7 @@
 //!
 //! Most usage should go through the `Client` struct.
 
+use place::{GetPlaceParams, PlaceInfo, UpdatePlaceInfo, UpdatePlaceParams};
 use universe::{
     GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
     UpdateUniverseParams,
@@ -23,13 +24,14 @@ use self::{
 pub mod group;
 pub(crate) mod http_err;
 pub mod notification;
+pub mod place;
 pub mod subscription;
 pub mod universe;
 pub mod user;
 
 use crate::rbx::error::Error;
 
-use super::types::{GroupId, RobloxUserId, UniverseId};
+use super::types::{GroupId, PlaceId, RobloxUserId, UniverseId};
 
 /// Access into the Roblox Open Cloud APIs.
 ///
@@ -56,6 +58,12 @@ pub struct SubscriptionClient {
 pub struct NotificationClient {
     pub api_key: String,
     pub universe_id: UniverseId,
+}
+
+pub struct PlaceClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
 }
 
 pub struct UniverseClient {
@@ -149,6 +157,32 @@ impl NotificationClient {
     }
 }
 
+impl PlaceClient {
+    pub async fn get(&self) -> Result<PlaceInfo, Error> {
+        place::get_place(&GetPlaceParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+        })
+        .await
+    }
+
+    pub async fn update(
+        &self,
+        update_mask: String,
+        info: UpdatePlaceInfo,
+    ) -> Result<PlaceInfo, Error> {
+        place::update_place(&UpdatePlaceParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            update_mask,
+            info,
+        })
+        .await
+    }
+}
+
 impl UniverseClient {
     pub async fn get(&self) -> Result<UniverseInfo, Error> {
         universe::get_universe(&GetUniverseParams {
@@ -232,6 +266,14 @@ impl Client {
         NotificationClient {
             api_key: self.api_key.clone(),
             universe_id,
+        }
+    }
+
+    pub fn place(&self, universe_id: UniverseId, place_id: PlaceId) -> PlaceClient {
+        PlaceClient {
+            api_key: self.api_key.clone(),
+            universe_id,
+            place_id,
         }
     }
 

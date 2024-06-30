@@ -5,6 +5,7 @@ mod group_cli;
 mod messaging_cli;
 mod notification_cli;
 mod ordered_datastore_cli;
+mod place_cli;
 mod subscription_cli;
 mod universe_cli;
 mod user_cli;
@@ -16,7 +17,7 @@ use user_cli::User;
 use self::{
     assets_cli::Assets, datastore_cli::DataStore, experience_cli::Experience, group_cli::Group,
     messaging_cli::Messaging, notification_cli::Notification,
-    ordered_datastore_cli::OrderedDataStore, subscription_cli::Subscription,
+    ordered_datastore_cli::OrderedDataStore, place_cli::Place, subscription_cli::Subscription,
 };
 
 #[derive(Debug, Parser)]
@@ -52,6 +53,9 @@ pub enum Command {
     /// Access the Roblox Notification API
     Notification(Notification),
 
+    /// Access the Roblox Place API
+    Place(Place),
+
     /// Access the Roblox Universe API
     Universe(Universe),
 
@@ -70,6 +74,7 @@ impl Cli {
             Command::Group(command) => command.run().await,
             Command::Subscription(command) => command.run().await,
             Command::Notification(command) => command.run().await,
+            Command::Place(command) => command.run().await,
             Command::Universe(command) => command.run().await,
             Command::User(command) => command.run().await,
         }
