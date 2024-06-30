@@ -68,5 +68,5 @@ Options:
 
 ### Example
 ```
-$ rbxcloud universe update-server-size -s 700 -u 12345 -p 67890 -a MY_KEY
+$ rbxcloud place update-server-size -s 700 -u 12345 -p 67890 -a MY_KEY
 ```
