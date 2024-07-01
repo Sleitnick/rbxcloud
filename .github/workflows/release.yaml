@@ -91,7 +91,7 @@ jobs:
 
   create-release:
     needs: ["build"]
-    name: Check Release Version
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Create artifact directory
