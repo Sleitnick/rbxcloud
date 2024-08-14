@@ -12,8 +12,8 @@ use super::http_err::handle_http_err;
 #[serde(rename_all = "camelCase")]
 pub struct GameJoinRestriction {
     pub active: bool,
-    pub start_time: String,
-    pub duration: String,
+    pub start_time: Option<String>,
+    pub duration: Option<String>,
     pub private_reason: String,
     pub display_reason: String,
     pub exclude_alt_accounts: bool,
@@ -24,7 +24,7 @@ pub struct GameJoinRestriction {
 #[serde(rename_all = "camelCase")]
 pub struct UserRestriction {
     pub path: String,
-    pub update_time: String,
+    pub update_time: Option<String>,
     pub user: String,
     pub game_join_restriction: GameJoinRestriction,
 }
@@ -45,7 +45,7 @@ pub struct UpdateUserRestrictionParams {
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct UpdateUserRestriction {
-    game_joint_restriction: GameJoinRestriction,
+    game_join_restriction: GameJoinRestriction,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -79,7 +79,7 @@ pub struct UserRestrictionLog {
     pub duration: String,
     pub private_reason: String,
     pub display_reason: String,
-    pub exclude_alt_accounts: String,
+    pub exclude_alt_accounts: bool,
     pub moderator: UserRestrictionModerator,
 }
 
@@ -222,36 +222,36 @@ pub async fn update_user_restriction(
     // Build update mask based on provided parameters:
     let mut update_mask: Vec<&str> = vec![];
     if params.active.is_some() {
-        update_mask.push("game_join_restriction.active");
+        update_mask.push("gameJoinRestriction.active");
     }
     if params.duration.is_some() {
-        update_mask.push("game_join_restriction.duration");
+        update_mask.push("gameJoinRestriction.duration");
     }
     if params.private_reason.is_some() {
-        update_mask.push("game_join_restriction.privateReason");
+        update_mask.push("gameJoinRestriction.privateReason");
     }
     if params.display_reason.is_some() {
-        update_mask.push("game_join_restriction.displayReason");
+        update_mask.push("gameJoinRestriction.displayReason");
     }
     if params.exclude_alt_accounts.is_some() {
-        update_mask.push("game_join_restriction.excludeAltAccounts");
+        update_mask.push("gameJoinRestriction.excludeAltAccounts");
     }
     let update_mask_str = update_mask.join(",");
 
     // See: https://create.roblox.com/docs/cloud/reference/types#timestamp
-    let timestamp = chrono::Utc::now().to_rfc3339();
+    let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
 
     let query: QueryString = vec![
         ("updateMask", update_mask_str),
         ("idempotencyKey.key", params.idempotency_key.to_string()),
-        ("idempotencyKey.firstSent", timestamp),
+        ("idempotencyKey.firstSent", timestamp.clone()),
     ];
 
     let body = serde_json::to_string(&UpdateUserRestriction {
-        game_joint_restriction: GameJoinRestriction {
+        game_join_restriction: GameJoinRestriction {
             active: params.active.unwrap_or(false),
-            start_time: "".into(),
-            duration: params.duration.clone().unwrap_or("".into()),
+            start_time: Some(timestamp),
+            duration: params.duration.clone(),
             private_reason: params.private_reason.clone().unwrap_or("".into()),
             display_reason: params.display_reason.clone().unwrap_or("".into()),
             exclude_alt_accounts: params.exclude_alt_accounts.unwrap_or(false),
@@ -262,6 +262,7 @@ pub async fn update_user_restriction(
     let res = client
         .patch(url)
         .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
         .query(&query)
         .body(body)
         .send()
