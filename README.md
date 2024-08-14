@@ -25,6 +25,7 @@ Possible use-cases:
 
 | | API v2 (Beta) |
 | -- | -- |
+| :x: | Data Stores |
 | :white_check_mark: | Groups |
 | :white_check_mark: | Universes |
 | :white_check_mark: | Places |
@@ -33,6 +34,7 @@ Possible use-cases:
 | :x: | Inventory |
 | :white_check_mark: | User Notifications |
 | :white_check_mark: | User |
+| :white_check_mark: | User Restrictions |
 | :x: | Creator Store |
 
 - :white_check_mark: = Supported
