@@ -127,6 +127,7 @@ pub struct AssetErrorStatus {
 pub enum AssetType {
     AudioMp3,
     AudioOgg,
+    AudioFlac,
     DecalPng,
     DecalJpeg,
     DecalBmp,
@@ -139,6 +140,7 @@ impl AssetType {
         match self {
             Self::AudioMp3 => "audio/mpeg",
             Self::AudioOgg => "audio/ogg",
+            Self::AudioFlac => "audio/flac",
             Self::DecalPng => "image/png",
             Self::DecalJpeg => "image/jpeg",
             Self::DecalBmp => "image/bmp",
@@ -149,7 +151,7 @@ impl AssetType {
 
     fn asset_type(&self) -> &'static str {
         match self {
-            Self::AudioMp3 | Self::AudioOgg => "Audio",
+            Self::AudioMp3 | Self::AudioOgg | Self::AudioFlac => "Audio",
             Self::DecalPng | Self::DecalJpeg | Self::DecalBmp | Self::DecalTga => "Decal",
             Self::ModelFbx => "Model",
         }
@@ -159,6 +161,7 @@ impl AssetType {
         match extension.to_lowercase().as_str() {
             "mp3" => Ok(Self::AudioMp3),
             "ogg" => Ok(Self::AudioOgg),
+            "flac" => Ok(Self::AudioFlac),
             "png" => Ok(Self::DecalPng),
             "jpg" => Ok(Self::DecalJpeg),
             "jpeg" => Ok(Self::DecalJpeg),
