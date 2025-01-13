@@ -18,7 +18,7 @@ jobs:
           python-version: "3.x"
 
       - name: Check tag version against cargo version
-        run: python scripts/check_version.py ${{ github.ref_name }}
+        run: python -u scripts/check_version.py ${{ github.ref_name }}
 
   build:
     needs: ["check-release-version"]
@@ -96,6 +96,11 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
       - name: Create artifact directory
         shell: bash
         run: mkdir gh_artifacts
