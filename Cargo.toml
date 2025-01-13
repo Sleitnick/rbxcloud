@@ -1,6 +1,6 @@
 [package]
 name = "rbxcloud"
-version = "0.15.0"
+version = "0.15.1"
 description = "CLI and SDK for the Roblox Open Cloud APIs"
 authors = ["Stephen Leitnick"]
 license = "MIT"
