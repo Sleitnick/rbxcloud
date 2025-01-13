@@ -128,6 +128,7 @@ pub enum AssetType {
     AudioMp3,
     AudioOgg,
     AudioFlac,
+    AudioWav,
     DecalPng,
     DecalJpeg,
     DecalBmp,
@@ -141,6 +142,7 @@ impl AssetType {
             Self::AudioMp3 => "audio/mpeg",
             Self::AudioOgg => "audio/ogg",
             Self::AudioFlac => "audio/flac",
+            Self::AudioWav => "audio/wav",
             Self::DecalPng => "image/png",
             Self::DecalJpeg => "image/jpeg",
             Self::DecalBmp => "image/bmp",
@@ -151,7 +153,7 @@ impl AssetType {
 
     fn asset_type(&self) -> &'static str {
         match self {
-            Self::AudioMp3 | Self::AudioOgg | Self::AudioFlac => "Audio",
+            Self::AudioMp3 | Self::AudioOgg | Self::AudioFlac | Self::AudioWav => "Audio",
             Self::DecalPng | Self::DecalJpeg | Self::DecalBmp | Self::DecalTga => "Decal",
             Self::ModelFbx => "Model",
         }
@@ -162,6 +164,7 @@ impl AssetType {
             "mp3" => Ok(Self::AudioMp3),
             "ogg" => Ok(Self::AudioOgg),
             "flac" => Ok(Self::AudioFlac),
+            "wav" => Ok(Self::AudioWav),
             "png" => Ok(Self::DecalPng),
             "jpg" => Ok(Self::DecalJpeg),
             "jpeg" => Ok(Self::DecalJpeg),
