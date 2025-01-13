@@ -37,7 +37,7 @@ jobs:
             label: win64
 
           - host: macos
-            os: macos-latest
+            os: macos-13
             target: x86_64-apple-darwin
             label: macos
 
@@ -101,8 +101,8 @@ jobs:
         run: mkdir gh_artifacts
 
       - name: Download artifacts
+        uses: actions/download-artifacts@v4
         id: download-artifact
-        uses: dawidd6/action-download-artifact@v6
         with:
           path: gh_artifacts
 
