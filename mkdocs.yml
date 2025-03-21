@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - CLI:
     - Install: cli/cli-install.md
+    - Assets: cli/cli-assets.md
     - API Key: cli/cli-api-key.md
     - Experience: cli/cli-experience.md
     - Messaging: cli/cli-messaging.md
