@@ -24,7 +24,7 @@ pub enum AssetCreator {
     Group(AssetGroupCreator),
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetCreationContext {
     pub creator: AssetCreator,
@@ -88,7 +88,7 @@ pub struct ArchiveAssetParams {
     pub asset_id: u64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetOperation {
     pub path: Option<String>,
@@ -98,14 +98,14 @@ pub struct AssetOperation {
     pub response: Option<ProtobufAny>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ProtobufAny {
     #[serde(rename = "@type")]
     pub message_type: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperation {
     pub path: String,
@@ -113,7 +113,7 @@ pub struct AssetGetOperation {
     pub response: Option<AssetGetOperationResponse>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperationResponse {
     pub path: String,
@@ -126,7 +126,7 @@ pub struct AssetGetOperationResponse {
     pub creation_context: AssetCreationContext,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetInfo {
     pub asset_type: AssetTypeCategory,
@@ -141,7 +141,7 @@ pub struct AssetInfo {
     pub state: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ModerationResult {
     /// Note: There's a discrepancy between the Open Cloud docs and the actual
@@ -150,7 +150,7 @@ pub struct ModerationResult {
     pub moderation_state: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetErrorStatus {
     pub code: u64,
@@ -171,7 +171,7 @@ pub enum AssetType {
     ModelFbx,
 }
 
-#[derive(Debug, Clone, Copy, clap::ValueEnum, Deserialize)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Serialize, Deserialize)]
 pub enum AssetTypeCategory {
     Audio,
     Decal,
