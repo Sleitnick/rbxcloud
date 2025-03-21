@@ -14,7 +14,7 @@ pub enum DataStoreCommands {
     /// List all DataStores in a given universe
     ListStores {
         /// Return only DataStores with this prefix
-        #[clap(short, long, value_parser)]
+        #[clap(short = 'r', long, value_parser)]
         prefix: Option<String>,
 
         /// Maximum number of items to return
@@ -28,6 +28,10 @@ pub enum DataStoreCommands {
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -49,7 +53,7 @@ pub enum DataStoreCommands {
         all_scopes: bool,
 
         /// Return only DataStores with this prefix
-        #[clap(short, long, value_parser)]
+        #[clap(short = 'r', long, value_parser)]
         prefix: Option<String>,
 
         /// Maximum number of items to return
@@ -63,6 +67,10 @@ pub enum DataStoreCommands {
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -129,6 +137,10 @@ pub enum DataStoreCommands {
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -231,6 +243,10 @@ pub enum DataStoreCommands {
         #[clap(short, long, value_parser)]
         universe_id: u64,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -293,6 +309,7 @@ impl DataStore {
                 limit,
                 cursor,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -305,7 +322,14 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -318,6 +342,7 @@ impl DataStore {
                 api_key,
                 datastore_name,
                 scope,
+                pretty,
                 all_scopes,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -333,7 +358,14 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -370,6 +402,7 @@ impl DataStore {
                 user_ids,
                 attributes,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -388,7 +421,14 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -454,6 +494,7 @@ impl DataStore {
                 limit,
                 cursor,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -471,7 +512,14 @@ impl DataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }

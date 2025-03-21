@@ -1,7 +1,7 @@
 //! Low-level Experience API operations.
 use std::fmt;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::rbx::error::Error;
 use crate::rbx::v1::{PlaceId, UniverseId};
@@ -38,7 +38,7 @@ pub struct PublishExperienceParams {
 ///
 /// The version number represents the latest version uploaded
 /// to Roblox.
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct PublishExperienceResponse {
     pub version_number: u64,

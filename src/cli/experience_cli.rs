@@ -14,7 +14,7 @@ pub enum ExperienceCommands {
         filename: String,
 
         /// Place ID of the experience
-        #[clap(short, long, value_parser)]
+        #[clap(short = 'i', long, value_parser)]
         place_id: u64,
 
         /// Universe ID of the experience
@@ -24,6 +24,10 @@ pub enum ExperienceCommands {
         /// Version type
         #[clap(short = 't', long, value_enum)]
         version_type: VersionType,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -47,11 +51,12 @@ impl Experience {
     pub async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
             ExperienceCommands::Publish {
+                filename,
                 place_id,
                 universe_id,
                 version_type,
+                pretty,
                 api_key,
-                filename,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
                 let publish_version_type = match version_type {
@@ -63,13 +68,14 @@ impl Experience {
                     .publish(&filename, publish_version_type)
                     .await;
                 match res {
-                    Ok(body) => Ok(Some(
-                        format!(
-                            "{:?} {}/{} with version number {}",
-                            version_type, universe_id, place_id, body.version_number
-                        )
-                        .to_lowercase(),
-                    )),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
