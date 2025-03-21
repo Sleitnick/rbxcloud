@@ -2,6 +2,7 @@ mod assets_cli;
 mod datastore_cli;
 mod experience_cli;
 mod group_cli;
+mod luau_execution_cli;
 mod messaging_cli;
 mod notification_cli;
 mod ordered_datastore_cli;
@@ -11,6 +12,7 @@ mod universe_cli;
 mod user_cli;
 
 use clap::{Parser, Subcommand};
+use luau_execution_cli::Luau;
 use universe_cli::Universe;
 use user_cli::User;
 
@@ -47,6 +49,8 @@ pub enum Command {
     /// Access the Roblox Group API
     Group(Group),
 
+    Luau(Luau),
+
     /// Access the Roblox Subscription API
     Subscription(Subscription),
 
@@ -72,6 +76,7 @@ impl Cli {
             Command::Datastore(command) => command.run().await,
             Command::OrderedDatastore(command) => command.run().await,
             Command::Group(command) => command.run().await,
+            Command::Luau(command) => command.run().await,
             Command::Subscription(command) => command.run().await,
             Command::Notification(command) => command.run().await,
             Command::Place(command) => command.run().await,
