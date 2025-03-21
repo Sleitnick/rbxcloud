@@ -23,7 +23,7 @@ Possible use-cases:
 | :white_check_mark: | Messaging |
 | :white_check_mark: | Place Publishing |
 
-| | API v2 (Beta) |
+| | API v2 |
 | -- | -- |
 | :white_check_mark: | Groups |
 | :white_check_mark: | Universes |
@@ -34,6 +34,7 @@ Possible use-cases:
 | :white_check_mark: | User Notifications |
 | :white_check_mark: | User |
 | :x: | Creator Store |
+| :x: | Luau Execution |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
