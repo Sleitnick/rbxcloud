@@ -9,13 +9,14 @@ pub mod messaging;
 pub mod ordered_datastore;
 
 use crate::rbx::error;
+use assets::{ArchiveAssetParams, AssetInfo, GetAssetOperationParams, GetAssetParams};
 pub use experience::PublishVersionType;
 use serde::de::DeserializeOwned;
 
 use self::{
     assets::{
         AssetCreation, AssetGetOperation, AssetOperation, AssetType, CreateAssetParams,
-        CreateAssetParamsWithContents, GetAssetParams, UpdateAssetParams,
+        CreateAssetParamsWithContents, UpdateAssetParams,
     },
     datastore::{
         DeleteEntryParams, GetEntryParams, GetEntryVersionParams, IncrementEntryParams,
@@ -490,8 +491,17 @@ pub struct UpdateAsset {
     pub filepath: String,
 }
 
-pub struct GetAsset {
+pub struct GetAssetOperation {
     pub operation_id: String,
+}
+
+pub struct GetAsset {
+    pub asset_id: u64,
+    pub read_mask: Option<String>,
+}
+
+pub struct ArchiveAsset {
+    pub asset_id: u64,
 }
 
 impl RbxAssets {
@@ -529,10 +539,38 @@ impl RbxAssets {
     }
 
     /// Get asset information
-    pub async fn get(&self, params: &GetAsset) -> Result<AssetGetOperation, Error> {
-        assets::get_asset(&GetAssetParams {
+    pub async fn get_operation(
+        &self,
+        params: &GetAssetOperation,
+    ) -> Result<AssetGetOperation, Error> {
+        assets::get_operation(&GetAssetOperationParams {
             api_key: self.api_key.clone(),
             operation_id: params.operation_id.clone(),
+        })
+        .await
+    }
+
+    pub async fn get(&self, params: &GetAsset) -> Result<AssetInfo, Error> {
+        assets::get_asset(&GetAssetParams {
+            api_key: self.api_key.clone(),
+            asset_id: params.asset_id,
+            read_mask: params.read_mask.clone(),
+        })
+        .await
+    }
+
+    pub async fn archive(&self, params: &ArchiveAsset) -> Result<AssetInfo, Error> {
+        assets::archive_asset(&ArchiveAssetParams {
+            api_key: self.api_key.clone(),
+            asset_id: params.asset_id,
+        })
+        .await
+    }
+
+    pub async fn restore(&self, params: &ArchiveAsset) -> Result<AssetInfo, Error> {
+        assets::restore_asset(&ArchiveAssetParams {
+            api_key: self.api_key.clone(),
+            asset_id: params.asset_id,
         })
         .await
     }
