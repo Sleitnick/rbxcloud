@@ -9,7 +9,7 @@ use rbxcloud::rbx::{
             AssetCreation, AssetCreationContext, AssetCreator, AssetGroupCreator, AssetType,
             AssetUserCreator,
         },
-        CreateAsset, GetAsset, RbxCloud, UpdateAsset,
+        ArchiveAsset, CreateAsset, GetAsset, GetAssetOperation, RbxCloud, UpdateAsset,
     },
 };
 
@@ -75,11 +75,47 @@ pub enum AssetsCommands {
         api_key: String,
     },
 
-    /// Get asset information
-    Get {
+    /// Get asset operation information
+    GetOperation {
         /// Operation ID
         #[clap(short = 'i', long, value_parser)]
         operation_id: String,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Get asset information
+    Get {
+        /// Asset ID
+        #[clap(short = 'i', long, value_parser)]
+        asset_id: u64,
+
+        #[clap(short = 'm', long, value_parser)]
+        read_mask: Option<String>,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Archive an asset
+    Archive {
+        /// Asset ID
+        #[clap(short = 'i', long, value_parser)]
+        asset_id: u64,
+
+        /// Roblox Open Cloud API Key
+        #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
+        api_key: String,
+    },
+
+    /// Restore an archived asset
+    Restore {
+        /// Asset ID
+        #[clap(short = 'i', long, value_parser)]
+        asset_id: u64,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -191,13 +227,54 @@ impl Assets {
                 }
             }
 
-            AssetsCommands::Get {
+            AssetsCommands::GetOperation {
                 operation_id,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
                 let assets = rbx_cloud.assets();
-                let res = assets.get(&GetAsset { operation_id }).await;
+                let res = assets
+                    .get_operation(&GetAssetOperation { operation_id })
+                    .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            AssetsCommands::Get {
+                asset_id,
+                read_mask,
+                api_key,
+            } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let assets = rbx_cloud.assets();
+                let res = assets
+                    .get(&GetAsset {
+                        asset_id,
+                        read_mask,
+                    })
+                    .await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            AssetsCommands::Archive { asset_id, api_key } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let assets = rbx_cloud.assets();
+                let res = assets.archive(&ArchiveAsset { asset_id }).await;
+                match res {
+                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Err(err) => Err(anyhow::anyhow!(err)),
+                }
+            }
+
+            AssetsCommands::Restore { asset_id, api_key } => {
+                let rbx_cloud = RbxCloud::new(&api_key);
+                let assets = rbx_cloud.assets();
+                let res = assets.restore(&ArchiveAsset { asset_id }).await;
                 match res {
                     Ok(data) => Ok(Some(format!("{data:#?}"))),
                     Err(err) => Err(anyhow::anyhow!(err)),

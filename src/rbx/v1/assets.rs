@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::rbx::error::Error;
+use crate::rbx::{error::Error, util::QueryString};
 use reqwest::{multipart, Response};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::json;
@@ -72,9 +72,20 @@ pub struct UpdateAssetParams {
     pub filepath: String,
 }
 
-pub struct GetAssetParams {
+pub struct GetAssetOperationParams {
     pub api_key: String,
     pub operation_id: String,
+}
+
+pub struct GetAssetParams {
+    pub api_key: String,
+    pub asset_id: u64,
+    pub read_mask: Option<String>,
+}
+
+pub struct ArchiveAssetParams {
+    pub api_key: String,
+    pub asset_id: u64,
 }
 
 #[derive(Deserialize, Debug)]
@@ -117,13 +128,37 @@ pub struct AssetGetOperationResponse {
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct AssetInfo {
+    pub asset_type: AssetTypeCategory,
+    pub asset_id: String,
+    pub creation_context: AssetCreationContext,
+    pub description: String,
+    pub display_name: String,
+    pub path: String,
+    pub revision_id: String,
+    pub revision_create_time: String,
+    pub moderation_result: ModerationResult,
+    pub state: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ModerationResult {
+    /// Note: There's a discrepancy between the Open Cloud docs and the actual
+    /// data from the API regarding what this value can be, hence it has been
+    /// left as a string and not an enum.
+    pub moderation_state: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct AssetErrorStatus {
     pub code: u64,
     pub message: String,
     pub details: Vec<ProtobufAny>,
 }
 
-#[derive(Debug, Clone, Copy, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Deserialize)]
 pub enum AssetType {
     AudioMp3,
     AudioOgg,
@@ -134,6 +169,13 @@ pub enum AssetType {
     DecalBmp,
     DecalTga,
     ModelFbx,
+}
+
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Deserialize)]
+pub enum AssetTypeCategory {
+    Audio,
+    Decal,
+    Model,
 }
 
 impl AssetType {
@@ -299,7 +341,7 @@ pub async fn update_asset(params: &UpdateAssetParams) -> Result<AssetOperation, 
     handle_res::<AssetOperation>(res).await
 }
 
-pub async fn get_asset(params: &GetAssetParams) -> Result<AssetGetOperation, Error> {
+pub async fn get_operation(params: &GetAssetOperationParams) -> Result<AssetGetOperation, Error> {
     let client = reqwest::Client::new();
     let url = format!(
         "https://apis.roblox.com/assets/v1/operations/{operationId}",
@@ -311,4 +353,53 @@ pub async fn get_asset(params: &GetAssetParams) -> Result<AssetGetOperation, Err
         .send()
         .await?;
     handle_res::<AssetGetOperation>(res).await
+}
+
+pub async fn get_asset(params: &GetAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}",
+        assetId = params.asset_id
+    );
+    let mut query: QueryString = vec![];
+    if let Some(read_mask) = &params.read_mask {
+        query.push(("readMask", read_mask.clone()));
+    }
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+        .query(&query)
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
+}
+
+pub async fn archive_asset(params: &ArchiveAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}:archive",
+        assetId = params.asset_id
+    );
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
+}
+
+pub async fn restore_asset(params: &ArchiveAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}:restore",
+        assetId = params.asset_id
+    );
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
 }
