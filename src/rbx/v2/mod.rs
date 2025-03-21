@@ -2,6 +2,11 @@
 //!
 //! Most usage should go through the `Client` struct.
 
+use luau_execution::{
+    CreateLuauExecutionTaskParams, GetLuauExecutionSessionTaskLogsParams,
+    GetLuauExecutionSessionTaskParams, LuauExecutionSessionTask, LuauExecutionSessionTaskLogPage,
+    LuauExecutionTaskLogView, NewLuauExecutionSessionTask,
+};
 use place::{GetPlaceParams, PlaceInfo, UpdatePlaceInfo, UpdatePlaceParams};
 use universe::{
     GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
@@ -50,6 +55,13 @@ pub struct Client {
 pub struct GroupClient {
     pub api_key: String,
     pub group_id: GroupId,
+}
+
+pub struct LuauExecutionClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
+    pub version_id: Option<String>,
 }
 
 pub struct SubscriptionClient {
@@ -119,6 +131,49 @@ impl GroupClient {
             max_page_size,
             page_token,
             filter,
+        })
+        .await
+    }
+}
+
+impl LuauExecutionClient {
+    pub async fn create_task(
+        &self,
+        script: String,
+        timeout: Option<String>,
+    ) -> Result<NewLuauExecutionSessionTask, Error> {
+        luau_execution::create_luau_execution_task(&CreateLuauExecutionTaskParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            script,
+            timeout,
+        })
+        .await
+    }
+
+    pub async fn get_task(&self, task_path: String) -> Result<LuauExecutionSessionTask, Error> {
+        luau_execution::get_luau_execution_task(&GetLuauExecutionSessionTaskParams {
+            api_key: self.api_key.clone(),
+            path: task_path,
+        })
+        .await
+    }
+
+    pub async fn get_logs(
+        &self,
+        task_path: String,
+        view: LuauExecutionTaskLogView,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+    ) -> Result<LuauExecutionSessionTaskLogPage, Error> {
+        luau_execution::get_luau_execution_task_logs(&GetLuauExecutionSessionTaskLogsParams {
+            api_key: self.api_key.clone(),
+            path: task_path,
+            view,
+            max_page_size,
+            page_token,
         })
         .await
     }
