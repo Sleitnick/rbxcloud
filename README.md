@@ -34,7 +34,7 @@ Possible use-cases:
 | :white_check_mark: | User Notifications |
 | :white_check_mark: | User |
 | :x: | Creator Store |
-| :x: | Luau Execution |
+| :white_check_mark: | Luau Execution |
 
 - :white_check_mark: = Supported
 - :x: = Not yet supported
