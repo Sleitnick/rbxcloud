@@ -23,6 +23,7 @@ use self::{
 };
 pub mod group;
 pub(crate) mod http_err;
+pub mod luau_execution;
 pub mod notification;
 pub mod place;
 pub mod subscription;
