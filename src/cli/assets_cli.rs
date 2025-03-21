@@ -51,6 +51,10 @@ pub enum AssetsCommands {
         #[clap(short, long, value_parser)]
         filepath: String,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -70,6 +74,10 @@ pub enum AssetsCommands {
         #[clap(short, long, value_parser)]
         filepath: String,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -80,6 +88,10 @@ pub enum AssetsCommands {
         /// Operation ID
         #[clap(short = 'i', long, value_parser)]
         operation_id: String,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -95,6 +107,10 @@ pub enum AssetsCommands {
         #[clap(short = 'm', long, value_parser)]
         read_mask: Option<String>,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -106,6 +122,10 @@ pub enum AssetsCommands {
         #[clap(short = 'i', long, value_parser)]
         asset_id: u64,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -116,6 +136,10 @@ pub enum AssetsCommands {
         /// Asset ID
         #[clap(short = 'i', long, value_parser)]
         asset_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -175,6 +199,7 @@ impl Assets {
                 creator_id,
                 creator_type,
                 filepath,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -197,7 +222,14 @@ impl Assets {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
@@ -206,6 +238,7 @@ impl Assets {
                 asset_type,
                 asset_id,
                 filepath,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -222,13 +255,21 @@ impl Assets {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
 
             AssetsCommands::GetOperation {
                 operation_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -237,7 +278,14 @@ impl Assets {
                     .get_operation(&GetAssetOperation { operation_id })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
@@ -245,6 +293,7 @@ impl Assets {
             AssetsCommands::Get {
                 asset_id,
                 read_mask,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -256,27 +305,56 @@ impl Assets {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
 
-            AssetsCommands::Archive { asset_id, api_key } => {
+            AssetsCommands::Archive {
+                asset_id,
+                pretty,
+                api_key,
+            } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
                 let assets = rbx_cloud.assets();
                 let res = assets.archive(&ArchiveAsset { asset_id }).await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }
 
-            AssetsCommands::Restore { asset_id, api_key } => {
+            AssetsCommands::Restore {
+                asset_id,
+                pretty,
+                api_key,
+            } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
                 let assets = rbx_cloud.assets();
                 let res = assets.restore(&ArchiveAsset { asset_id }).await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(anyhow::anyhow!(err)),
                 }
             }

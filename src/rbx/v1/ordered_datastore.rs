@@ -5,6 +5,7 @@
 //!
 
 use reqwest::Response;
+use serde::Serialize;
 use serde::{de::DeserializeOwned, Deserialize};
 use serde_json::json;
 
@@ -50,14 +51,15 @@ pub struct OrderedIncrementEntryParams {
     pub increment: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct OrderedEntry {
     pub path: String,
     pub id: String,
     pub value: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct OrderedListEntriesResponse {
     pub entries: Vec<OrderedEntry>,
