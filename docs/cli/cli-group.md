@@ -63,7 +63,7 @@ $ rbxcloud group roles -p -g 12345 -a MY_KEY
 ## List Group Memberships
 List members of the group. For more info on the `--filter` option, see [Roblox's documentation](https://create.roblox.com/docs/cloud/reference/patterns#list-group-memberships).
 ```
-Usage: rbxcloud.exe group memberships [OPTIONS] --group-id <GROUP_ID> --api-key <API_KEY>
+Usage: rbxcloud group memberships [OPTIONS] --group-id <GROUP_ID> --api-key <API_KEY>
 
 Options:
   -a, --api-key <API_KEY>                  Roblox Open Cloud API Key [env: RBXCLOUD_API_KEY=]
