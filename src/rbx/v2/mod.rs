@@ -153,24 +153,37 @@ impl LuauExecutionClient {
         .await
     }
 
-    pub async fn get_task(&self, task_path: String) -> Result<LuauExecutionSessionTask, Error> {
+    pub async fn get_task(
+        &self,
+        session_id: String,
+        task_id: String,
+    ) -> Result<LuauExecutionSessionTask, Error> {
         luau_execution::get_luau_execution_task(&GetLuauExecutionSessionTaskParams {
             api_key: self.api_key.clone(),
-            path: task_path,
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            session_id,
+            task_id,
         })
         .await
     }
 
     pub async fn get_logs(
         &self,
-        task_path: String,
+        session_id: String,
+        task_id: String,
         view: LuauExecutionTaskLogView,
         max_page_size: Option<u32>,
         page_token: Option<String>,
     ) -> Result<LuauExecutionSessionTaskLogPage, Error> {
         luau_execution::get_luau_execution_task_logs(&GetLuauExecutionSessionTaskLogsParams {
             api_key: self.api_key.clone(),
-            path: task_path,
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            session_id,
+            task_id,
             view,
             max_page_size,
             page_token,
@@ -309,6 +322,20 @@ impl Client {
         GroupClient {
             api_key: self.api_key.clone(),
             group_id,
+        }
+    }
+
+    pub fn luau(
+        &self,
+        universe_id: UniverseId,
+        place_id: PlaceId,
+        version_id: Option<String>,
+    ) -> LuauExecutionClient {
+        LuauExecutionClient {
+            api_key: self.api_key.clone(),
+            universe_id,
+            place_id,
+            version_id,
         }
     }
 

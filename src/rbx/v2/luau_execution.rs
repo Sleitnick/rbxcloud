@@ -30,21 +30,29 @@ pub struct NewLuauExecutionSessionTask {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLuauExecutionSessionTaskParams {
-    pub path: String,
     pub api_key: String,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
+    pub version_id: Option<String>,
+    pub session_id: String,
+    pub task_id: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct GetLuauExecutionSessionTaskLogsParams {
-    pub path: String,
     pub api_key: String,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
+    pub version_id: Option<String>,
+    pub session_id: String,
+    pub task_id: String,
     pub max_page_size: Option<u32>,
     pub page_token: Option<String>,
     pub view: LuauExecutionTaskLogView,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Deserialize, Serialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum LuauExecutionTaskLogView {
     Flat,
@@ -106,6 +114,7 @@ pub enum LuauExecutionState {
 #[serde(rename_all = "camelCase")]
 struct LuauExecutionInput {
     pub script: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timeout: Option<String>,
 }
 
@@ -139,6 +148,7 @@ pub async fn create_luau_execution_task(
     let res = client
         .post(url)
         .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
         .body(req_body)
         .send()
         .await?;
@@ -159,10 +169,24 @@ pub async fn get_luau_execution_task(
 ) -> Result<LuauExecutionSessionTask, Error> {
     let client = reqwest::Client::new();
 
-    let url = format!(
-        "https://apis.roblox.com/cloud/v2/{path}",
-        path = &params.path
-    );
+    let url = if let Some(version_id) = &params.version_id {
+        format!(
+			"https://apis.roblox.com/cloud/v2/universes/{universeId}/places/{placeId}/versions/{versionId}/luau-execution-sessions/{sessionId}/tasks/{taskId}",
+			universeId = &params.universe_id,
+			placeId = &params.place_id,
+			versionId = version_id,
+			sessionId = &params.session_id,
+			taskId = &params.task_id,
+		)
+    } else {
+        format!(
+			"https://apis.roblox.com/cloud/v2/universes/{universeId}/places/{placeId}/luau-execution-sessions/{sessionId}/tasks/{taskId}",
+			universeId = &params.universe_id,
+			placeId = &params.place_id,
+			sessionId = &params.session_id,
+			taskId = &params.task_id,
+		)
+    };
 
     let res = client
         .get(url)
@@ -186,10 +210,24 @@ pub async fn get_luau_execution_task_logs(
 ) -> Result<LuauExecutionSessionTaskLogPage, Error> {
     let client = reqwest::Client::new();
 
-    let url = format!(
-        "https://apis.roblox.com/cloud/v2/{path}",
-        path = &params.path
-    );
+    let url = if let Some(version_id) = &params.version_id {
+        format!(
+			"https://apis.roblox.com/cloud/v2/universes/{universeId}/places/{placeId}/versions/{versionId}/luau-execution-sessions/{sessionId}/tasks/{taskId}/logs",
+			universeId = &params.universe_id,
+			placeId = &params.place_id,
+			versionId = version_id,
+			sessionId = &params.session_id,
+			taskId = &params.task_id,
+		)
+    } else {
+        format!(
+			"https://apis.roblox.com/cloud/v2/universes/{universeId}/places/{placeId}/luau-execution-sessions/{sessionId}/tasks/{taskId}/logs",
+			universeId = &params.universe_id,
+			placeId = &params.place_id,
+			sessionId = &params.session_id,
+			taskId = &params.task_id,
+		)
+    };
 
     let res = client
         .get(url)
