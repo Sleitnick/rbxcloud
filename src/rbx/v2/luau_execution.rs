@@ -4,6 +4,7 @@ use serde_json::Value;
 use crate::rbx::{
     error::Error,
     types::{PlaceId, UniverseId},
+    util::QueryString,
 };
 
 use super::http_err::handle_http_err;
@@ -57,6 +58,19 @@ pub struct GetLuauExecutionSessionTaskLogsParams {
 pub enum LuauExecutionTaskLogView {
     Flat,
     Structured,
+}
+
+impl std::fmt::Display for LuauExecutionTaskLogView {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Flat => "FLAT",
+                Self::Structured => "STRUCTURED",
+            }
+        )
+    }
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -229,11 +243,22 @@ pub async fn get_luau_execution_task_logs(
 		)
     };
 
+    let mut query: QueryString = vec![("view", params.view.to_string())];
+    if let Some(max_page_size) = params.max_page_size {
+        query.push(("maxPageSize", format!("{max_page_size}")));
+    }
+    if let Some(page_token) = &params.page_token {
+        query.push(("pageToken", page_token.clone()));
+    }
+
     let res = client
         .get(url)
         .header("x-api-key", &params.api_key)
+        .query(&query)
         .send()
         .await?;
+
+    println!("URL SENT: {}", res.url());
 
     let status = res.status();
 
