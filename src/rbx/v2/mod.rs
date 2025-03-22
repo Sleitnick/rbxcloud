@@ -28,6 +28,7 @@ use self::{
 };
 pub mod group;
 pub(crate) mod http_err;
+pub mod inventory;
 pub mod luau_execution;
 pub mod notification;
 pub mod place;
