@@ -30,7 +30,7 @@ Possible use-cases:
 | :white_check_mark: | Places |
 | :x: | Instances |
 | :white_check_mark: | Subscriptions |
-| :x: | Inventory |
+| :white_check_mark: | Inventory |
 | :white_check_mark: | User Notifications |
 | :white_check_mark: | User |
 | :x: | Creator Store |
