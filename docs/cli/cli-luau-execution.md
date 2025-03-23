@@ -37,7 +37,7 @@ Options:
 ## Get Task Logs
 Retrieves logs on a previously executed task.
 ```
-Usage: rbxcloud.exe luau get-logs [OPTIONS] --universe-id <UNIVERSE_ID> --place-id <PLACE_ID> --session-id <SESSION_ID> --task-id <TASK_ID> --api-key <API_KEY>
+Usage: rbxcloud luau get-logs [OPTIONS] --universe-id <UNIVERSE_ID> --place-id <PLACE_ID> --session-id <SESSION_ID> --task-id <TASK_ID> --api-key <API_KEY>
 
 Options:
   -u, --universe-id <UNIVERSE_ID>      Universe ID of the experience
