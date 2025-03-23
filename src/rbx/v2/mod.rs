@@ -2,6 +2,7 @@
 //!
 //! Most usage should go through the `Client` struct.
 
+use inventory::{InventoryItems, ListInventoryItemsParams};
 use luau_execution::{
     CreateLuauExecutionTaskParams, GetLuauExecutionSessionTaskLogsParams,
     GetLuauExecutionSessionTaskParams, LuauExecutionSessionTask, LuauExecutionSessionTaskLogPage,
@@ -56,6 +57,10 @@ pub struct Client {
 pub struct GroupClient {
     pub api_key: String,
     pub group_id: GroupId,
+}
+
+pub struct InventoryClient {
+    pub api_key: String,
 }
 
 pub struct LuauExecutionClient {
@@ -129,6 +134,25 @@ impl GroupClient {
         group::list_group_memberships(&ListGroupMembershipsParams {
             api_key: self.api_key.clone(),
             group_id: self.group_id,
+            max_page_size,
+            page_token,
+            filter,
+        })
+        .await
+    }
+}
+
+impl InventoryClient {
+    pub async fn list_inventory_items(
+        &self,
+        user_id: RobloxUserId,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+        filter: Option<String>,
+    ) -> Result<InventoryItems, Error> {
+        inventory::list_inventory_items(&ListInventoryItemsParams {
+            api_key: self.api_key.clone(),
+            user_id,
             max_page_size,
             page_token,
             filter,
@@ -323,6 +347,12 @@ impl Client {
         GroupClient {
             api_key: self.api_key.clone(),
             group_id,
+        }
+    }
+
+    pub fn inventory(&self) -> InventoryClient {
+        InventoryClient {
+            api_key: self.api_key.clone(),
         }
     }
 
