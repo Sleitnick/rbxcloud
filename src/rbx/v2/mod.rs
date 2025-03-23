@@ -9,6 +9,7 @@ use luau_execution::{
     LuauExecutionTaskLogView, NewLuauExecutionSessionTask,
 };
 use place::{GetPlaceParams, PlaceInfo, UpdatePlaceInfo, UpdatePlaceParams};
+use rand::{distr::Alphanumeric, Rng};
 use universe::{
     GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
     UpdateUniverseParams,
@@ -102,7 +103,6 @@ pub struct UserClient {
 pub struct UserRestrictionClient {
     pub api_key: String,
     pub universe_id: UniverseId,
-    idempotent_gen: u64,
 }
 
 pub struct UserRestrictionParams {
@@ -394,14 +394,17 @@ impl UserRestrictionClient {
         &mut self,
         params: &UserRestrictionParams,
     ) -> Result<UserRestriction, Error> {
-        self.idempotent_gen += 1;
-        let key = format!("{}", self.idempotent_gen);
+        let idempotency_key: String = rand::rng()
+            .sample_iter(&Alphanumeric)
+            .take(32)
+            .map(char::from)
+            .collect();
         user_restriction::update_user_restriction(&UpdateUserRestrictionParams {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             place_id: params.place_id,
             user_id: params.user_id,
-            idempotency_key: key,
+            idempotency_key: Some(idempotency_key),
             active: params.active,
             duration: params.duration.and_then(|d| Some(format!("{}s", d))),
             private_reason: params.private_reason.clone(),
@@ -502,7 +505,6 @@ impl Client {
         UserRestrictionClient {
             api_key: self.api_key.clone(),
             universe_id,
-            idempotent_gen: 0,
         }
     }
 }

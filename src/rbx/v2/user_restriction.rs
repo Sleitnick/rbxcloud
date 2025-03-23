@@ -13,7 +13,9 @@ use super::http_err::handle_http_err;
 #[serde(rename_all = "camelCase")]
 pub struct GameJoinRestriction {
     pub active: bool,
-    pub start_time: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_time: Option<DateTime<Utc>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub duration: Option<String>,
     pub private_reason: String,
     pub display_reason: String,
@@ -25,6 +27,7 @@ pub struct GameJoinRestriction {
 #[serde(rename_all = "camelCase")]
 pub struct UserRestriction {
     pub path: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub update_time: Option<DateTime<Utc>>,
     pub user: String,
     pub game_join_restriction: GameJoinRestriction,
@@ -35,7 +38,7 @@ pub struct UpdateUserRestrictionParams {
     pub universe_id: UniverseId,
     pub place_id: Option<PlaceId>,
     pub user_id: RobloxUserId,
-    pub idempotency_key: String,
+    pub idempotency_key: Option<String>,
     pub active: Option<bool>,
     pub duration: Option<String>,
     pub private_reason: Option<String>,
@@ -220,33 +223,17 @@ pub async fn update_user_restriction(
         )
     };
 
-    // Build update mask based on provided parameters:
-    let mut update_mask: Vec<&str> = vec![];
-    if params.active.is_some() {
-        update_mask.push("gameJoinRestriction.active");
-    }
-    if params.duration.is_some() {
-        update_mask.push("gameJoinRestriction.duration");
-    }
-    if params.private_reason.is_some() {
-        update_mask.push("gameJoinRestriction.privateReason");
-    }
-    if params.display_reason.is_some() {
-        update_mask.push("gameJoinRestriction.displayReason");
-    }
-    if params.exclude_alt_accounts.is_some() {
-        update_mask.push("gameJoinRestriction.excludeAltAccounts");
-    }
-    let update_mask_str = update_mask.join(",");
+    let timestamp = Utc::now();
 
-    // See: https://create.roblox.com/docs/cloud/reference/types#timestamp
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true);
+    let mut query: QueryString = vec![("updateMask", "gameJoinRestriction".to_string())];
 
-    let query: QueryString = vec![
-        ("updateMask", update_mask_str),
-        ("idempotencyKey.key", params.idempotency_key.to_string()),
-        ("idempotencyKey.firstSent", timestamp.clone()),
-    ];
+    if let Some(idempotency_key) = &params.idempotency_key {
+        query.push(("idempotencyKey.key", idempotency_key.to_string()));
+        query.push((
+            "idempotencyKey.firstSent",
+            timestamp.to_rfc3339_opts(SecondsFormat::Millis, true),
+        ));
+    }
 
     let body = serde_json::to_string(&UpdateUserRestriction {
         game_join_restriction: GameJoinRestriction {
