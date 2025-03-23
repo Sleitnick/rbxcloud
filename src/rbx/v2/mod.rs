@@ -2,7 +2,14 @@
 //!
 //! Most usage should go through the `Client` struct.
 
+use inventory::{InventoryItems, ListInventoryItemsParams};
+use luau_execution::{
+    CreateLuauExecutionTaskParams, GetLuauExecutionSessionTaskLogsParams,
+    GetLuauExecutionSessionTaskParams, LuauExecutionSessionTask, LuauExecutionSessionTaskLogPage,
+    LuauExecutionTaskLogView, NewLuauExecutionSessionTask,
+};
 use place::{GetPlaceParams, PlaceInfo, UpdatePlaceInfo, UpdatePlaceParams};
+use rand::{distr::Alphanumeric, Rng};
 use universe::{
     GetUniverseParams, RestartUniverseServersParams, UniverseInfo, UpdateUniverseInfo,
     UpdateUniverseParams,
@@ -10,6 +17,10 @@ use universe::{
 use user::{
     GenerateUserThumbnailOperationResponse, GenerateUserThumbnailParams, GetUserParams,
     GetUserResponse, UserThumbnailFormat, UserThumbnailShape, UserThumbnailSize,
+};
+use user_restriction::{
+    GetUserRestrictionParams, ListUserRestrictionLogsParams, ListUserRestrictionsParams,
+    UpdateUserRestrictionParams, UserRestriction, UserRestrictionList, UserRestrictionLogsList,
 };
 
 use self::{
@@ -23,11 +34,14 @@ use self::{
 };
 pub mod group;
 pub(crate) mod http_err;
+pub mod inventory;
+pub mod luau_execution;
 pub mod notification;
 pub mod place;
 pub mod subscription;
 pub mod universe;
 pub mod user;
+pub mod user_restriction;
 
 use crate::rbx::error::Error;
 
@@ -49,6 +63,17 @@ pub struct Client {
 pub struct GroupClient {
     pub api_key: String,
     pub group_id: GroupId,
+}
+
+pub struct InventoryClient {
+    pub api_key: String,
+}
+
+pub struct LuauExecutionClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+    pub place_id: PlaceId,
+    pub version_id: Option<String>,
 }
 
 pub struct SubscriptionClient {
@@ -73,6 +98,21 @@ pub struct UniverseClient {
 
 pub struct UserClient {
     pub api_key: String,
+}
+
+pub struct UserRestrictionClient {
+    pub api_key: String,
+    pub universe_id: UniverseId,
+}
+
+pub struct UserRestrictionParams {
+    pub user_id: RobloxUserId,
+    pub place_id: Option<PlaceId>,
+    pub active: Option<bool>,
+    pub duration: Option<u64>,
+    pub private_reason: Option<String>,
+    pub display_reason: Option<String>,
+    pub exclude_alt_accounts: Option<bool>,
 }
 
 impl GroupClient {
@@ -118,6 +158,81 @@ impl GroupClient {
             max_page_size,
             page_token,
             filter,
+        })
+        .await
+    }
+}
+
+impl InventoryClient {
+    pub async fn list_inventory_items(
+        &self,
+        user_id: RobloxUserId,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+        filter: Option<String>,
+    ) -> Result<InventoryItems, Error> {
+        inventory::list_inventory_items(&ListInventoryItemsParams {
+            api_key: self.api_key.clone(),
+            user_id,
+            max_page_size,
+            page_token,
+            filter,
+        })
+        .await
+    }
+}
+
+impl LuauExecutionClient {
+    pub async fn create_task(
+        &self,
+        script: String,
+        timeout: Option<String>,
+    ) -> Result<NewLuauExecutionSessionTask, Error> {
+        luau_execution::create_luau_execution_task(&CreateLuauExecutionTaskParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            script,
+            timeout,
+        })
+        .await
+    }
+
+    pub async fn get_task(
+        &self,
+        session_id: String,
+        task_id: String,
+    ) -> Result<LuauExecutionSessionTask, Error> {
+        luau_execution::get_luau_execution_task(&GetLuauExecutionSessionTaskParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            session_id,
+            task_id,
+        })
+        .await
+    }
+
+    pub async fn get_logs(
+        &self,
+        session_id: String,
+        task_id: String,
+        view: LuauExecutionTaskLogView,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+    ) -> Result<LuauExecutionSessionTaskLogPage, Error> {
+        luau_execution::get_luau_execution_task_logs(&GetLuauExecutionSessionTaskLogsParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: self.place_id,
+            version_id: self.version_id.clone(),
+            session_id,
+            task_id,
+            view,
+            max_page_size,
+            page_token,
         })
         .await
     }
@@ -201,7 +316,7 @@ impl UniverseClient {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             update_mask,
-            info: info,
+            info,
         })
         .await
     }
@@ -242,6 +357,82 @@ impl UserClient {
     }
 }
 
+impl UserRestrictionClient {
+    pub async fn list_user_restrictions(
+        &self,
+        place_id: Option<PlaceId>,
+        max_page_size: Option<u32>,
+        filter: Option<String>,
+        page_token: Option<String>,
+    ) -> Result<UserRestrictionList, Error> {
+        user_restriction::list_user_restrictions(&ListUserRestrictionsParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id,
+            max_page_size,
+            page_token,
+            filter,
+        })
+        .await
+    }
+
+    pub async fn get_user_restriction(
+        &self,
+        user_id: RobloxUserId,
+        place_id: Option<PlaceId>,
+    ) -> Result<UserRestriction, Error> {
+        user_restriction::get_user_restriction(&GetUserRestrictionParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id,
+            user_id,
+        })
+        .await
+    }
+
+    pub async fn update_user_restriction(
+        &mut self,
+        params: &UserRestrictionParams,
+    ) -> Result<UserRestriction, Error> {
+        let idempotency_key: String = rand::rng()
+            .sample_iter(&Alphanumeric)
+            .take(32)
+            .map(char::from)
+            .collect();
+        user_restriction::update_user_restriction(&UpdateUserRestrictionParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id: params.place_id,
+            user_id: params.user_id,
+            idempotency_key: Some(idempotency_key),
+            active: params.active,
+            duration: params.duration.and_then(|d| Some(format!("{}s", d))),
+            private_reason: params.private_reason.clone(),
+            display_reason: params.display_reason.clone(),
+            exclude_alt_accounts: params.exclude_alt_accounts,
+        })
+        .await
+    }
+
+    pub async fn list_user_restriction_logs(
+        &self,
+        place_id: Option<PlaceId>,
+        max_page_size: Option<u32>,
+        page_token: Option<String>,
+        filter: Option<String>,
+    ) -> Result<UserRestrictionLogsList, Error> {
+        user_restriction::list_user_restriction_logs(&ListUserRestrictionLogsParams {
+            api_key: self.api_key.clone(),
+            universe_id: self.universe_id,
+            place_id,
+            max_page_size,
+            page_token,
+            filter,
+        })
+        .await
+    }
+}
+
 impl Client {
     pub fn new(api_key: &str) -> Client {
         Client {
@@ -253,6 +444,26 @@ impl Client {
         GroupClient {
             api_key: self.api_key.clone(),
             group_id,
+        }
+    }
+
+    pub fn inventory(&self) -> InventoryClient {
+        InventoryClient {
+            api_key: self.api_key.clone(),
+        }
+    }
+
+    pub fn luau(
+        &self,
+        universe_id: UniverseId,
+        place_id: PlaceId,
+        version_id: Option<String>,
+    ) -> LuauExecutionClient {
+        LuauExecutionClient {
+            api_key: self.api_key.clone(),
+            universe_id,
+            place_id,
+            version_id,
         }
     }
 
@@ -287,6 +498,13 @@ impl Client {
     pub fn user(&self) -> UserClient {
         UserClient {
             api_key: self.api_key.clone(),
+        }
+    }
+
+    pub fn user_restriction(&self, universe_id: UniverseId) -> UserRestrictionClient {
+        UserRestrictionClient {
+            api_key: self.api_key.clone(),
+            universe_id,
         }
     }
 }

@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 /// Represents the UniverseId of a Roblox experience.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct UniverseId(pub u64);
 
 /// Represents the PlaceId of a specific place within a Roblox experience.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct PlaceId(pub u64);
 
 // Number of items to return.
@@ -11,7 +13,7 @@ pub struct PlaceId(pub u64);
 pub struct ReturnLimit(pub u64);
 
 /// Represents a Roblox user's ID.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct RobloxUserId(pub u64);
 
 #[derive(Debug, Clone, Copy)]
