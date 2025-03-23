@@ -24,7 +24,7 @@ pub enum OrderedDataStoreCommands {
         max_page_size: Option<u64>,
 
         /// Cursor for the next set of data
-        #[clap(short, long, value_parser)]
+        #[clap(short = 't', long, value_parser)]
         page_token: Option<String>,
 
         /// The enumeration direction (Use 'desc' for descending)
@@ -38,6 +38,10 @@ pub enum OrderedDataStoreCommands {
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -66,6 +70,10 @@ pub enum OrderedDataStoreCommands {
         #[clap(short, long, value_parser)]
         universe_id: u64,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -88,6 +96,10 @@ pub enum OrderedDataStoreCommands {
         /// Universe ID of the experience
         #[clap(short, long, value_parser)]
         universe_id: u64,
+
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
 
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
@@ -143,6 +155,10 @@ pub enum OrderedDataStoreCommands {
         #[clap(short, long, value_parser)]
         universe_id: u64,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -170,6 +186,10 @@ pub enum OrderedDataStoreCommands {
         #[clap(short, long, value_parser)]
         universe_id: u64,
 
+        /// Pretty-print the JSON response
+        #[clap(short, long, value_parser, default_value_t = false)]
+        pretty: bool,
+
         /// Roblox Open Cloud API Key
         #[clap(short, long, value_parser, env = "RBXCLOUD_API_KEY")]
         api_key: String,
@@ -193,6 +213,7 @@ impl OrderedDataStore {
                 order_by,
                 filter,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -208,7 +229,14 @@ impl OrderedDataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -219,6 +247,7 @@ impl OrderedDataStore {
                 id,
                 value,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -232,7 +261,14 @@ impl OrderedDataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -242,6 +278,7 @@ impl OrderedDataStore {
                 scope,
                 id,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -254,7 +291,14 @@ impl OrderedDataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -288,6 +332,7 @@ impl OrderedDataStore {
                 value,
                 allow_missing,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -302,7 +347,14 @@ impl OrderedDataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }
@@ -313,6 +365,7 @@ impl OrderedDataStore {
                 id,
                 increment,
                 universe_id,
+                pretty,
                 api_key,
             } => {
                 let rbx_cloud = RbxCloud::new(&api_key);
@@ -326,7 +379,14 @@ impl OrderedDataStore {
                     })
                     .await;
                 match res {
-                    Ok(data) => Ok(Some(format!("{data:#?}"))),
+                    Ok(data) => {
+                        let r = if pretty {
+                            serde_json::to_string_pretty(&data)?
+                        } else {
+                            serde_json::to_string(&data)?
+                        };
+                        Ok(Some(r))
+                    }
                     Err(err) => Err(err.into()),
                 }
             }

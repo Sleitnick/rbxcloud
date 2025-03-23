@@ -4,7 +4,7 @@
 //! struct, obtained through the `RbxCloud` struct.
 
 use reqwest::Response;
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::rbx::{
     error::Error,
@@ -13,14 +13,14 @@ use crate::rbx::{
 
 use crate::rbx::v1::{ds_error::DataStoreErrorResponse, ReturnLimit, RobloxUserId, UniverseId};
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListDataStoreEntry {
     pub name: String,
     pub created_time: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListDataStoresResponse {
     pub datastores: Vec<ListDataStoreEntry>,
@@ -46,14 +46,14 @@ pub struct ListEntriesParams {
     pub cursor: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListEntriesResponse {
     pub keys: Vec<ListEntriesKey>,
     pub next_page_cursor: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListEntriesKey {
     pub scope: String,
@@ -81,7 +81,7 @@ pub struct SetEntryParams {
     pub data: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SetEntryResponse {
     pub version: String,
@@ -123,14 +123,14 @@ pub struct ListEntryVersionsParams {
     pub cursor: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListEntryVersionsResponse {
     pub versions: Vec<ListEntryVersion>,
     pub next_page_cursor: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ListEntryVersion {
     pub version: String,

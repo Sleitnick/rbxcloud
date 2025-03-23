@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::rbx::error::Error;
+use crate::rbx::{error::Error, util::QueryString};
 use reqwest::{multipart, Response};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::json;
@@ -24,7 +24,7 @@ pub enum AssetCreator {
     Group(AssetGroupCreator),
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetCreationContext {
     pub creator: AssetCreator,
@@ -72,12 +72,23 @@ pub struct UpdateAssetParams {
     pub filepath: String,
 }
 
-pub struct GetAssetParams {
+pub struct GetAssetOperationParams {
     pub api_key: String,
     pub operation_id: String,
 }
 
-#[derive(Deserialize, Debug)]
+pub struct GetAssetParams {
+    pub api_key: String,
+    pub asset_id: u64,
+    pub read_mask: Option<String>,
+}
+
+pub struct ArchiveAssetParams {
+    pub api_key: String,
+    pub asset_id: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetOperation {
     pub path: Option<String>,
@@ -87,14 +98,14 @@ pub struct AssetOperation {
     pub response: Option<ProtobufAny>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ProtobufAny {
     #[serde(rename = "@type")]
     pub message_type: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperation {
     pub path: String,
@@ -102,7 +113,7 @@ pub struct AssetGetOperation {
     pub response: Option<AssetGetOperationResponse>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetGetOperationResponse {
     pub path: String,
@@ -115,7 +126,31 @@ pub struct AssetGetOperationResponse {
     pub creation_context: AssetCreationContext,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AssetInfo {
+    pub asset_type: AssetTypeCategory,
+    pub asset_id: String,
+    pub creation_context: AssetCreationContext,
+    pub description: String,
+    pub display_name: String,
+    pub path: String,
+    pub revision_id: String,
+    pub revision_create_time: String,
+    pub moderation_result: ModerationResult,
+    pub state: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct ModerationResult {
+    /// Note: There's a discrepancy between the Open Cloud docs and the actual
+    /// data from the API regarding what this value can be, hence it has been
+    /// left as a string and not an enum.
+    pub moderation_state: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AssetErrorStatus {
     pub code: u64,
@@ -123,10 +158,12 @@ pub struct AssetErrorStatus {
     pub details: Vec<ProtobufAny>,
 }
 
-#[derive(Debug, Clone, Copy, clap::ValueEnum)]
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Deserialize)]
 pub enum AssetType {
     AudioMp3,
     AudioOgg,
+    AudioFlac,
+    AudioWav,
     DecalPng,
     DecalJpeg,
     DecalBmp,
@@ -134,11 +171,20 @@ pub enum AssetType {
     ModelFbx,
 }
 
+#[derive(Debug, Clone, Copy, clap::ValueEnum, Serialize, Deserialize)]
+pub enum AssetTypeCategory {
+    Audio,
+    Decal,
+    Model,
+}
+
 impl AssetType {
     fn content_type(&self) -> &'static str {
         match self {
             Self::AudioMp3 => "audio/mpeg",
             Self::AudioOgg => "audio/ogg",
+            Self::AudioFlac => "audio/flac",
+            Self::AudioWav => "audio/wav",
             Self::DecalPng => "image/png",
             Self::DecalJpeg => "image/jpeg",
             Self::DecalBmp => "image/bmp",
@@ -149,7 +195,7 @@ impl AssetType {
 
     fn asset_type(&self) -> &'static str {
         match self {
-            Self::AudioMp3 | Self::AudioOgg => "Audio",
+            Self::AudioMp3 | Self::AudioOgg | Self::AudioFlac | Self::AudioWav => "Audio",
             Self::DecalPng | Self::DecalJpeg | Self::DecalBmp | Self::DecalTga => "Decal",
             Self::ModelFbx => "Model",
         }
@@ -159,6 +205,8 @@ impl AssetType {
         match extension.to_lowercase().as_str() {
             "mp3" => Ok(Self::AudioMp3),
             "ogg" => Ok(Self::AudioOgg),
+            "flac" => Ok(Self::AudioFlac),
+            "wav" => Ok(Self::AudioWav),
             "png" => Ok(Self::DecalPng),
             "jpg" => Ok(Self::DecalJpeg),
             "jpeg" => Ok(Self::DecalJpeg),
@@ -293,7 +341,7 @@ pub async fn update_asset(params: &UpdateAssetParams) -> Result<AssetOperation, 
     handle_res::<AssetOperation>(res).await
 }
 
-pub async fn get_asset(params: &GetAssetParams) -> Result<AssetGetOperation, Error> {
+pub async fn get_operation(params: &GetAssetOperationParams) -> Result<AssetGetOperation, Error> {
     let client = reqwest::Client::new();
     let url = format!(
         "https://apis.roblox.com/assets/v1/operations/{operationId}",
@@ -305,4 +353,53 @@ pub async fn get_asset(params: &GetAssetParams) -> Result<AssetGetOperation, Err
         .send()
         .await?;
     handle_res::<AssetGetOperation>(res).await
+}
+
+pub async fn get_asset(params: &GetAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}",
+        assetId = params.asset_id
+    );
+    let mut query: QueryString = vec![];
+    if let Some(read_mask) = &params.read_mask {
+        query.push(("readMask", read_mask.clone()));
+    }
+    let res = client
+        .get(url)
+        .header("x-api-key", &params.api_key)
+        .query(&query)
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
+}
+
+pub async fn archive_asset(params: &ArchiveAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}:archive",
+        assetId = params.asset_id
+    );
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
+}
+
+pub async fn restore_asset(params: &ArchiveAssetParams) -> Result<AssetInfo, Error> {
+    let client = reqwest::Client::new();
+    let url = format!(
+        "https://apis.roblox.com/assets/v1/assets/{assetId}:restore",
+        assetId = params.asset_id
+    );
+    let res = client
+        .post(url)
+        .header("x-api-key", &params.api_key)
+        .header("Content-Type", "application/json")
+        .send()
+        .await?;
+    handle_res::<AssetInfo>(res).await
 }
