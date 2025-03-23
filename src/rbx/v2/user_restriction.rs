@@ -1,3 +1,4 @@
+use chrono::{DateTime, SecondsFormat, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::rbx::{
@@ -24,7 +25,7 @@ pub struct GameJoinRestriction {
 #[serde(rename_all = "camelCase")]
 pub struct UserRestriction {
     pub path: String,
-    pub update_time: Option<String>,
+    pub update_time: Option<DateTime<Utc>>,
     pub user: String,
     pub game_join_restriction: GameJoinRestriction,
 }
@@ -239,7 +240,7 @@ pub async fn update_user_restriction(
     let update_mask_str = update_mask.join(",");
 
     // See: https://create.roblox.com/docs/cloud/reference/types#timestamp
-    let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
+    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true);
 
     let query: QueryString = vec![
         ("updateMask", update_mask_str),
