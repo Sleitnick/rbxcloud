@@ -33,6 +33,7 @@ pub struct InventoryItem {
     game_pass_details: Option<InventoryItemGamePassDetails>,
     #[serde(skip_serializing_if = "Option::is_none")]
     private_server_details: Option<InventoryItemPrivateServerDetails>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     add_time: Option<String>,
 }
 
@@ -42,6 +43,7 @@ pub struct InventoryItemAssetDetails {
     asset_id: String,
     instance_id: String,
     inventory_item_asset_type: InventoryItemAssetType,
+    #[serde(skip_serializing_if = "Option::is_none")]
     collectible_details: Option<InventoryItemCollectibleDetails>,
 }
 
@@ -69,7 +71,8 @@ pub struct InventoryItemCollectibleDetails {
     item_id: String,
     instance_id: String,
     instance_state: InventoryItemInstanceState,
-    serial_number: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    serial_number: Option<u64>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -164,6 +167,8 @@ pub async fn list_inventory_items(
         .query(&query)
         .send()
         .await?;
+
+    println!("URL: {}", res.url());
 
     let status = res.status();
 
