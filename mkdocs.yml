@@ -13,6 +13,7 @@ nav:
     - DataStore: cli/cli-datastore.md
     - Experience: cli/cli-experience.md
     - Group: cli/cli-group.md
+    - Inventory: cli/cli-inventory.md
     - Luau Execution: cli/cli-luau-execution.md
     - Messaging: cli/cli-messaging.md
     - Notification: cli/cli-notification.md
