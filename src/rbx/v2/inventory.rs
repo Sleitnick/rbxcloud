@@ -66,7 +66,18 @@ pub struct InventoryItemPrivateServerDetails {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct InventoryItemCollectibleDetails {
-    // TODO
+    item_id: String,
+    instance_id: String,
+    instance_state: InventoryItemInstanceState,
+    serial_number: u64,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum InventoryItemInstanceState {
+    CollectibleItemInstanceStateUnspecified,
+    Available,
+    Hold,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
