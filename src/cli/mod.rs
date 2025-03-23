@@ -2,6 +2,8 @@ mod assets_cli;
 mod datastore_cli;
 mod experience_cli;
 mod group_cli;
+mod inventory_cli;
+mod luau_execution_cli;
 mod messaging_cli;
 mod notification_cli;
 mod ordered_datastore_cli;
@@ -12,6 +14,8 @@ mod user_cli;
 mod user_restriction_cli;
 
 use clap::{Parser, Subcommand};
+use inventory_cli::Inventory;
+use luau_execution_cli::Luau;
 use universe_cli::Universe;
 use user_cli::User;
 use user_restriction_cli::UserRestriction;
@@ -46,8 +50,13 @@ pub(crate) enum Command {
     /// Access the Roblox OrderedDataStore API
     OrderedDatastore(OrderedDataStore),
 
+    /// Access the Roblox user inventory API
+    Inventory(Inventory),
+
     /// Access the Roblox Group API
     Group(Group),
+
+    Luau(Luau),
 
     /// Access the Roblox Subscription API
     Subscription(Subscription),
@@ -77,6 +86,8 @@ impl Cli {
             Command::Datastore(command) => command.run().await,
             Command::OrderedDatastore(command) => command.run().await,
             Command::Group(command) => command.run().await,
+            Command::Inventory(command) => command.run().await,
+            Command::Luau(command) => command.run().await,
             Command::Subscription(command) => command.run().await,
             Command::Notification(command) => command.run().await,
             Command::Place(command) => command.run().await,

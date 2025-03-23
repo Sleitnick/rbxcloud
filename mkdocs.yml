@@ -8,16 +8,18 @@ nav:
   - Home: index.md
   - CLI:
     - Install: cli/cli-install.md
-    - Assets: cli/cli-assets.md
     - API Key: cli/cli-api-key.md
-    - Experience: cli/cli-experience.md
-    - Messaging: cli/cli-messaging.md
+    - Assets: cli/cli-assets.md
     - DataStore: cli/cli-datastore.md
-    - OrderedDataStore: cli/cli-ordered-datastore.md
+    - Experience: cli/cli-experience.md
     - Group: cli/cli-group.md
-    - Subscription: cli/cli-subscription.md
+    - Inventory: cli/cli-inventory.md
+    - Luau Execution: cli/cli-luau-execution.md
+    - Messaging: cli/cli-messaging.md
     - Notification: cli/cli-notification.md
+    - OrderedDataStore: cli/cli-ordered-datastore.md
     - Place: cli/cli-place.md
+    - Subscription: cli/cli-subscription.md
     - Universe: cli/cli-universe.md
     - User: cli/cli-user.md
   - Rust Lib:
