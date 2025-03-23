@@ -168,8 +168,6 @@ pub async fn list_inventory_items(
         .send()
         .await?;
 
-    println!("URL: {}", res.url());
-
     let status = res.status();
 
     if !status.is_success() {
