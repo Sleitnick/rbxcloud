@@ -295,7 +295,7 @@ impl UniverseClient {
             api_key: self.api_key.clone(),
             universe_id: self.universe_id,
             update_mask,
-            info: info,
+            info,
         })
         .await
     }
