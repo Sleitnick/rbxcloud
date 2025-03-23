@@ -107,7 +107,7 @@ pub async fn get_subscription(
 
     let mut query: QueryString = vec![];
     if let Some(view) = &params.view {
-        query.push(("view", view.to_string()))
+        query.push(("view", view.to_string()));
     }
 
     let res = client

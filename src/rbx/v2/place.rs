@@ -83,8 +83,7 @@ pub async fn update_place(params: &UpdatePlaceParams) -> Result<PlaceInfo, Error
         placeId = &params.place_id,
     );
 
-    let mut query: QueryString = vec![];
-    query.push(("updateMask", params.update_mask.clone()));
+    let query: QueryString = vec![("updateMask", params.update_mask.clone())];
 
     let body = serde_json::to_string(&params.info)?;
 

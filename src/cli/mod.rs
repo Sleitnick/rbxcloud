@@ -2,6 +2,7 @@ mod assets_cli;
 mod datastore_cli;
 mod experience_cli;
 mod group_cli;
+mod inventory_cli;
 mod luau_execution_cli;
 mod messaging_cli;
 mod notification_cli;
@@ -10,11 +11,14 @@ mod place_cli;
 mod subscription_cli;
 mod universe_cli;
 mod user_cli;
+mod user_restriction_cli;
 
 use clap::{Parser, Subcommand};
+use inventory_cli::Inventory;
 use luau_execution_cli::Luau;
 use universe_cli::Universe;
 use user_cli::User;
+use user_restriction_cli::UserRestriction;
 
 use self::{
     assets_cli::Assets, datastore_cli::DataStore, experience_cli::Experience, group_cli::Group,
@@ -24,13 +28,13 @@ use self::{
 
 #[derive(Debug, Parser)]
 #[clap(name = "rbxcloud", version)]
-pub struct Cli {
+pub(crate) struct Cli {
     #[clap(subcommand)]
     pub command: Command,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum Command {
+pub(crate) enum Command {
     /// Access the Roblox Assets API
     Assets(Assets),
 
@@ -45,6 +49,9 @@ pub enum Command {
 
     /// Access the Roblox OrderedDataStore API
     OrderedDatastore(OrderedDataStore),
+
+    /// Access the Roblox user inventory API
+    Inventory(Inventory),
 
     /// Access the Roblox Group API
     Group(Group),
@@ -65,10 +72,13 @@ pub enum Command {
 
     /// Access the Roblox User API
     User(User),
+
+    /// Access to the Roblox User Restriction API
+    UserRestriction(UserRestriction),
 }
 
 impl Cli {
-    pub async fn run(self) -> anyhow::Result<Option<String>> {
+    pub(crate) async fn run(self) -> anyhow::Result<Option<String>> {
         match self.command {
             Command::Assets(command) => command.run().await,
             Command::Experience(command) => command.run().await,
@@ -76,12 +86,14 @@ impl Cli {
             Command::Datastore(command) => command.run().await,
             Command::OrderedDatastore(command) => command.run().await,
             Command::Group(command) => command.run().await,
+            Command::Inventory(command) => command.run().await,
             Command::Luau(command) => command.run().await,
             Command::Subscription(command) => command.run().await,
             Command::Notification(command) => command.run().await,
             Command::Place(command) => command.run().await,
             Command::Universe(command) => command.run().await,
             Command::User(command) => command.run().await,
+            Command::UserRestriction(command) => command.run().await,
         }
     }
 }

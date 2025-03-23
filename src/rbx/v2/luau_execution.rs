@@ -258,8 +258,6 @@ pub async fn get_luau_execution_task_logs(
         .send()
         .await?;
 
-    println!("URL SENT: {}", res.url());
-
     let status = res.status();
 
     if !status.is_success() {

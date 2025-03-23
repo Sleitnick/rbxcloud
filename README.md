@@ -25,14 +25,16 @@ Possible use-cases:
 
 | | API v2 |
 | -- | -- |
+| :x: | Data Stores |
 | :white_check_mark: | Groups |
 | :white_check_mark: | Universes |
 | :white_check_mark: | Places |
 | :x: | Instances |
 | :white_check_mark: | Subscriptions |
-| :x: | Inventory |
+| :white_check_mark: | Inventory |
 | :white_check_mark: | User Notifications |
 | :white_check_mark: | User |
+| :white_check_mark: | User Restrictions |
 | :x: | Creator Store |
 | :white_check_mark: | Luau Execution |
 

@@ -13,7 +13,7 @@ pub struct PlaceId(pub u64);
 pub struct ReturnLimit(pub u64);
 
 /// Represents a Roblox user's ID.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct RobloxUserId(pub u64);
 
 #[derive(Debug, Clone, Copy)]
